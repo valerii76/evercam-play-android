@@ -448,8 +448,10 @@ void gst_native_request_sample (JNIEnv* env, jobject thiz, jstring format) {
     }
 
     GstSample *sample;    
+    GstState state = GST_STATE_NULL;
+    gst_element_get_state(data->pipeline, &state, NULL, GST_CLOCK_TIME_NONE);
 
-    if (data->target_state == GST_STATE_PAUSED)
+    if (state == GST_STATE_PAUSED)
         sample = data->last_sample;
     else
         g_object_get(data->pipeline, "sample", &sample, NULL);
