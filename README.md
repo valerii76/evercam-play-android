@@ -39,7 +39,9 @@ The entire Evercam codebase is open source, see details: http://www.evercam.io/o
 
 If you have experience with Android SDK and IP cameras, we look forward to your pull requests!
 
-Any questions or sugestions, drop us a line: http://www.evercam.io/contact
+For any bugs and discussions, please use [Github Issues](https://github.com/evercam/evercam-play-android/issues).
+
+Any questions or suggestions around Evercam, drop us a line: http://www.evercam.io/contact
 
 
 
