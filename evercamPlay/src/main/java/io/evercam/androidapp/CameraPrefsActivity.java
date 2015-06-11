@@ -21,6 +21,7 @@ import io.evercam.androidapp.utils.PropertyReader;
 public class CameraPrefsActivity extends PreferenceActivity
 {
     private static int screenWidth = 0;
+    private PropertyReader propertyReader;
     private static final String TAG = "CameraPrefsActivity";
 
     @Override
@@ -28,11 +29,16 @@ public class CameraPrefsActivity extends PreferenceActivity
     {
         super.onCreate(savedInstanceState);
 
+        propertyReader = new PropertyReader(this);
         if(Constants.isAppTrackingEnabled)
         {
-            String bugSenseCode = new PropertyReader(this).getPropertyStr(PropertyReader
-                    .KEY_SPLUNK_MINT);
-            Mint.initAndStartSession(this, bugSenseCode);
+            if(propertyReader.isPropertyExist(PropertyReader
+                    .KEY_SPLUNK_MINT))
+            {
+                String bugSenseCode = propertyReader.getPropertyStr(PropertyReader
+                        .KEY_SPLUNK_MINT);
+                Mint.initAndStartSession(this, bugSenseCode);
+            }
         }
 
         if(this.getActionBar() != null)
@@ -54,7 +60,10 @@ public class CameraPrefsActivity extends PreferenceActivity
 
         if(Constants.isAppTrackingEnabled)
         {
-            Mint.startSession(this);
+            if(propertyReader.isPropertyExist(PropertyReader.KEY_SPLUNK_MINT))
+            {
+                Mint.startSession(this);
+            }
         }
     }
 
@@ -62,9 +71,14 @@ public class CameraPrefsActivity extends PreferenceActivity
     public void onStop()
     {
         super.onStop();
+
+
         if(Constants.isAppTrackingEnabled)
         {
-            Mint.closeSession(this);
+            if(propertyReader.isPropertyExist(PropertyReader.KEY_SPLUNK_MINT))
+            {
+                Mint.closeSession(this);
+            }
         }
     }
 

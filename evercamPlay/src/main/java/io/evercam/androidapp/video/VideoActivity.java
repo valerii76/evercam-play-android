@@ -1297,7 +1297,8 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
                     startTime = null;
                 }
 
-                logger.info(successItem.toJson());
+                sendToLogentries(logger, successItem.toJson());
+
                 successItem.sendToKeenIo(client);
             }
         });
@@ -1320,7 +1321,9 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
                 failedItem.setCameraId(evercamCamera.getCameraId());
                 failedItem.setUrl(createUri(evercamCamera));
                 failedItem.setType(StreamFeedbackItem.TYPE_RTSP);
-                logger.info(failedItem.toJson());
+
+
+                sendToLogentries(logger, failedItem.toJson());
                 failedItem.sendToKeenIo(client);
 
                 isPlayingJpg = true;
