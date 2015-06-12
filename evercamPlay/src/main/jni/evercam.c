@@ -36,13 +36,13 @@ typedef struct _CustomData {
     ANativeWindow *native_window; /* The Android native window where video will be rendered */
     gint tcp_timeout;             /* tcp timeout for rtspsrc */
     GstState target_state;        /* Target pipeline state for playing errors detection */
-    gboolean busy_in_conversion;  /* TRUE if sample conversion in progress */
+    GstSample *last_sample;       /* Here is sample for implementation of snapshot from paused stream, here is just last snapshot before settings paused state or NULL */
 } CustomData;
 
 typedef struct {
     GstCaps    *caps;             /* Target frame caps */
     GstSample  *sample;           /* Sample for conversion */
-    CustomData *data;             /* Global data for using CustomData::busy_in_conversion and call java stuff */
+    CustomData *data;             /* Global data for call java stuff */
 } ConvertSampleContext;
 
 
@@ -242,17 +242,19 @@ static void *convert_thread_func(void *arg)
 {
     ConvertSampleContext *data = (ConvertSampleContext*) arg;
     GError *err = NULL;
-    GstSample *sample = gst_video_convert_sample(data->sample, data->caps, GST_CLOCK_TIME_NONE, &err);
-    process_converted_sample(sample, err, data);
-    g_free(data);
-    data->data->busy_in_conversion = FALSE;
+
+    if (data->caps != NULL && data->sample != NULL) {
+        GstSample *sample = gst_video_convert_sample(data->sample, data->caps, GST_CLOCK_TIME_NONE, &err);
+        process_converted_sample(sample, err, data);
+        g_free(data);
+    }
+
     return NULL;
 }
 
 /* Asynchronous function for converting frame */
 static void convert_sample(ConvertSampleContext *ctx)
-{
-    ctx->data->busy_in_conversion = TRUE;
+{    
     pthread_t thread;
 
     if (pthread_create(&thread, NULL, convert_thread_func, ctx) != 0)
@@ -280,8 +282,8 @@ static void *app_function (void *userdata) {
     GstBus *bus;
     CustomData *data = (CustomData *)userdata;
     data->tcp_timeout = 0;
-    data->target_state = GST_STATE_NULL;
-    data->busy_in_conversion = FALSE;
+    data->target_state = GST_STATE_NULL;    
+    data->last_sample = NULL;
     GSource *bus_source;
     GError *error = NULL;
 
@@ -366,6 +368,12 @@ static void gst_native_init (JNIEnv* env, jobject thiz) {
 static void gst_native_finalize (JNIEnv* env, jobject thiz) {
     CustomData *data = GET_CUSTOM_DATA (env, thiz, custom_data_field_id);
     if (!data) return;
+
+    if (data->last_sample != NULL) {
+        gst_sample_unref(data->last_sample);
+        data->last_sample = NULL;
+    }
+
     GST_DEBUG ("Quitting main loop...");
     g_main_loop_quit (data->main_loop);
     GST_DEBUG ("Waiting for thread to finish...");
@@ -383,6 +391,12 @@ static void gst_native_play (JNIEnv* env, jobject thiz) {
     CustomData *data = GET_CUSTOM_DATA (env, thiz, custom_data_field_id);
     if (!data) return;
     GST_DEBUG ("Setting state to PLAYING");
+
+    if (data->last_sample != NULL) {
+        gst_sample_unref(data->last_sample);
+        data->last_sample = NULL;
+    }
+
     data->target_state = GST_STATE_PLAYING;
     gst_element_set_state (data->pipeline, GST_STATE_PLAYING);
 
@@ -393,6 +407,15 @@ static void gst_native_pause (JNIEnv* env, jobject thiz) {
     CustomData *data = GET_CUSTOM_DATA (env, thiz, custom_data_field_id);
     if (!data) return;
     GST_DEBUG ("Setting state to PAUSED");
+    GstSample *sample;
+    g_object_get(data->pipeline, "sample", &sample, NULL);
+
+    if (data->last_sample != NULL) {
+        gst_sample_unref(data->last_sample);
+        data->last_sample = NULL;
+    }
+
+    data->last_sample = sample;
     data->target_state = GST_STATE_PAUSED;
     gst_element_set_state (data->pipeline, GST_STATE_PAUSED);
 }
@@ -404,7 +427,7 @@ void gst_native_set_uri (JNIEnv* env, jobject thiz, jstring uri, jint timeout) {
     const jbyte *char_uri = (*env)->GetStringUTFChars (env, uri, NULL);
     data->tcp_timeout = timeout;
     GST_DEBUG("Set tcp timeout to %d", data->tcp_timeout);
-    g_object_set(data->pipeline, "uri", char_uri, NULL);
+    g_object_set(data->pipeline, "uri", char_uri, NULL);    
     data->target_state = GST_STATE_READY;
     gst_element_set_state (data->pipeline, GST_STATE_READY);
     (*env)->ReleaseStringUTFChars (env, uri, char_uri);
@@ -416,13 +439,6 @@ void gst_native_request_sample (JNIEnv* env, jobject thiz, jstring format) {
     CustomData *data = GET_CUSTOM_DATA (env, thiz, custom_data_field_id);
     if (!data || !data->pipeline) return;
 
-    /* If conversion in process, do nothing */
-    /*if (data->busy_in_conversion == TRUE) {
-        GST_DEBUG("Currently busy with previous sample conversion, plase try later");
-        notify_about_get_sample_failed(data);
-        return;
-    }*/
-
     const jbyte *fmt = (*env)->GetStringUTFChars (env, format, NULL);
 
     if (strcmp(fmt, "png") != 0 && strcmp(fmt, "jpeg") != 0 && strcmp(fmt, "jpg") != 0) {
@@ -431,8 +447,14 @@ void gst_native_request_sample (JNIEnv* env, jobject thiz, jstring format) {
         return;
     }
 
-    GstSample *sample;
-    g_object_get(data->pipeline, "sample", &sample, NULL);
+    GstSample *sample;    
+    GstState state = GST_STATE_NULL;
+    gst_element_get_state(data->pipeline, &state, NULL, GST_CLOCK_TIME_NONE);
+
+    if (state == GST_STATE_PAUSED)
+        sample = data->last_sample;
+    else
+        g_object_get(data->pipeline, "sample", &sample, NULL);
 
     if (sample != NULL) {
         ConvertSampleContext *ctx = g_malloc( sizeof(ConvertSampleContext) );
