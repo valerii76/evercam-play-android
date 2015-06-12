@@ -1,13 +1,13 @@
 package org.freedesktop.gstreamer;
 
+import android.content.Context;
+import android.content.res.AssetManager;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import android.content.Context;
-import android.content.res.AssetManager;
 
 public class GStreamer {
     private static native void nativeInit(Context context) throws Exception;

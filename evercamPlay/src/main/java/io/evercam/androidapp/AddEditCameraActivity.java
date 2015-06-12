@@ -36,7 +36,6 @@ import io.evercam.androidapp.tasks.PatchCameraTask;
 import io.evercam.androidapp.tasks.TestSnapshotTask;
 import io.evercam.androidapp.utils.Commons;
 import io.evercam.androidapp.utils.Constants;
-import io.evercam.androidapp.utils.PropertyReader;
 import io.evercam.androidapp.video.VideoActivity;
 import io.evercam.network.discovery.DiscoveredCamera;
 
