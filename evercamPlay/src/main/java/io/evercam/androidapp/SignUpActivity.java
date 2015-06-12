@@ -333,15 +333,6 @@ public class SignUpActivity extends ParentActivity
             }
             catch(EvercamException e)
             {
-                try
-                {
-                    sendWithMsgToMint("User details" , userDetail.getFirstname() + " " + userDetail.getLastname()
-                            + ", " + userDetail.getUsername() + ", " + userDetail.getEmail(), e);
-                }
-                catch(EvercamException e1)
-                {
-                    e1.printStackTrace();
-                }
                 return e.getMessage();
             }
         }
