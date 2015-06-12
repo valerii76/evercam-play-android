@@ -1105,11 +1105,6 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
                     mediaPlayerView.setVisibility(View.VISIBLE);
                     snapshotMenuView.setVisibility(View.VISIBLE);
 
-                    if(surfaceView.getVisibility() == View.VISIBLE)
-                    {
-                        snapshotMenuView.setVisibility(View.GONE);
-                    }
-
                     mediaPlayerView.setImageBitmap(null);
                     mediaPlayerView.setImageResource(android.R.drawable.ic_media_play);
 
