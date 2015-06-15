@@ -39,6 +39,10 @@ android {
     testOptions {
         unitTests.returnDefaultValues = true
     }
+
+    lintOptions {
+        abortOnError false
+    }
 }
 
 apply plugin: 'com.android.application'
@@ -53,8 +57,6 @@ dependencies {
     compile project(':supertoasts')
     compile 'com.android.support:support-v4:22.2.0'
     compile 'joda-time:joda-time:2.6'
-    compile files('libs/HCNetSDK.jar')
-    compile files('libs/PlayerSDK.jar')
     compile files('libs/evercam-java-1.0-withDependency-ShadedForAndroid.jar')
     compile files('libs/evercam-networkscan.jar')
     compile files('libs/httpmime-4.3.4.jar')
