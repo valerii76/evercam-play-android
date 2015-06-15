@@ -51,7 +51,6 @@ import io.evercam.Camera;
 import io.evercam.androidapp.CamerasActivity;
 import io.evercam.androidapp.EvercamPlayApplication;
 import io.evercam.androidapp.FeedbackActivity;
-import io.evercam.androidapp.LocalStorageActivity;
 import io.evercam.androidapp.MainActivity;
 import io.evercam.androidapp.ParentActivity;
 import io.evercam.androidapp.R;
@@ -542,7 +541,6 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
     public boolean onPrepareOptionsMenu(Menu menu)
     {
         MenuItem viewItem = menu.findItem(R.id.video_menu_view_camera);
-        MenuItem localStorageItem = menu.findItem(R.id.video_menu_local_storage);
         MenuItem shortcutItem = menu.findItem(R.id.video_menu_create_shortcut);
 
         if(evercamCamera != null)
@@ -555,15 +553,6 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
             else
             {
                 viewItem.setVisible(true);
-            }
-
-            if(evercamCamera.isHikvision() && evercamCamera.hasCredentials())
-            {
-                localStorageItem.setVisible(true);
-            }
-            else
-            {
-                localStorageItem.setVisible(false);
             }
 
             if(evercamCamera.isOffline())
@@ -612,10 +601,6 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
                 editStarted = true;
                 Intent viewIntent = new Intent(VideoActivity.this, ViewCameraActivity.class);
                 startActivityForResult(viewIntent, Constants.REQUEST_CODE_VIEW_CAMERA);
-            }
-            else if(itemId == R.id.video_menu_local_storage)
-            {
-                startActivity(new Intent(VideoActivity.this, LocalStorageActivity.class));
             }
             else if(itemId == android.R.id.home)
             {

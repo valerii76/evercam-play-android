@@ -157,11 +157,6 @@
             android:logo="@drawable/icon_evercam">
         </activity>
         <activity
-            android:name=".LocalStorageActivity"
-            android:label="@string/title_activity_local_storage"
-            android:logo="@drawable/icon_evercam">
-        </activity>
-        <activity
             android:name=".FeedbackActivity"
             android:label="@string/title_activity_feedback"
             android:logo="@drawable/icon_evercam">
