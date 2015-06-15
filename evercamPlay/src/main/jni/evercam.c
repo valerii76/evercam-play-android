@@ -232,7 +232,10 @@ static void process_converted_sample(GstSample *sample, GError *err, ConvertSamp
     }
 
     gst_sample_unref(sample);
-    gst_sample_unref(data->sample);
+
+    if (data->data->last_sample != data->sample)
+        gst_sample_unref(data->sample);
+
     gst_caps_unref(data->caps);
 }
 
@@ -254,7 +257,7 @@ static void *convert_thread_func(void *arg)
 
 /* Asynchronous function for converting frame */
 static void convert_sample(ConvertSampleContext *ctx)
-{    
+{
     pthread_t thread;
 
     if (pthread_create(&thread, NULL, convert_thread_func, ctx) != 0)
@@ -282,7 +285,7 @@ static void *app_function (void *userdata) {
     GstBus *bus;
     CustomData *data = (CustomData *)userdata;
     data->tcp_timeout = 0;
-    data->target_state = GST_STATE_NULL;    
+    data->target_state = GST_STATE_NULL;
     data->last_sample = NULL;
     GSource *bus_source;
     GError *error = NULL;
@@ -416,6 +419,7 @@ static void gst_native_pause (JNIEnv* env, jobject thiz) {
     }
 
     data->last_sample = sample;
+    GST_DEBUG("Sample is null %d", data->last_sample == NULL);
     data->target_state = GST_STATE_PAUSED;
     gst_element_set_state (data->pipeline, GST_STATE_PAUSED);
 }
@@ -427,7 +431,7 @@ void gst_native_set_uri (JNIEnv* env, jobject thiz, jstring uri, jint timeout) {
     const jbyte *char_uri = (*env)->GetStringUTFChars (env, uri, NULL);
     data->tcp_timeout = timeout;
     GST_DEBUG("Set tcp timeout to %d", data->tcp_timeout);
-    g_object_set(data->pipeline, "uri", char_uri, NULL);    
+    g_object_set(data->pipeline, "uri", char_uri, NULL);
     data->target_state = GST_STATE_READY;
     gst_element_set_state (data->pipeline, GST_STATE_READY);
     (*env)->ReleaseStringUTFChars (env, uri, char_uri);
@@ -447,11 +451,9 @@ void gst_native_request_sample (JNIEnv* env, jobject thiz, jstring format) {
         return;
     }
 
-    GstSample *sample;    
-    GstState state = GST_STATE_NULL;
-    gst_element_get_state(data->pipeline, &state, NULL, GST_CLOCK_TIME_NONE);
+    GstSample *sample;
 
-    if (state == GST_STATE_PAUSED)
+    if (sample = data->last_sample != NULL)
         sample = data->last_sample;
     else
         g_object_get(data->pipeline, "sample", &sample, NULL);
