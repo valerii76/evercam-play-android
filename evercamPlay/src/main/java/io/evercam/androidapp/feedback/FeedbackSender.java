@@ -37,13 +37,14 @@ public class FeedbackSender
 
     public void send(String feedbackString, String cameraId)
     {
-        AppUser user = AppData.defaultUser;
-        String fullName = "";
-        String userEmail = "";
-
-        sendgrid.setFrom(user.getEmail());
-        if(user != null)
+        if(sendgrid != null)
         {
+            AppUser user = AppData.defaultUser;
+            String fullName = "";
+            String userEmail = "";
+
+            sendgrid.setFrom(user.getEmail());
+
             try
             {
                 User evercamUser = new User(user.getUsername());
@@ -55,25 +56,25 @@ public class FeedbackSender
                 EvercamPlayApplication.sendCaughtException(activity, e);
                 Log.e(TAG, e.toString());
             }
-        }
 
-        DataCollector dataCollector = new DataCollector(context);
-        sendgrid.addTo(TO_EMAIL);
-        if(!userEmail.isEmpty())
-        {
-            sendgrid.setFrom(userEmail);
+            DataCollector dataCollector = new DataCollector(context);
+            sendgrid.addTo(TO_EMAIL);
+            if(!userEmail.isEmpty())
+            {
+                sendgrid.setFrom(userEmail);
+            }
+            sendgrid.setSubject(TITLE_FEEDBACK);
+            String contentString = fullName + " says: \n\n" + feedbackString + "\n\nVersion: " +
+                    dataCollector.getAppVersion() + "\nDevice: " + DataCollector.getDeviceName() +
+                    "\nAndroid " + DataCollector.getAndroidVersion() + "\nNetwork: " + dataCollector.getNetworkString();
+
+            if(cameraId != null)
+            {
+                contentString += "\nCamera ID: " + cameraId;
+            }
+            sendgrid.setText(contentString);
+            String response = sendgrid.send();
+            Log.d(TAG, "Sendgrid response: " + response);
         }
-        sendgrid.setSubject(TITLE_FEEDBACK);
-        String contentString = fullName + " says: \n\n" + feedbackString + "\n\nVersion: " +
-                dataCollector.getAppVersion() + "\nDevice: " + DataCollector.getDeviceName() +
-                "\nAndroid " + DataCollector.getAndroidVersion() + "\nNetwork: " + dataCollector
-                .getNetworkString();
-        if(cameraId != null)
-        {
-            contentString += "\nCamera ID: " + cameraId;
-        }
-        sendgrid.setText(contentString);
-        String response = sendgrid.send();
-        Log.d(TAG, "Sendgrid response: " + response);
     }
 }
