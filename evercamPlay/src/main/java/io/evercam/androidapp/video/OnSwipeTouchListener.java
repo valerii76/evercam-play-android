@@ -7,7 +7,7 @@ import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.RelativeLayout;
 
-public class OnSwipeTouchListener implements View.OnTouchListener
+public abstract class OnSwipeTouchListener implements View.OnTouchListener
 {
     private final String TAG = "OnSwipeTouchListener";
     private float lastX = -1;
@@ -48,19 +48,30 @@ public class OnSwipeTouchListener implements View.OnTouchListener
 
             case MotionEvent.ACTION_UP:
 
+                float upX = event.getX();
+                float upY = event.getY();
+
+                if(lastX == upX && lastY == upY)
+                {
+                    onClick();
+                }
+
                 lastX = -1;
                 lastY = -1;
                 break;
 
             case MotionEvent.ACTION_MOVE:
 
-                if(scaleListener != null && scaleListener.zoom)
+                if(scaleListener != null)
                 {
-                    onActionZoom(view);
-                }
-                else if(!scaleListener.zoom)
-                {
-                    onActionMove(event, view);
+                    if(scaleListener.zoom)
+                    {
+                        onActionZoom(view);
+                    }
+                    else
+                    {
+                        onActionMove(event, view);
+                    }
                 }
                 lastX = event.getX();
                 lastY = event.getY();
@@ -161,4 +172,6 @@ public class OnSwipeTouchListener implements View.OnTouchListener
             return originalScaleFactor;
         }
     }
+
+    public abstract void onClick();
 }

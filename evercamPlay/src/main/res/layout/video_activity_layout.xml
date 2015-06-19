@@ -10,7 +10,7 @@
         android:layout_height="wrap_content">
 
         <ImageView
-            android:id="@+id/img_camera1"
+            android:id="@+id/jpg_image_view"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"/>
 
@@ -27,7 +27,7 @@
             android:layout_centerInParent="true">
 
             <ImageView
-                android:id="@+id/ivmediaplayer1"
+                android:id="@+id/play_control_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/play_button_background_selector"
@@ -39,7 +39,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/play_button_background_selector"
-                android:layout_toRightOf="@+id/ivmediaplayer1"
+                android:layout_toRightOf="@+id/play_control_view"
                 android:src="@drawable/ic_action_save"
                 android:visibility="gone"/>
 
@@ -47,10 +47,10 @@
                 android:id="@+id/ivprogressspinner1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignLeft="@+id/ivmediaplayer1"
-                android:layout_alignRight="@+id/ivmediaplayer1"
-                android:layout_alignTop="@+id/ivmediaplayer1"
-                android:layout_alignBottom="@+id/ivmediaplayer1"/>
+                android:layout_alignLeft="@+id/play_control_view"
+                android:layout_alignRight="@+id/play_control_view"
+                android:layout_alignTop="@+id/play_control_view"
+                android:layout_alignBottom="@+id/play_control_view"/>
         </RelativeLayout>
 
         <TextView
