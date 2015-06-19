@@ -92,28 +92,33 @@ public class OnSwipeTouchListener implements View.OnTouchListener
 
     private void onActionMove(MotionEvent event, View view)
     {
-        long currentTime = System.nanoTime();
-        if(time != 0 && (currentTime - time) > 10000000)
+        if(lastX >= 0 && lastY > 0)
         {
-            if(lastX >= 0 && lastY > 0)
+            float newX = event.getX();
+            float newY = event.getY();
+
+            int xDiffInt = (int) (newX - lastX);
+            int yDiffInt = (int) (newY - lastY);
+            Log.d(TAG, "Swiping - Xdiff " + newX + " - " + lastX + " = " + xDiffInt + " Ydiff: " + newY + "-" + lastY + " = " + yDiffInt);
+
+            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) view
+                    .getLayoutParams();
+
+            //If moving right, stop if image's left reach screen left
+            if(xDiffInt > 0 && layoutParams.leftMargin >=  0)
             {
-                float newX = event.getX();
-                float newY = event.getY();
-
-                int xDiffInt = (int) (newX - lastX);
-                int yDiffInt = (int) (newY - lastY);
-                Log.d(TAG, "Swiping - Xdiff " + newX + " - " + lastX + " = " + xDiffInt + " Ydiff: " + newY + "-" + lastY + " = " + yDiffInt);
-
-                RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) view
-                        .getLayoutParams();
-                layoutParams.setMargins(layoutParams.leftMargin + xDiffInt, layoutParams
-                        .topMargin + yDiffInt, layoutParams.rightMargin - xDiffInt, layoutParams.bottomMargin - yDiffInt);
-                view.setLayoutParams(layoutParams);
+                return;
             }
-        }
-        else
-        {
-            time = System.nanoTime();
+
+            //If moving left, stop if image's right reach screen right
+            if(xDiffInt < 0 && layoutParams.rightMargin >= 0)
+            {
+                return;
+            }
+
+            layoutParams.setMargins(layoutParams.leftMargin + xDiffInt, layoutParams
+                    .topMargin + yDiffInt, layoutParams.rightMargin - xDiffInt, layoutParams.bottomMargin - yDiffInt);
+            view.setLayoutParams(layoutParams);
         }
 
     }
