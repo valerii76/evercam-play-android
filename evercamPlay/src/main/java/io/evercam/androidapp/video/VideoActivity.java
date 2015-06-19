@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
 import android.app.Activity;
 import android.app.TaskStackBuilder;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -20,10 +21,12 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -91,7 +94,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
     /**
      * UI elements
      */
-    private SurfaceView surfaceView;
+    private GStreamerSurfaceView surfaceView;
     private SurfaceHolder surfaceHolder;
     private ProgressView progressView = null;
     private TextView offlineTextView;
@@ -170,6 +173,8 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
     private long native_custom_data;      // Native code will use this to keep private data
 
     private final int TCP_TIMEOUT = 10 * 1000000; // 10 seconds in micro seconds
+
+    private OnSwipeTouchListener swipeTouchListener;
 
     static
     {
@@ -985,8 +990,8 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
         }
         else
         {
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager
+                    .LayoutParams.FLAG_FULLSCREEN);
         }
     }
 
@@ -1012,9 +1017,13 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
         mediaPlayerView = (ImageView) this.findViewById(R.id.ivmediaplayer1);
         snapshotMenuView = (ImageView) this.findViewById(R.id.player_savesnapshot);
 
-        surfaceView = (SurfaceView) findViewById(R.id.surface_view);
+        surfaceView = (GStreamerSurfaceView) findViewById(R.id.surface_view);
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(this);
+
+        swipeTouchListener = new OnSwipeTouchListener(this);
+        surfaceView.setOnTouchListener(swipeTouchListener);
+        imageView.setOnTouchListener(swipeTouchListener);
 
         progressView = ((ProgressView) imageViewLayout.findViewById(R.id.ivprogressspinner1));
 
@@ -1670,13 +1679,16 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
         getActionBar().setSelectedNavigationItem(defaultCameraIndex);
     }
 
-    private void onMediaSizeChanged (int width, int height) {
-        Log.i ("GStreamer", "Media size changed to " + width + "x" + height);
-        final GStreamerSurfaceView gstreamerSurfaceView = (GStreamerSurfaceView) this.findViewById(R.id.surface_view);
+    private void onMediaSizeChanged (int width, int height)
+    {
+        Log.i("GStreamer", "Media size changed to " + width + "x" + height);
+        final GStreamerSurfaceView gstreamerSurfaceView = surfaceView;
         gstreamerSurfaceView.media_width = width;
         gstreamerSurfaceView.media_height = height;
-        runOnUiThread(new Runnable() {
-            public void run() {
+        runOnUiThread(new Runnable()
+        {
+            public void run()
+            {
                 gstreamerSurfaceView.requestLayout();
             }
         });
