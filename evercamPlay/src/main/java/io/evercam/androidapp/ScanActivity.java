@@ -31,12 +31,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import io.evercam.EvercamException;
 import io.evercam.androidapp.custom.CustomedDialog;
 import io.evercam.androidapp.tasks.CheckInternetTask;
 import io.evercam.androidapp.tasks.ScanForCameraTask;
 import io.evercam.androidapp.utils.Constants;
-import io.evercam.network.cambase.CambaseAPI;
-import io.evercam.network.cambase.CambaseException;
+import io.evercam.network.EvercamAPI;
 import io.evercam.network.discovery.DiscoveredCamera;
 
 public class ScanActivity extends ParentActivity
@@ -352,9 +352,9 @@ public class ScanActivity extends ParentActivity
             String thumbnailUrl = "";
             try
             {
-                thumbnailUrl = CambaseAPI.getThumbnailUrlFor(vendorId, modelId);
+                thumbnailUrl = EvercamAPI.getThumbnailUrlFor(vendorId, modelId);
             }
-            catch(CambaseException e)
+            catch(EvercamException e)
             {
                 Log.e(TAG, e.toString());
             }
