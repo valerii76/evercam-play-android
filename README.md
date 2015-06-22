@@ -1,4 +1,4 @@
-# Evercam Play [![Build Status](https://travis-ci.org/evercam/evercam-play-android.svg?branch=master)](https://travis-ci.org/evercam/evercam-play-android)
+# Evercam Play [![Build Status](https://travis-ci.org/evercam/evercam-play-android.svg?branch=master)](https://travis-ci.org/evercam/evercam-play-android) [![Stories in Ready](https://badge.waffle.io/evercam/evercam-play-android.png?label=ready&title=Ready)](https://waffle.io/evercam/evercam-play-android)
 
 Evercam Play allows connect your own IP cameras, public webcams and any Android devices that you use as an IP camera. It connects you to Evercam dashboard so that you can see all your cameras on your desktop as well. 
 
