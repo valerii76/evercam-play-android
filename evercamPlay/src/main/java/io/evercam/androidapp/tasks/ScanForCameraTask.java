@@ -14,6 +14,7 @@ import io.evercam.androidapp.utils.NetInfo;
 import io.evercam.network.EvercamDiscover;
 import io.evercam.network.discovery.DiscoveredCamera;
 import io.evercam.network.discovery.ScanRange;
+import io.evercam.network.onvif.OnvifDiscovery;
 
 public class ScanForCameraTask extends AsyncTask<Void, Void, ArrayList<DiscoveredCamera>>
 {
@@ -35,9 +36,10 @@ public class ScanForCameraTask extends AsyncTask<Void, Void, ArrayList<Discovere
         ArrayList<DiscoveredCamera> cameraList = null;
         try
         {
-            EvercamDiscover evercamDiscover = new EvercamDiscover();
-            ScanRange scanRange = new ScanRange(netInfo.getGatewayIp(), netInfo.getNetmaskIp());
-            cameraList = evercamDiscover.discoverAllAndroid(scanRange);
+//            EvercamDiscover evercamDiscover = new EvercamDiscover();
+//            ScanRange scanRange = new ScanRange(netInfo.getGatewayIp(), netInfo.getNetmaskIp());
+//            cameraList = evercamDiscover.discoverAllAndroid(scanRange);
+            cameraList = OnvifDiscovery.probe();
         }
         catch(Exception e)
         {
