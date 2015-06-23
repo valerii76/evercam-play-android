@@ -37,6 +37,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.logentries.android.AndroidLogger;
+import com.squareup.picasso.Picasso;
 
 import org.freedesktop.gstreamer.GStreamer;
 import org.json.JSONException;
@@ -748,7 +749,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
             imageView.setVisibility(View.VISIBLE);
             showProgressView();
 
-            loadImageFromCache(VideoActivity.evercamCamera.getCameraId());
+            loadImageFromCache(VideoActivity.evercamCamera);
 
             if(!evercamCamera.isOffline())
             {
@@ -768,12 +769,13 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
 
     // Loads image from cache. First image gets loaded correctly and hence we
     // can start making requests concurrently as well
-    public void loadImageFromCache(String cameraId)
+    public void loadImageFromCache(EvercamCamera camera)
     {
         imageView.setImageDrawable(null);
 
-        Bitmap cacheBitmap = EvercamFile.loadBitmapForCamera(this, cameraId);
-        imageView.setImageBitmap(cacheBitmap);
+//        Bitmap cacheBitmap = EvercamFile.loadBitmapForCamera(this, cameraId);
+//        imageView.setImageBitmap(cacheBitmap);
+        Picasso.with(this).load(camera.getThumbnailUrl()).into(imageView);
     }
 
     private void startMediaPlayerAnimation()
