@@ -455,27 +455,30 @@ public class CamerasActivity extends ParentActivity
 
                 index++;
 
-                /**
-                 * If need to reload the images, read camera layout position and
-                 * check the rectangle is within scope of the screen or not
-                 */
-                if(reloadImages)
-                {
-                    evercamCamera.loadingStatus = ImageLoadingStatus.not_started;
-                    new Handler().postDelayed(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            Rect cameraBounds = new Rect();
-                            cameraListLayout.getHitRect(cameraBounds);
-                            if(Rect.intersects(cameraBounds, bounds))
-                            {
-                                cameraLayout.loadImage();
-                            }
-                        }
-                    }, 300);
-                }
+                //TODO: Re-enable or remove this
+//                /**
+//                 * If need to reload the images, read camera layout position and
+//                 * check the rectangle is within scope of the screen or not
+//                 */
+//                if(reloadImages)
+//                {
+//                    evercamCamera.loadingStatus = ImageLoadingStatus.not_started;
+//                    new Handler().postDelayed(new Runnable()
+//                    {
+//                        @Override
+//                        public void run()
+//                        {
+//                            Rect cameraBounds = new Rect();
+//                            cameraListLayout.getHitRect(cameraBounds);
+//                            if(Rect.intersects(cameraBounds, bounds))
+//                            {
+//                                //FIXME
+//                                //cameraLayout.loadImage();
+//                                //cameraLayout.showThumbnail();
+//                            }
+//                        }
+//                    }, 300);
+//                }
 
                 new Handler().postDelayed(new Runnable()
                 {
@@ -507,11 +510,12 @@ public class CamerasActivity extends ParentActivity
 
             if(refresh != null) refresh.setActionView(null);
 
-            // Only set up scroll listener if snapshots need to get reload
-            if(reloadImages)
-            {
-                setScrollStopListenerFor(scrollView);
-            }
+            //TODO: Re-enable or remove this
+//            // Only set up scroll listener if snapshots need to get reload
+//            if(reloadImages)
+//            {
+//                setScrollStopListenerFor(scrollView);
+//            }
             return true;
         }
         catch(Exception e)
@@ -567,7 +571,9 @@ public class CamerasActivity extends ParentActivity
                                 @Override
                                 public void run()
                                 {
-                                    cameraLayout.loadImage();
+                                    //FIXME
+                                    //cameraLayout.loadImage();
+                                    //cameraLayout.showThumbnail();
                                 }
                             });
                         }

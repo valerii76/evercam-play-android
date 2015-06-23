@@ -75,8 +75,8 @@ public class EvercamAccount
     {
         Account account = getAccountByEmail(email);
 
-        //Start to sync camera list
-        startSync(account);
+        //Start to sync camera list (Disabled because it doesn't need to be synced when the app starts)
+        //startSync(account);
 
         return retrieveUserDetailFromAccount(account);
     }
