@@ -2,11 +2,8 @@ package io.evercam.androidapp.custom;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Gravity;

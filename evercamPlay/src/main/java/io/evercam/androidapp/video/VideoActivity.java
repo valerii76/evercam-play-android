@@ -74,7 +74,6 @@ import io.evercam.androidapp.tasks.DeleteCameraTask;
 import io.evercam.androidapp.utils.Commons;
 import io.evercam.androidapp.utils.Constants;
 import io.evercam.androidapp.utils.EnumConstants.DeleteType;
-import io.evercam.androidapp.utils.EvercamFile;
 import io.evercam.androidapp.utils.PrefsManager;
 import io.evercam.androidapp.utils.PropertyReader;
 import io.evercam.androidapp.video.SnapshotManager.FileType;
