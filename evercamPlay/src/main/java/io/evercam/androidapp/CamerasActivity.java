@@ -47,6 +47,7 @@ import io.evercam.androidapp.utils.Commons;
 import io.evercam.androidapp.utils.Constants;
 import io.evercam.androidapp.utils.PrefsManager;
 import io.evercam.androidapp.utils.PropertyReader;
+import io.evercam.androidapp.video.MultiCameraActivity;
 import io.keen.client.java.KeenClient;
 
 public class CamerasActivity extends ParentActivity
@@ -183,6 +184,10 @@ public class CamerasActivity extends ParentActivity
         else if(itemId == R.id.menu_feedback)
         {
             startActivity(new Intent(CamerasActivity.this, FeedbackActivity.class));
+        }
+        else if(itemId == R.id.menu_test)
+        {
+            startActivity(new Intent(this, MultiCameraActivity.class));
         }
         else
         {

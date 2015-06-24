@@ -177,7 +177,14 @@
             android:configChanges="keyboard|keyboardHidden|screenSize|orientation">
         <meta-data
             android:name="android.support.PARENT_ACTIVITY"
-            android:value=".video.VideoActivity" />
+            android:value=".video.VideoActivity"
+            android:icon="@drawable/icon_evercam"
+            android:label="Test Multi Camera View"/>
+        </activity>
+        <activity
+            android:name=".video.MultiCameraActivity"
+            android:icon="@drawable/icon_evercam"
+            android:label="@string/title_activity_about_web">
         </activity>
     </application>
 
