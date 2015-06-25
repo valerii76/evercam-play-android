@@ -50,6 +50,10 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
     private int singleIpEndedCount = 0;
 
     private String externalIp = "";
+    private float scanPercentage = 0;
+    private int totalDevices = 255;
+    //ONVIF,SSDP and NAT discovery take 9 percents each. The rest is allocated to IP scan
+    private final int PER__DISCOVERY_METHOD_PERCENT = 9;
 
     public ScanForCameraTask(ScanActivity scanActivity)
     {
@@ -62,7 +66,7 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
     @Override
     protected void onPreExecute()
     {
-
+        getScanActivity().onScanningStarted();
     }
 
     @Override
@@ -72,6 +76,7 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
         try
         {
             ScanRange scanRange = new ScanRange(netInfo.getGatewayIp(), netInfo.getNetmaskIp());
+            totalDevices = scanRange.size();
 
             externalIp = NetworkInfo.getExternalIP();
 
@@ -91,6 +96,13 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
                         pool.execute(new IpScanRunnable(ip));
                     }
                 }
+
+                @Override
+                public void onIpScanned(String ip)
+                {
+                    scanPercentage += getPerDevicePercent();
+                    getScanActivity().updateScanPercentage(scanPercentage);
+                }
             });
             ipScan.scanAll(scanRange);
         }
@@ -100,8 +112,15 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
             e.printStackTrace();
         }
 
+        int loopCount = 0;
         while(!onvifDone && !upnpDone || ! natDone || singleIpStartedCount != singleIpEndedCount)
         {
+            loopCount++;
+
+            if(loopCount > 20) break; //Wait for maximum 10 secs
+
+            if(isCancelled()) break;
+
             try
             {
                 Thread.sleep(500);
@@ -117,12 +136,17 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
     @Override
     protected void onProgressUpdate(DiscoveredCamera... discoveredCameras)
     {
-        scanActivityReference.get().addNewCameraToResultList(discoveredCameras[0]);
+        getScanActivity().addNewCameraToResultList(discoveredCameras[0]);
     }
 
     @Override
     protected void onPostExecute(ArrayList<DiscoveredCamera> cameraList)
     {
+        getScanActivity().showScanResults(cameraList);
+        getScanActivity().onScanningFinished();
+
+        pool.shutdown();
+
         Float scanningTime = Commons.calculateTimeDifferenceFrom(startTime);
         Log.d(TAG, "Scanning time: " + scanningTime);
 
@@ -131,11 +155,17 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
         {
             username = AppData.defaultUser.getUsername();
         }
-        new ScanFeedbackItem(scanActivityReference.get(), username, scanningTime, cameraList).sendToKeenIo();
-
-        scanActivityReference.get().showProgress(false);
-
-        scanActivityReference.get().showScanResults(cameraList);
+        new ScanFeedbackItem(getScanActivity(), username, scanningTime, cameraList).sendToKeenIo();
+    }
+    
+    private float getPerDevicePercent()
+    {
+        return (float)(100 - PER__DISCOVERY_METHOD_PERCENT*3)/totalDevices;
+    }
+    
+    private ScanActivity getScanActivity()
+    {
+        return scanActivityReference.get();
     }
 
     private class OnvifRunnable implements Runnable
@@ -152,6 +182,8 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
                 }
             }.probe();
 
+            scanPercentage += PER__DISCOVERY_METHOD_PERCENT;
+            getScanActivity().updateScanPercentage(scanPercentage);
             onvifDone = true;
         }
     }
@@ -255,6 +287,8 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
                 e.printStackTrace();
             }
             upnpDone = true;
+            scanPercentage += PER__DISCOVERY_METHOD_PERCENT;
+            getScanActivity().updateScanPercentage(scanPercentage);
         }
     }
 
@@ -312,6 +346,8 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
                 e.printStackTrace();
             }
             natDone = true;
+            scanPercentage += PER__DISCOVERY_METHOD_PERCENT;
+            getScanActivity().updateScanPercentage(scanPercentage);
         }
     }
 }

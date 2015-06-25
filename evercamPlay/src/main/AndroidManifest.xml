@@ -148,7 +148,7 @@
         <activity
             android:name=".ScanActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_scan"
+            android:label=""
             android:logo="@drawable/icon_evercam">
         </activity>
         <activity

@@ -2,20 +2,25 @@
        xmlns:tools="http://schemas.android.com/tools"
        tools:context=".ScanActivity">
 
-    <!-- Scan progress -->
-
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
 
+        <ProgressBar
+            android:id="@+id/horizontal_progress_bar"
+            style="@android:style/Widget.DeviceDefault.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-8dp"
+            android:visibility="gone"/>
         <!-- Scan Result -->
 
         <RelativeLayout
             android:id="@+id/scan_result_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5sp"
             android:layout_marginBottom="5sp"
+            android:layout_marginTop="5sp"
             android:visibility="gone">
 
             <ListView
@@ -25,44 +30,42 @@
             </ListView>
         </RelativeLayout>
 
-    <LinearLayout
-        android:id="@+id/scan_status_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/scan_result_layout"
-        android:layout_centerHorizontal="true"
-        android:gravity="center"
-        android:orientation="vertical">
-
-        <ProgressBar
-            style="?android:attr/progressBarStyleLarge"
+        <!-- Scan progress -->
+        <LinearLayout
+            android:id="@+id/scan_status_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"/>
-
-        <TextView
-            android:id="@+id/scan_status_message"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:fontFamily="sans-serif-light"
+            android:layout_below="@+id/scan_result_layout"
+            android:layout_centerInParent="true"
             android:gravity="center"
-            android:text="@string/msg_scanning"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/scan_status_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:fontFamily="sans-serif-light"
+                android:gravity="center"
+                android:text="@string/msg_scanning"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+        </LinearLayout>
 
         <Button
             android:id="@+id/button_cancel_scan"
             android:layout_width="wrap_content"
             android:layout_height="35dp"
             android:layout_marginTop="10sp"
+            android:layout_marginBottom="10sp"
             android:background="@+drawable/signup_btn_selector"
-            android:gravity="center"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
             android:paddingLeft="20sp"
             android:paddingRight="20sp"
             android:text="@string/cancel"
             android:textColor="@+drawable/signup_btn_txt_selector"
             android:textSize="17sp"/>
-    </LinearLayout>
 
     </RelativeLayout>
 

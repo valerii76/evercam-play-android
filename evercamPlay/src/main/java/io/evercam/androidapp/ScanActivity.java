@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -46,6 +48,7 @@ public class ScanActivity extends ParentActivity
     private View scanProgressView;
     private View scanResultListView;
     private View scanResultNoCameraView;
+    private ProgressBar progressBar;
 
     private ListView cameraListView;
     private Button cancelButton;
@@ -77,6 +80,8 @@ public class ScanActivity extends ParentActivity
         scanResultListView = findViewById(R.id.scan_result_layout);
         scanResultNoCameraView = findViewById(R.id.scan_result_no_camera_layout);
         cancelButton = (Button) findViewById(R.id.button_cancel_scan);
+        progressBar = (ProgressBar)findViewById(R.id.horizontal_progress_bar);
+        progressBar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.evercam_color), PorterDuff.Mode.SRC_IN);
 
         drawableArray = new SparseArray<Drawable>();
 
@@ -219,7 +224,7 @@ public class ScanActivity extends ParentActivity
         }
     }
 
-    public void showProgress(boolean show)
+    public void showTextProgress(boolean show)
     {
         scanProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
     }
@@ -232,6 +237,11 @@ public class ScanActivity extends ParentActivity
     public void showNoCameraView(boolean show)
     {
         scanResultNoCameraView.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
+    public void showHorizontalProgress(boolean show)
+    {
+        progressBar.setVisibility(show? View.VISIBLE : View.GONE);
     }
 
     public void showConfirmCancelScanDialog()
@@ -278,6 +288,7 @@ public class ScanActivity extends ParentActivity
             Log.d(TAG, "New discovered camera: " + discoveredCamera.getIP());
             showCameraListView(true);
             showNoCameraView(false);
+            showTextProgress(false);
 
             boolean merged = false; //The new device has been included in the device list or not
 
@@ -470,6 +481,49 @@ public class ScanActivity extends ParentActivity
 
             deviceAdapter.notifyDataSetChanged();
         }
+    }
+
+    public void onScanningStarted()
+    {
+        showHorizontalProgress(true);
+        showTextProgress(true);
+    }
+
+    public void onScanningFinished()
+    {
+        //Hide the scanning percentage
+        updateScanPercentage(null);
+        //Hide the scanning text
+        showTextProgress(false);
+        //Hide the horizontal progress bar
+        showHorizontalProgress(false);
+    }
+
+    public void updateScanPercentage(final Float percentageFloat)
+    {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run()
+            {
+                if(getActionBar() != null)
+                {
+                    if(percentageFloat == null)
+                    {
+                        getActionBar().setTitle("");
+                    }
+                    else
+                    {
+                        float percentf = percentageFloat;
+                        int percentageInt = (int) percentf;
+                        if(percentageInt < 100)
+                        {
+                            getActionBar().setTitle("Scanning... " + percentageInt + '%');
+                            progressBar.setProgress(percentageInt);
+                        }
+                    }
+                }
+            }
+        });
     }
 
     class ScanCheckInternetTask extends CheckInternetTask
