@@ -118,7 +118,8 @@ public class StreamFeedbackItem extends FeedbackItem
                 @Override
                 public void run()
                 {
-                    client.addEvent(Constants.KEEN_COLLECTION_STREAM_LOADING_TIME, feedbackItem.toHashMap());
+                    client.addEvent(Constants.KEEN_COLLECTION_STREAM_LOADING_TIME, feedbackItem
+                            .toHashMap());
 
                 }
             }).start();

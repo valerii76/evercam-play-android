@@ -19,7 +19,8 @@ public class ShortcutFeedbackItem extends FeedbackItem
     private String action_type = "";
     private String result = "";
 
-    public ShortcutFeedbackItem(Context context, String username, String cameraId, String actionType, String resultType)
+    public ShortcutFeedbackItem(Context context, String username, String cameraId, String
+            actionType, String resultType)
     {
         super(context, username);
         this.camera_id = cameraId;
@@ -49,7 +50,8 @@ public class ShortcutFeedbackItem extends FeedbackItem
                 @Override
                 public void run()
                 {
-                    client.addEvent(Constants.KEEN_COLLECTION_HOME_SHORTCUT, feedbackItem.toHashMap());
+                    client.addEvent(Constants.KEEN_COLLECTION_HOME_SHORTCUT, feedbackItem
+                            .toHashMap());
 
                 }
             }).start();

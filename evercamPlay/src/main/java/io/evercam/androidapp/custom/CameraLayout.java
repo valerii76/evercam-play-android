@@ -2,11 +2,8 @@ package io.evercam.androidapp.custom;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Gravity;
@@ -18,17 +15,12 @@ import android.widget.RelativeLayout;
 
 import com.squareup.picasso.Picasso;
 
-import java.io.InputStream;
-
-import io.evercam.Camera;
-import io.evercam.EvercamException;
 import io.evercam.androidapp.ParentActivity;
 import io.evercam.androidapp.R;
 import io.evercam.androidapp.dto.AppData;
 import io.evercam.androidapp.dto.CameraStatus;
 import io.evercam.androidapp.dto.EvercamCamera;
 import io.evercam.androidapp.dto.ImageLoadingStatus;
-import io.evercam.androidapp.tasks.SaveImageRunnable;
 import io.evercam.androidapp.video.VideoActivity;
 
 public class CameraLayout extends LinearLayout
@@ -141,15 +133,16 @@ public class CameraLayout extends LinearLayout
         }
     }
 
-    // This method will call the image
-    // loading thread to further load from camera
-    public void loadImage()
-    {
-        if(!end)
-        {
-            handler.postDelayed(LoadImageRunnable, 0);
-        }
-    }
+    //TODO: Remove this
+//    // This method will call the image
+//    // loading thread to further load from camera
+//    public void loadImage()
+//    {
+//        if(!end)
+//        {
+//            handler.postDelayed(LoadImageRunnable, 0);
+//        }
+//    }
 
     public Rect getOfflineIconBounds()
     {
@@ -193,12 +186,11 @@ public class CameraLayout extends LinearLayout
         handler.removeCallbacks(LoadImageRunnable);
     }
 
-    private boolean showThumbnail()
+    public boolean showThumbnail()
     {
-        String thumbnailUrl = evercamCamera.getThumbnailUrl();
-        if(thumbnailUrl != null && !thumbnailUrl.isEmpty())
+        if(evercamCamera.hasThumbnailUrl())
         {
-            Picasso.with(context).load(thumbnailUrl).fit().into(snapshotImageView);
+            Picasso.with(context).load(evercamCamera.getThumbnailUrl()).fit().into(snapshotImageView);
 
             loadingAnimation.setVisibility(View.GONE);
             cameraRelativeLayout.removeView(loadingAnimation);
@@ -209,9 +201,10 @@ public class CameraLayout extends LinearLayout
                 showOfflineIcon();
             }
 
-            //Save the thumbnail, it will be showing before live view get loaded
-            new Thread(new SaveImageRunnable(context, evercamCamera.getThumbnailUrl(),
-                    evercamCamera.getCameraId())).start();
+            //TODO: Remove this (Disabled thumbnail saving because it uses too much memory)
+//            //Save the thumbnail, it will be showing before live view get loaded
+//            new Thread(new SaveImageRunnable(context, evercamCamera.getThumbnailUrl(),
+//                    evercamCamera.getCameraId())).start();
 
             return true;
         }
@@ -273,7 +266,7 @@ public class CameraLayout extends LinearLayout
                 {
                     if(evercamCamera.isActive())
                     {
-                        showAndSaveLiveSnapshot();
+                        //showAndSaveLiveSnapshot();
                     }
                 }
                 else if(evercamCamera.loadingStatus == ImageLoadingStatus.live_received)
@@ -307,49 +300,50 @@ public class CameraLayout extends LinearLayout
         snapshotImageView.setAlpha(0.5f);
     }
 
-    private void showAndSaveLiveSnapshot()
-    {
-        DownloadLiveSnapshotTask downloadLiveSnapshotTask = new DownloadLiveSnapshotTask
-                (evercamCamera.getCameraId());
-        downloadLiveSnapshotTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
+    //TODO: Remove this (Removed live image request because the thumbnail is up-to-date)
+//    private void showAndSaveLiveSnapshot()
+//    {
+//        DownloadLiveSnapshotTask downloadLiveSnapshotTask = new DownloadLiveSnapshotTask
+//                (evercamCamera.getCameraId());
+//        downloadLiveSnapshotTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+//    }
 
-    private class DownloadLiveSnapshotTask extends AsyncTask<Void, Void, Bitmap>
-    {
-        private String cameraId;
-
-        public DownloadLiveSnapshotTask(String cameraId)
-        {
-            this.cameraId = cameraId;
-        }
-
-        @Override
-        protected Bitmap doInBackground(Void... params)
-        {
-            try
-            {
-                Camera camera = Camera.getById(cameraId, false);
-                InputStream stream = camera.getSnapshotFromEvercam();
-                return BitmapFactory.decodeStream(stream);
-            }
-            catch(EvercamException e)
-            {
-                Log.e(TAG, "Failed to request live snapshot for: " + cameraId + " " + e
-                        .getMessage());
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap bitmap)
-        {
-            if(bitmap != null)
-            {
-                snapshotImageView.setImageBitmap(bitmap);
-
-                CameraLayout.this.evercamCamera.loadingStatus = ImageLoadingStatus.live_received;
-                handler.postDelayed(LoadImageRunnable, 0);
-            }
-        }
-    }
+//    private class DownloadLiveSnapshotTask extends AsyncTask<Void, Void, Bitmap>
+//    {
+//        private String cameraId;
+//
+//        public DownloadLiveSnapshotTask(String cameraId)
+//        {
+//            this.cameraId = cameraId;
+//        }
+//
+//        @Override
+//        protected Bitmap doInBackground(Void... params)
+//        {
+//            try
+//            {
+//                Camera camera = Camera.getById(cameraId, false);
+//                InputStream stream = camera.getSnapshotFromEvercam();
+//                return BitmapFactory.decodeStream(stream);
+//            }
+//            catch(EvercamException e)
+//            {
+//                Log.e(TAG, "Failed to request live snapshot for: " + cameraId + " " + e
+//                        .getMessage());
+//            }
+//            return null;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Bitmap bitmap)
+//        {
+//            if(bitmap != null)
+//            {
+//                snapshotImageView.setImageBitmap(bitmap);
+//
+//                CameraLayout.this.evercamCamera.loadingStatus = ImageLoadingStatus.live_received;
+//                handler.postDelayed(LoadImageRunnable, 0);
+//            }
+//        }
+//    }
 }

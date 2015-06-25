@@ -21,7 +21,7 @@ public class LoadCameraListTask extends AsyncTask<Void, Boolean, Boolean>
 {
     private AppUser user;
     private CamerasActivity camerasActivity;
-    private String TAG = "evercamplay-LoadCameraListTask";
+    private String TAG = "LoadCameraListTask";
     public boolean reload = false;
 
     public LoadCameraListTask(AppUser user, CamerasActivity camerasActivity)
@@ -89,6 +89,15 @@ public class LoadCameraListTask extends AsyncTask<Void, Boolean, Boolean>
                     Log.d(TAG, "new camera detected!" + camera.toString() + "\n");
                     updateDB = true;
                     break;
+                }
+                else
+                {
+                    if(!databaseCameraList.get(databaseCameraList.indexOf(camera)).hasThumbnailUrl())
+                    {
+                        Log.d(TAG, "Camera exists but need to update thumbnail URL:" + camera.toString() + "\n");
+                        updateDB = true;
+                        break;
+                    }
                 }
             }
 

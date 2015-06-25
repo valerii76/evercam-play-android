@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -36,8 +38,8 @@ import io.evercam.androidapp.custom.CustomedDialog;
 import io.evercam.androidapp.tasks.CheckInternetTask;
 import io.evercam.androidapp.tasks.ScanForCameraTask;
 import io.evercam.androidapp.utils.Constants;
-import io.evercam.network.EvercamAPI;
 import io.evercam.network.discovery.DiscoveredCamera;
+import io.evercam.network.query.EvercamQuery;
 
 public class ScanActivity extends ParentActivity
 {
@@ -46,13 +48,14 @@ public class ScanActivity extends ParentActivity
     private View scanProgressView;
     private View scanResultListView;
     private View scanResultNoCameraView;
+    private ProgressBar progressBar;
 
     private ListView cameraListView;
     private Button cancelButton;
 
     private ArrayList<HashMap<String, Object>> deviceArrayList;
     private ScanResultAdapter deviceAdapter;
-    private ArrayList<DiscoveredCamera> discoveredCameras;
+    private ArrayList<DiscoveredCamera> discoveredCameras = new ArrayList<>();
     private SparseArray<Drawable> drawableArray;
 
     private final String ADAPTER_KEY_LOGO = "camera_logo";
@@ -77,8 +80,10 @@ public class ScanActivity extends ParentActivity
         scanResultListView = findViewById(R.id.scan_result_layout);
         scanResultNoCameraView = findViewById(R.id.scan_result_no_camera_layout);
         cancelButton = (Button) findViewById(R.id.button_cancel_scan);
+        progressBar = (ProgressBar)findViewById(R.id.horizontal_progress_bar);
+        progressBar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.evercam_color), PorterDuff.Mode.SRC_IN);
 
-        drawableArray = new SparseArray();
+        drawableArray = new SparseArray<Drawable>();
 
         cameraListView = (ListView) findViewById(R.id.scan_result_list);
         Button addManuallyButton = (Button) findViewById(R.id.button_add_camera_manually);
@@ -219,7 +224,7 @@ public class ScanActivity extends ParentActivity
         }
     }
 
-    public void showProgress(boolean show)
+    public void showTextProgress(boolean show)
     {
         scanProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
     }
@@ -232,6 +237,11 @@ public class ScanActivity extends ParentActivity
     public void showNoCameraView(boolean show)
     {
         scanResultNoCameraView.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
+    public void showHorizontalProgress(boolean show)
+    {
+        progressBar.setVisibility(show? View.VISIBLE : View.GONE);
     }
 
     public void showConfirmCancelScanDialog()
@@ -263,48 +273,126 @@ public class ScanActivity extends ParentActivity
         {
             showCameraListView(true);
             showNoCameraView(false);
-            this.discoveredCameras = discoveredCameras;
-            for(int index = 0; index < discoveredCameras.size(); index++)
-            {
-                DiscoveredCamera camera = discoveredCameras.get(index);
-                HashMap<String, Object> deviceMap = new HashMap<String, Object>();
-                String ipTextShowing = camera.getIP();
-                if(camera.hasHTTP())
-                {
-                    ipTextShowing = ipTextShowing + ":" + camera.getHttp();
-                }
-                deviceMap.put(ADAPTER_KEY_IP, ipTextShowing);
-
-                String vendor = camera.getVendor().toUpperCase(Locale.UK);
-
-                if(camera.hasModel())
-                {
-                    String model = camera.getModel().toUpperCase(Locale.UK);
-                    if(model.startsWith(vendor))
-                    {
-                        deviceMap.put(ADAPTER_KEY_MODEL, model);
-                    }
-                    else
-                    {
-                        deviceMap.put(ADAPTER_KEY_MODEL, vendor + " " + model);
-                    }
-                }
-                else
-                {
-                    deviceMap.put(ADAPTER_KEY_MODEL, vendor);
-                }
-                deviceArrayList.add(deviceMap);
-                deviceAdapter.notifyDataSetChanged();
-
-                new RetrieveThumbnailTask(camera.getVendor(), camera.getModel(),
-                        index).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            }
         }
         else
         {
             showCameraListView(false);
             showNoCameraView(true);
         }
+    }
+
+    public void addNewCameraToResultList(DiscoveredCamera discoveredCamera)
+    {
+        try
+        {
+            Log.d(TAG, "New discovered camera: " + discoveredCamera.getIP());
+            showCameraListView(true);
+            showNoCameraView(false);
+            showTextProgress(false);
+
+            boolean merged = false; //The new device has been included in the device list or not
+
+            if(discoveredCameras.size() > 0)
+            {
+                for(int index = 0; index < discoveredCameras.size(); index++)
+                {
+                    DiscoveredCamera originalCamera = discoveredCameras.get(index);
+
+                    //TODO: Refactor the following code (Move to discovery lib)
+                    if(originalCamera.getIP().equals(discoveredCamera.getIP()))
+                    {
+                        if(discoveredCamera.hasMac())
+                        {
+                            originalCamera.setMAC(discoveredCamera.getMAC());
+                        }
+                        if(discoveredCamera.hasRTSP())
+                        {
+                            originalCamera.setRtsp(discoveredCamera.getRtsp());
+                        }
+                        if(!originalCamera.hasVendor() && discoveredCamera.hasVendor())
+                        {
+                            originalCamera.setVendor(discoveredCamera.getVendor());
+                        }
+                        if(!originalCamera.hasHTTP() && discoveredCamera.hasHTTP())
+                        {
+                            originalCamera.setHttp(discoveredCamera.getHttp());
+                        }
+                        if(!originalCamera.hasModel() && discoveredCamera.hasModel())
+                        {
+                            originalCamera.setModel(discoveredCamera.getModel());
+                        }
+                        if(discoveredCamera.hasExternalHttp())
+                        {
+                            originalCamera.setExthttp(discoveredCamera.getExthttp());
+                        }
+                        if(discoveredCamera.hasExternalRtsp())
+                        {
+                            originalCamera.setExtrtsp(discoveredCamera.getExtrtsp());
+                        }
+
+                        Log.d(TAG, "Camera after merging: " + originalCamera.toString());
+
+                        //Update the UI camera list
+                        deviceArrayList.set(index, cameraToDeviceMap(originalCamera));
+
+                        merged = true;
+                        break;
+                    }
+                }
+            }
+
+            if(!merged)
+            {
+                Log.d(TAG, "Not merged, add this camera: " + discoveredCamera.getIP());
+                ScanForCameraTask.cameraList.add(discoveredCamera);
+                deviceArrayList.add(cameraToDeviceMap(discoveredCamera));
+                new RetrieveThumbnailTask(discoveredCamera.getVendor(), discoveredCamera.getModel(),
+                        ScanForCameraTask.cameraList.indexOf(discoveredCamera)).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }
+            else
+            {
+                Log.d(TAG, "Already merged, discard this camera: " + discoveredCamera.getIP());
+            }
+
+            deviceAdapter.notifyDataSetChanged();
+            discoveredCameras = ScanForCameraTask.cameraList;
+
+        } catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    private HashMap<String, Object> cameraToDeviceMap(DiscoveredCamera camera)
+    {
+        HashMap<String, Object> deviceMap = new HashMap<String, Object>();
+        String ipTextShowing = camera.getIP();
+        if(camera.hasHTTP())
+        {
+            ipTextShowing = ipTextShowing + ":" + camera.getHttp();
+        }
+        deviceMap.put(ADAPTER_KEY_IP, ipTextShowing);
+
+        String vendor = camera.getVendor().toUpperCase(Locale.UK);
+
+        if(camera.hasModel())
+        {
+            String model = camera.getModel().toUpperCase(Locale.UK);
+            if(model.startsWith(vendor))
+            {
+                deviceMap.put(ADAPTER_KEY_MODEL, model);
+            }
+            else
+            {
+                deviceMap.put(ADAPTER_KEY_MODEL, vendor + " " + model);
+            }
+        }
+        else
+        {
+            deviceMap.put(ADAPTER_KEY_MODEL, vendor);
+        }
+
+        return deviceMap;
     }
 
     private class ScanResultAdapter extends SimpleAdapter
@@ -352,7 +440,7 @@ public class ScanActivity extends ParentActivity
             String thumbnailUrl = "";
             try
             {
-                thumbnailUrl = EvercamAPI.getThumbnailUrlFor(vendorId, modelId);
+                thumbnailUrl = EvercamQuery.getThumbnailUrlFor(vendorId, modelId);
             }
             catch(EvercamException e)
             {
@@ -393,6 +481,49 @@ public class ScanActivity extends ParentActivity
 
             deviceAdapter.notifyDataSetChanged();
         }
+    }
+
+    public void onScanningStarted()
+    {
+        showHorizontalProgress(true);
+        showTextProgress(true);
+    }
+
+    public void onScanningFinished()
+    {
+        //Hide the scanning percentage
+        updateScanPercentage(null);
+        //Hide the scanning text
+        showTextProgress(false);
+        //Hide the horizontal progress bar
+        showHorizontalProgress(false);
+    }
+
+    public void updateScanPercentage(final Float percentageFloat)
+    {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run()
+            {
+                if(getActionBar() != null)
+                {
+                    if(percentageFloat == null)
+                    {
+                        getActionBar().setTitle("");
+                    }
+                    else
+                    {
+                        float percentf = percentageFloat;
+                        int percentageInt = (int) percentf;
+                        if(percentageInt < 100)
+                        {
+                            getActionBar().setTitle("Scanning... " + percentageInt + '%');
+                            progressBar.setProgress(percentageInt);
+                        }
+                    }
+                }
+            }
+        });
     }
 
     class ScanCheckInternetTask extends CheckInternetTask

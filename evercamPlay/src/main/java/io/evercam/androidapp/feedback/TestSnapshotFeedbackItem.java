@@ -15,7 +15,8 @@ public class TestSnapshotFeedbackItem extends FeedbackItem
     private boolean is_success;
     private boolean is_port_opened;
 
-    public TestSnapshotFeedbackItem(Context context, String username, boolean isSuccess, boolean isPortOpened)
+    public TestSnapshotFeedbackItem(Context context, String username, boolean isSuccess, boolean
+            isPortOpened)
     {
         super(context, username);
         this.is_success = isSuccess;
@@ -64,7 +65,8 @@ public class TestSnapshotFeedbackItem extends FeedbackItem
                 @Override
                 public void run()
                 {
-                    client.addEvent(Constants.KEEN_COLLECTION_TEST_SNAPSHOT, feedbackItem.toHashMap());
+                    client.addEvent(Constants.KEEN_COLLECTION_TEST_SNAPSHOT, feedbackItem
+                            .toHashMap());
 
                 }
             }).start();
