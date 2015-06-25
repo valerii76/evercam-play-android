@@ -72,7 +72,7 @@ dependencies {
     compile "com.mixpanel.android:mixpanel-android:4.5.3"
     compile 'com.google.android.gms:play-services:7.3.0'
     compile "com.splunk.mint:mint:4.2"
-    compile ('org.simpleframework:simple-xml:2.7.1'){
+    compile('org.simpleframework:simple-xml:2.7.1') {
         exclude module: 'stax'
         exclude module: 'stax-api'
         exclude module: 'xpp3'
