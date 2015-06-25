@@ -4,12 +4,34 @@
 
     <!-- Scan progress -->
 
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <!-- Scan Result -->
+
+        <RelativeLayout
+            android:id="@+id/scan_result_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5sp"
+            android:layout_marginBottom="5sp"
+            android:visibility="gone">
+
+            <ListView
+                android:id="@+id/scan_result_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            </ListView>
+        </RelativeLayout>
+
     <LinearLayout
         android:id="@+id/scan_status_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center_horizontal"
+        android:layout_below="@+id/scan_result_layout"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
         android:orientation="vertical">
 
         <ProgressBar
@@ -42,20 +64,6 @@
             android:textSize="17sp"/>
     </LinearLayout>
 
-    <!-- Scan Result -->
-
-    <RelativeLayout
-        android:id="@+id/scan_result_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10sp"
-        android:visibility="gone">
-
-        <ListView
-            android:id="@+id/scan_result_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-        </ListView>
     </RelativeLayout>
 
     <!-- No Camera Found -->
