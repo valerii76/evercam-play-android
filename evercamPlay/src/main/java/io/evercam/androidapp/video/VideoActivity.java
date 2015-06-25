@@ -774,7 +774,14 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
 
 //        Bitmap cacheBitmap = EvercamFile.loadBitmapForCamera(this, cameraId);
 //        imageView.setImageBitmap(cacheBitmap);
-        Picasso.with(this).load(camera.getThumbnailUrl()).into(imageView);
+        if(camera.hasThumbnailUrl())
+        {
+            Picasso.with(this).load(camera.getThumbnailUrl()).into(imageView);
+        }
+        else
+        {
+            Log.e(TAG, camera.toString());
+        }
     }
 
     private void startMediaPlayerAnimation()

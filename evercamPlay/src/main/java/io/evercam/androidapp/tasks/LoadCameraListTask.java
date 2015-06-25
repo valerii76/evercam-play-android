@@ -90,6 +90,15 @@ public class LoadCameraListTask extends AsyncTask<Void, Boolean, Boolean>
                     updateDB = true;
                     break;
                 }
+                else
+                {
+                    if(!databaseCameraList.get(databaseCameraList.indexOf(camera)).hasThumbnailUrl())
+                    {
+                        Log.d(TAG, "Camera exists but need to update thumbnail URL:" + camera.toString() + "\n");
+                        updateDB = true;
+                        break;
+                    }
+                }
             }
 
             // Step 3: Check if any local camera no longer exists in Evercam
