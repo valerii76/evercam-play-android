@@ -75,7 +75,8 @@ public class EvercamAccount
     {
         Account account = getAccountByEmail(email);
 
-        //Start to sync camera list (Disabled because it doesn't need to be synced when the app starts)
+        //Start to sync camera list (Disabled because it doesn't need to be synced when the app
+        // starts)
         //startSync(account);
 
         return retrieveUserDetailFromAccount(account);
@@ -187,14 +188,13 @@ public class EvercamAccount
     private void startSync(Account account)
     {
         final int SYNC_INTERVAL = 3600 * 6;
-        final String AUTHORITY = mContext.getString(R.string
-                        .content_provider_authorities);
+        final String AUTHORITY = mContext.getString(R.string.content_provider_authorities);
 
         //Force request a sync and also enable the auto sync
         Bundle bundle = new Bundle();
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-        ContentResolver.requestSync(account,AUTHORITY, bundle);
+        ContentResolver.requestSync(account, AUTHORITY, bundle);
         ContentResolver.setSyncAutomatically(account, AUTHORITY, true);
         ContentResolver.addPeriodicSync(account, AUTHORITY, Bundle.EMPTY, SYNC_INTERVAL);
     }

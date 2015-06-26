@@ -188,10 +188,9 @@ public class CameraLayout extends LinearLayout
 
     public boolean showThumbnail()
     {
-        String thumbnailUrl = evercamCamera.getThumbnailUrl();
-        if(thumbnailUrl != null && !thumbnailUrl.isEmpty())
+        if(evercamCamera.hasThumbnailUrl())
         {
-            Picasso.with(context).load(thumbnailUrl).fit().into(snapshotImageView);
+            Picasso.with(context).load(evercamCamera.getThumbnailUrl()).fit().into(snapshotImageView);
 
             loadingAnimation.setVisibility(View.GONE);
             cameraRelativeLayout.removeView(loadingAnimation);

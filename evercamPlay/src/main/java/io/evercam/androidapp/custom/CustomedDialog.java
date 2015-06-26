@@ -87,7 +87,9 @@ public class CustomedDialog
         titleTextView.setText(title);
         messageTextView.setText(message);
 
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity).setView(dialogLayout).setCancelable(false).setPositiveButton(positiveButton, positiveListener);
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity).setView
+                (dialogLayout).setCancelable(false).setPositiveButton(positiveButton,
+                positiveListener);
         if(negativeButton != 0)
         {
             dialogBuilder.setNegativeButton(negativeButton, negativeListener);

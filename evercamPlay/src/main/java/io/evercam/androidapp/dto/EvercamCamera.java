@@ -469,6 +469,11 @@ public class EvercamCamera
         return !getExternalRtspUrl().isEmpty();
     }
 
+    public boolean hasThumbnailUrl()
+    {
+        return getThumbnailUrl() != null && !getThumbnailUrl().isEmpty();
+    }
+
     @Override
     public boolean equals(Object obj)
     {
