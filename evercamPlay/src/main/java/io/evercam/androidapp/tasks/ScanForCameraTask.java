@@ -193,7 +193,17 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
     {
         if(getScanActivity() != null)
         {
-            getScanActivity().updateScanPercentage(percentage);
+            if(percentage != null)
+            {
+                if(!isCancelled() && getStatus() != Status.FINISHED)
+                {
+                    getScanActivity().updateScanPercentage(percentage);
+                }
+            }
+            else
+            {
+                getScanActivity().updateScanPercentage(percentage);
+            }
         }
     }
 
