@@ -241,7 +241,12 @@ public class ScanActivity extends ParentActivity
 
     public void showHorizontalProgress(boolean show)
     {
-        progressBar.setVisibility(show? View.VISIBLE : View.GONE);
+        progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
+    public void showCancelButton(boolean show)
+    {
+        cancelButton.setVisibility(show? View.VISIBLE : View.GONE);
     }
 
     public void showConfirmCancelScanDialog()
@@ -487,6 +492,7 @@ public class ScanActivity extends ParentActivity
     {
         showHorizontalProgress(true);
         showTextProgress(true);
+        showCancelButton(true);
     }
 
     public void onScanningFinished()
@@ -497,6 +503,8 @@ public class ScanActivity extends ParentActivity
         showTextProgress(false);
         //Hide the horizontal progress bar
         showHorizontalProgress(false);
+        //Hide the cancel button
+        showCancelButton(false);
     }
 
     public void updateScanPercentage(final Float percentageFloat)

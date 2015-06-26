@@ -65,7 +65,8 @@
             android:paddingRight="20sp"
             android:text="@string/cancel"
             android:textColor="@+drawable/signup_btn_txt_selector"
-            android:textSize="17sp"/>
+            android:textSize="17sp"
+            android:visibility="gone"/>
 
     </RelativeLayout>
 
