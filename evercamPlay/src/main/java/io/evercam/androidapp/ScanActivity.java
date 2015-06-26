@@ -9,8 +9,11 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -51,7 +54,7 @@ public class ScanActivity extends ParentActivity
     private ProgressBar progressBar;
 
     private ListView cameraListView;
-    private Button cancelButton;
+    private MenuItem cancelMenuItem;
 
     private ArrayList<HashMap<String, Object>> deviceArrayList;
     private ScanResultAdapter deviceAdapter;
@@ -79,7 +82,6 @@ public class ScanActivity extends ParentActivity
         scanProgressView = findViewById(R.id.scan_status_layout);
         scanResultListView = findViewById(R.id.scan_result_layout);
         scanResultNoCameraView = findViewById(R.id.scan_result_no_camera_layout);
-        cancelButton = (Button) findViewById(R.id.button_cancel_scan);
         progressBar = (ProgressBar)findViewById(R.id.horizontal_progress_bar);
         progressBar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.evercam_color), PorterDuff.Mode.SRC_IN);
 
@@ -120,15 +122,6 @@ public class ScanActivity extends ParentActivity
             }
         });
 
-        cancelButton.setOnClickListener(new OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                showConfirmCancelScanDialog();
-            }
-        });
-
         addManuallyButton.setOnClickListener(new OnClickListener()
         {
             @Override
@@ -143,12 +136,24 @@ public class ScanActivity extends ParentActivity
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_scan, menu);
+
+        cancelMenuItem = menu.findItem(R.id.action_cancel_scan);
+
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
         // Handle item selection
         switch(item.getItemId())
         {
             case android.R.id.home:
+
                 if(isScanning())
                 {
                     showConfirmCancelScanDialog();
@@ -158,6 +163,13 @@ public class ScanActivity extends ParentActivity
                     finish();
                 }
                 return true;
+
+            case R.id.action_cancel_scan:
+
+                showConfirmCancelScanDialog();
+
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -244,9 +256,23 @@ public class ScanActivity extends ParentActivity
         progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
-    public void showCancelButton(boolean show)
+    public void showCancelMenuItem(final boolean show)
     {
-        cancelButton.setVisibility(show? View.VISIBLE : View.GONE);
+        if(cancelMenuItem == null)
+        {
+            new Handler().postDelayed(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    cancelMenuItem.setVisible(show);
+                }
+            }, 500);
+        }
+        else
+        {
+            cancelMenuItem.setVisible(show);
+        }
     }
 
     public void showConfirmCancelScanDialog()
@@ -492,7 +518,7 @@ public class ScanActivity extends ParentActivity
     {
         showHorizontalProgress(true);
         showTextProgress(true);
-        showCancelButton(true);
+        showCancelMenuItem(true);
     }
 
     public void onScanningFinished()
@@ -504,7 +530,7 @@ public class ScanActivity extends ParentActivity
         //Hide the horizontal progress bar
         showHorizontalProgress(false);
         //Hide the cancel button
-        showCancelButton(false);
+        showCancelMenuItem(false);
     }
 
     public void updateScanPercentage(final Float percentageFloat)
