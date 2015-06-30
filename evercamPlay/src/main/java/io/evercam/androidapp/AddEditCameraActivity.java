@@ -17,6 +17,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TreeMap;
@@ -714,7 +715,7 @@ public class AddEditCameraActivity extends ParentActivity
                 {
                     try
                     {
-                        modelMap.put(model.getName(), model.getId());
+                        modelMap.put(model.getId(),model.getName());
                     }
                     catch(EvercamException e)
                     {
@@ -723,9 +724,10 @@ public class AddEditCameraActivity extends ParentActivity
                 }
             }
         }
-        Set<String> set = modelMap.keySet();
+        Collection<String> modelNameCollection = modelMap.values();
+
         String[] fullModelArray = Commons.joinStringArray(new String[]{getResources().getString(R
-                .string.select_model)}, set.toArray(new String[0]));
+                .string.select_model)}, modelNameCollection.toArray(new String[0]));
         ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, fullModelArray);
         spinnerArrayAdapter.setDropDownViewResource(R.layout.spinner);
@@ -736,7 +738,8 @@ public class AddEditCameraActivity extends ParentActivity
         {
             if(modelMap.get(selectedModel) != null)
             {
-                selectedPosition = spinnerArrayAdapter.getPosition(selectedModel);
+                String selectedModelName = modelMap.get(selectedModel);
+                selectedPosition = spinnerArrayAdapter.getPosition(selectedModelName);
             }
         }
         if(selectedPosition != 0)
@@ -974,7 +977,7 @@ public class AddEditCameraActivity extends ParentActivity
                 {
                     buildModelSpinner(modelList, cameraEdit.getModel());
                 }
-                else if(discoveredCamera != null && !discoveredCamera.getModel().isEmpty())
+                else if(discoveredCamera != null && discoveredCamera.hasModel())
                 {
                     buildModelSpinner(modelList, discoveredCamera.getModel());
                 }
