@@ -25,15 +25,19 @@ public class DataCollector
     public String getAppVersion()
     {
         String version = "";
-        PackageInfo packageInfo;
-        try
+        if(mContext != null)
         {
-            packageInfo = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0);
-            version = packageInfo.versionName;
-        }
-        catch(NameNotFoundException e)
-        {
-            e.printStackTrace();
+            PackageInfo packageInfo;
+            try
+            {
+                packageInfo = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0);
+
+                version = packageInfo.versionName;
+            }
+            catch(NameNotFoundException e)
+            {
+                e.printStackTrace();
+            }
         }
         return version;
     }

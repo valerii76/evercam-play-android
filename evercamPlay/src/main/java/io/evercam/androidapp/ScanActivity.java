@@ -329,37 +329,9 @@ public class ScanActivity extends ParentActivity
                 {
                     DiscoveredCamera originalCamera = discoveredCameras.get(index);
 
-                    //TODO: Refactor the following code (Move to discovery lib)
                     if(originalCamera.getIP().equals(discoveredCamera.getIP()))
                     {
-                        if(discoveredCamera.hasMac())
-                        {
-                            originalCamera.setMAC(discoveredCamera.getMAC());
-                        }
-                        if(discoveredCamera.hasRTSP())
-                        {
-                            originalCamera.setRtsp(discoveredCamera.getRtsp());
-                        }
-                        if(!originalCamera.hasVendor() && discoveredCamera.hasVendor())
-                        {
-                            originalCamera.setVendor(discoveredCamera.getVendor());
-                        }
-                        if(!originalCamera.hasHTTP() && discoveredCamera.hasHTTP())
-                        {
-                            originalCamera.setHttp(discoveredCamera.getHttp());
-                        }
-                        if(!originalCamera.hasModel() && discoveredCamera.hasModel())
-                        {
-                            originalCamera.setModel(discoveredCamera.getModel());
-                        }
-                        if(discoveredCamera.hasExternalHttp())
-                        {
-                            originalCamera.setExthttp(discoveredCamera.getExthttp());
-                        }
-                        if(discoveredCamera.hasExternalRtsp())
-                        {
-                            originalCamera.setExtrtsp(discoveredCamera.getExtrtsp());
-                        }
+                        originalCamera.merge(discoveredCamera);
 
                         Log.d(TAG, "Camera after merging: " + originalCamera.toString());
 

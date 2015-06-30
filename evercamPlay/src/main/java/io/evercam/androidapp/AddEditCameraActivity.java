@@ -367,6 +367,14 @@ public class AddEditCameraActivity extends ParentActivity
             {
                 externalRtspEdit.setText(String.valueOf(camera.getExtrtsp()));
             }
+            if(camera.hasName())
+            {
+                cameraNameEdit.setText(camera.getName());
+            }
+            else
+            {
+                cameraNameEdit.setText((camera.getVendor() + " " + camera.getModel()).toUpperCase());
+            }
         }
     }
 

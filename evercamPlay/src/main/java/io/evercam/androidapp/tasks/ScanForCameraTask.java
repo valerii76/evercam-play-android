@@ -181,10 +181,11 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
     {
         int port = upnpDevice.getPort();
         String model = upnpDevice.getModel();
-        if (port != 0)
+        if (port > 0)
         {
             discoveredCamera.setHttp(port);
         }
+        discoveredCamera.setName(upnpDevice.getFriendlyName());
         discoveredCamera.setModel(model);
         return discoveredCamera;
     }
