@@ -177,19 +177,6 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
         return scanActivityReference.get();
     }
 
-    private DiscoveredCamera mergeUpnpDeviceToCamera(UpnpDevice upnpDevice, DiscoveredCamera discoveredCamera)
-    {
-        int port = upnpDevice.getPort();
-        String model = upnpDevice.getModel();
-        if (port > 0)
-        {
-            discoveredCamera.setHttp(port);
-        }
-        discoveredCamera.setName(upnpDevice.getFriendlyName());
-        discoveredCamera.setModel(model);
-        return discoveredCamera;
-    }
-
     private void updatePercentageOnActivity(Float percentage)
     {
         if(getScanActivity() != null)
@@ -281,7 +268,7 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
                                         {
                                             if(ipFromUpnp.equals(camera.getIP()))
                                             {
-                                                mergeUpnpDeviceToCamera(upnpDevice, camera);
+                                                EvercamDiscover.mergeSingleUpnpDeviceToCamera(upnpDevice, camera);
                                                 break;
                                             }
                                         }
@@ -325,7 +312,7 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
                                 if(discoveredCamera.getIP().equals(upnpDevice.getIp()))
                                 {
                                     DiscoveredCamera publishCamera = new DiscoveredCamera(discoveredCamera.getIP());
-                                    mergeUpnpDeviceToCamera(upnpDevice, publishCamera);
+                                    EvercamDiscover.mergeSingleUpnpDeviceToCamera(upnpDevice, publishCamera);
                                     publishProgress(publishCamera);
                                     break;
                                 }
@@ -368,23 +355,11 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
                     {
                         String natIp = mapEntry.getIpAddress();
 
-
                         for(DiscoveredCamera discoveredCamera : cameraList)
                         {
                             if(discoveredCamera.getIP().equals(natIp))
                             {
-                                int natInternalPort = mapEntry.getInternalPort();
-                                int natExternalPort = mapEntry.getExternalPort();
-
-                                DiscoveredCamera publishCamera = new DiscoveredCamera(natIp);
-                                if(discoveredCamera.getHttp() == natInternalPort)
-                                {
-                                    publishCamera.setExthttp(natExternalPort);
-                                }
-                                if(discoveredCamera.getRtsp() == natInternalPort)
-                                {
-                                    publishCamera.setExtrtsp(natExternalPort);
-                                }
+                                DiscoveredCamera publishCamera = EvercamDiscover.mergeNatEntryToCameraIfMatches(discoveredCamera, mapEntry);
 
                                 publishProgress(publishCamera);
 
