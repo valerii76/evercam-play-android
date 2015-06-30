@@ -12,12 +12,9 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.net.Uri;
-import android.util.Log;
 
-import io.evercam.EvercamException;
 import io.evercam.androidapp.R;
 import io.evercam.androidapp.dto.EvercamCamera;
-import io.evercam.androidapp.utils.EvercamFile;
 
 public class HomeShortcut
 {

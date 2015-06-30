@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -291,7 +290,7 @@ public class ScanActivity extends ParentActivity
 
     public boolean isScanning()
     {
-        if(scanProgressView.getVisibility() == View.VISIBLE)
+        if(cancelMenuItem.isVisible())
         {
             return true;
         }

@@ -19,6 +19,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -501,6 +502,27 @@ public class AddEditCameraActivity extends ParentActivity
             cameraBuilder.setJpgUrl(jpgUrl);
         }
 
+        //Attach additional info for discovered camera as well
+        if(discoveredCamera != null)
+        {
+            cameraBuilder.setInternalHost(discoveredCamera.getIP());
+
+            if(discoveredCamera.hasMac())
+            {
+                cameraBuilder.setMacAddress(discoveredCamera.getMAC());
+            }
+
+            if(discoveredCamera.hasHTTP())
+            {
+                cameraBuilder.setInternalHttpPort(discoveredCamera.getHttp());
+            }
+
+            if(discoveredCamera.hasRTSP())
+            {
+                cameraBuilder.setInternalRtspPort(discoveredCamera.getRtsp());
+            }
+        }
+
         return cameraBuilder;
     }
 
@@ -818,8 +840,15 @@ public class AddEditCameraActivity extends ParentActivity
         }
         else
         {
-            return modelMap.get(modelName).toLowerCase(Locale.UK);
+            for (Map.Entry<String, String> entry : modelMap.entrySet())
+            {
+                if(entry.getValue().equals(modelName))
+                {
+                    return entry.getKey();
+                }
+            }
         }
+        return "";
     }
 
     private String getModelNameFromSpinner()
