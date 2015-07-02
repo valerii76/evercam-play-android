@@ -5,7 +5,7 @@ Evercam Play allows connect your own IP cameras, public webcams and any Android 
 | Name   | Evercam Play  |
 | --- | --- |
 | Owner   | [@liutingdu](https://github.com/liutingdu)   |
-| Version  | 1.3 |
+| Version  | 1.4.4 |
 | Evercam API Version  | 1.0  |
 | Minimum Android version | Android 4.1 - version code 14 | 
 | Licence | [AGPL](https://tldrlegal.com/license/gnu-affero-general-public-license-v3-%28agpl-3.0%29) |
@@ -30,8 +30,7 @@ Evercam Play allows connect your own IP cameras, public webcams and any Android 
 2. Install GStreamer 1.0 - 1.4.5 or higher for Android
 3. Modify evercamPlay/src/main/jni/Android.mk with the installed Gstreamer path for ```GSTREAMER_ROOT_ANDROID```
 4. Compile GStreamer - Navigate to evercamPlay/src/main and run ```ndk-build``` (Tested with NDK version r10c)
-5. Add necessary files: libs/PlayerSDK and libs/HCNetSDK
-6. Open the project in Android Studio and run
+5. Open the project in Android Studio and run
 
 ## Help make it better
 

@@ -624,7 +624,8 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
             }
             else if(itemId == R.id.video_menu_create_shortcut)
             {
-                HomeShortcut.create(getApplicationContext(), evercamCamera);
+                Bitmap bitmap = getBitmapFromImageView(imageView);
+                HomeShortcut.create(getApplicationContext(), evercamCamera, bitmap);
                 CustomToast.showSuperToastShort(this, R.string.msg_shortcut_created);
                 EvercamPlayApplication.sendEventAnalytics(this, R.string.category_shortcut, R
                         .string.action_shortcut_create, R.string.label_shortcut_create);
@@ -1167,27 +1168,34 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
 
                 if(imageView.getVisibility() == View.VISIBLE)
                 {
-                    final Bitmap bitmap;
-                    if(imageView.getDrawable() instanceof BitmapDrawable)
-                    {
-                        bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-                    }
-                    else
-                    {
-                        Drawable drawable = imageView.getDrawable();
-                        bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
-                                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-                        Canvas canvas = new Canvas(bitmap);
-                        drawable.draw(canvas);
-                    }
+                    Bitmap bitmap = getBitmapFromImageView(imageView);
 
                     processSnapshot(bitmap, FileType.JPG);
                 }
                 else if(surfaceView.getVisibility() == View.VISIBLE)
+                {
                     nativeRequestSample("jpeg");
-
+                }
             }
         });
+    }
+
+    private Bitmap getBitmapFromImageView(ImageView imageView)
+    {
+        final Bitmap bitmap;
+        if(imageView.getDrawable() instanceof BitmapDrawable)
+        {
+            bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+        }
+        else
+        {
+            Drawable drawable = imageView.getDrawable();
+            bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
+                    drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            drawable.draw(canvas);
+        }
+        return bitmap;
     }
 
     // Hide progress view

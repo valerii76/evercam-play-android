@@ -41,6 +41,7 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
     private Date startTime;
     public ExecutorService pool;
     public static ArrayList<DiscoveredCamera> cameraList;
+    public ArrayList<UpnpDevice> upnpDeviceList;
     private boolean upnpDone = false;
     private boolean natDone = false;
     private boolean onvifDone = false;
@@ -61,6 +62,7 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
         netInfo = new NetInfo(scanActivity);
         pool = Executors.newFixedThreadPool(EvercamDiscover.DEFAULT_FIXED_POOL);
         cameraList = new ArrayList<>();
+        upnpDeviceList = new ArrayList<>();
     }
 
     @Override
@@ -75,12 +77,12 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
         startTime = new Date();
         try
         {
-            ScanRange scanRange = new ScanRange(netInfo.getGatewayIp(), netInfo.getNetmaskIp());
+            final ScanRange scanRange = new ScanRange(netInfo.getGatewayIp(), netInfo.getNetmaskIp());
             totalDevices = scanRange.size();
 
             externalIp = NetworkInfo.getExternalIP();
 
-            if(!pool.isShutdown())
+            if(!pool.isShutdown() && ! isCancelled())
             {
                 pool.execute(new OnvifRunnable());
                 pool.execute(new UpnpRunnable());
@@ -91,7 +93,7 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
                 @Override
                 public void onActiveIp(String ip)
                 {
-                    if(!pool.isShutdown())
+                    if(!pool.isShutdown() && !isCancelled())
                     {
                         pool.execute(new IpScanRunnable(ip));
                     }
@@ -101,7 +103,8 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
                 public void onIpScanned(String ip)
                 {
                     scanPercentage += getPerDevicePercent();
-                    getScanActivity().updateScanPercentage(scanPercentage);
+
+                    updatePercentageOnActivity(scanPercentage);
                 }
             });
             ipScan.scanAll(scanRange);
@@ -136,14 +139,20 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
     @Override
     protected void onProgressUpdate(DiscoveredCamera... discoveredCameras)
     {
-        getScanActivity().addNewCameraToResultList(discoveredCameras[0]);
+        if(getScanActivity() != null)
+        {
+            getScanActivity().addNewCameraToResultList(discoveredCameras[0]);
+        }
     }
 
     @Override
     protected void onPostExecute(ArrayList<DiscoveredCamera> cameraList)
     {
-        getScanActivity().showScanResults(cameraList);
-        getScanActivity().onScanningFinished();
+        if(getScanActivity() != null)
+        {
+            getScanActivity().showScanResults(cameraList);
+            getScanActivity().onScanningFinished();
+        }
 
         pool.shutdown();
 
@@ -168,6 +177,24 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
         return scanActivityReference.get();
     }
 
+    private void updatePercentageOnActivity(Float percentage)
+    {
+        if(getScanActivity() != null)
+        {
+            if(percentage != null)
+            {
+                if(!isCancelled() && getStatus() != Status.FINISHED)
+                {
+                    getScanActivity().updateScanPercentage(percentage);
+                }
+            }
+            else
+            {
+                getScanActivity().updateScanPercentage(percentage);
+            }
+        }
+    }
+
     private class OnvifRunnable implements Runnable
     {
         @Override
@@ -183,7 +210,7 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
             }.probe();
 
             scanPercentage += PER__DISCOVERY_METHOD_PERCENT;
-            getScanActivity().updateScanPercentage(scanPercentage);
+            updatePercentageOnActivity(scanPercentage);
             onvifDone = true;
         }
     }
@@ -230,6 +257,23 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
                                 {
                                     camera = PortScan.mergePort(camera, port);
                                 }
+
+                                //Iterate UPnP device list and publish the UPnP details if matches
+                                if(upnpDeviceList.size() > 0)
+                                {
+                                    for(UpnpDevice upnpDevice : upnpDeviceList)
+                                    {
+                                        String ipFromUpnp = upnpDevice.getIp();
+                                        if (ipFromUpnp != null && !ipFromUpnp.isEmpty())
+                                        {
+                                            if(ipFromUpnp.equals(camera.getIP()))
+                                            {
+                                                EvercamDiscover.mergeSingleUpnpDeviceToCamera(upnpDevice, camera);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
                                 publishProgress(camera);
                             }
                         }
@@ -257,6 +301,8 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
                     @Override
                     public void onUpnpDeviceFound(UpnpDevice upnpDevice)
                     {
+                        Log.d(TAG, "UPnP device found: " + upnpDevice.toString());
+                        upnpDeviceList.add(upnpDevice);
                         // If IP address matches
                         String ipFromUpnp = upnpDevice.getIp();
                         if (ipFromUpnp != null && !ipFromUpnp.isEmpty())
@@ -266,13 +312,7 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
                                 if(discoveredCamera.getIP().equals(upnpDevice.getIp()))
                                 {
                                     DiscoveredCamera publishCamera = new DiscoveredCamera(discoveredCamera.getIP());
-                                    int port = upnpDevice.getPort();
-                                    String model = upnpDevice.getModel();
-                                    if (port != 0)
-                                    {
-                                        publishCamera.setHttp(port);
-                                    }
-                                    publishCamera.setModel(model);
+                                    EvercamDiscover.mergeSingleUpnpDeviceToCamera(upnpDevice, publishCamera);
                                     publishProgress(publishCamera);
                                     break;
                                 }
@@ -288,7 +328,7 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
             }
             upnpDone = true;
             scanPercentage += PER__DISCOVERY_METHOD_PERCENT;
-            getScanActivity().updateScanPercentage(scanPercentage);
+            updatePercentageOnActivity(scanPercentage);
         }
     }
 
@@ -315,23 +355,11 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
                     {
                         String natIp = mapEntry.getIpAddress();
 
-
                         for(DiscoveredCamera discoveredCamera : cameraList)
                         {
                             if(discoveredCamera.getIP().equals(natIp))
                             {
-                                int natInternalPort = mapEntry.getInternalPort();
-                                int natExternalPort = mapEntry.getExternalPort();
-
-                                DiscoveredCamera publishCamera = new DiscoveredCamera(natIp);
-                                if(discoveredCamera.getHttp() == natInternalPort)
-                                {
-                                    publishCamera.setExthttp(natExternalPort);
-                                }
-                                if(discoveredCamera.getRtsp() == natInternalPort)
-                                {
-                                    publishCamera.setExtrtsp(natExternalPort);
-                                }
+                                DiscoveredCamera publishCamera = EvercamDiscover.mergeNatEntryToCameraIfMatches(discoveredCamera, mapEntry);
 
                                 publishProgress(publishCamera);
 
@@ -347,7 +375,7 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
             }
             natDone = true;
             scanPercentage += PER__DISCOVERY_METHOD_PERCENT;
-            getScanActivity().updateScanPercentage(scanPercentage);
+            updatePercentageOnActivity(scanPercentage);
         }
     }
 }

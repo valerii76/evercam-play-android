@@ -13,13 +13,17 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.UUID;
 
 import io.evercam.Auth;
 import io.evercam.CameraBuilder;
@@ -30,19 +34,21 @@ import io.evercam.PatchCameraBuilder;
 import io.evercam.Vendor;
 import io.evercam.androidapp.custom.CustomToast;
 import io.evercam.androidapp.custom.CustomedDialog;
+import io.evercam.androidapp.dto.AppData;
 import io.evercam.androidapp.dto.EvercamCamera;
 import io.evercam.androidapp.tasks.AddCameraTask;
 import io.evercam.androidapp.tasks.PatchCameraTask;
 import io.evercam.androidapp.tasks.TestSnapshotTask;
 import io.evercam.androidapp.utils.Commons;
 import io.evercam.androidapp.utils.Constants;
+import io.evercam.androidapp.utils.DataCollector;
 import io.evercam.androidapp.video.VideoActivity;
 import io.evercam.network.discovery.DiscoveredCamera;
 
 public class AddEditCameraActivity extends ParentActivity
 {
     private final String TAG = "AddEditCameraActivity";
-    private EditText cameraIdEdit;
+    private LinearLayout cameraIdLayout;
     private TextView cameraIdTextView;
     private EditText cameraNameEdit;
     private Spinner vendorSpinner;
@@ -97,6 +103,13 @@ public class AddEditCameraActivity extends ParentActivity
 
         fillDiscoveredCameraDetails(discoveredCamera);
 
+        if(cameraEdit == null)
+        {
+            //Populate name and IP only when adding camera
+            autoPopulateCameraName();
+            autoPopulateExternalIP();
+        }
+
         fillEditCameraDetails(cameraEdit);
     }
 
@@ -129,7 +142,6 @@ public class AddEditCameraActivity extends ParentActivity
         //If add camera
         else
         {
-            String cameraId = cameraIdEdit.getText().toString();
             String cameraName = cameraNameEdit.getText().toString();
             String username = usernameEdit.getText().toString();
             String password = passwordEdit.getText().toString();
@@ -138,7 +150,7 @@ public class AddEditCameraActivity extends ParentActivity
             String externalRtsp = externalRtspEdit.getText().toString();
             String jpgUrl = jpgUrlEdit.getText().toString();
 
-            if(!(cameraId.isEmpty() && cameraName.isEmpty() && username.isEmpty() && password
+            if(!(cameraName.isEmpty() && username.isEmpty() && password
                     .isEmpty() && externalHost.isEmpty() && externalHttp.isEmpty() &&
                     externalRtsp.isEmpty() && jpgUrl.isEmpty()))
             {
@@ -154,7 +166,7 @@ public class AddEditCameraActivity extends ParentActivity
 
     private void initialScreen()
     {
-        cameraIdEdit = (EditText) findViewById(R.id.add_id_edit);
+        cameraIdLayout = (LinearLayout) findViewById(R.id.add_camera_id_layout);
         cameraIdTextView = (TextView) findViewById(R.id.add_id_txt_view);
         cameraNameEdit = (EditText) findViewById(R.id.add_name_edit);
         vendorSpinner = (Spinner) findViewById(R.id.vendor_spinner);
@@ -172,11 +184,11 @@ public class AddEditCameraActivity extends ParentActivity
         if(cameraEdit != null)
         {
             addEditButton.setText(getString(R.string.save_changes));
-            cameraIdEdit.setVisibility(View.GONE);
-            cameraIdTextView.setVisibility(View.VISIBLE);
+            cameraIdLayout.setVisibility(View.VISIBLE);
         }
         else
         {
+            cameraIdLayout.setVisibility(View.GONE);
             addEditButton.setText(getString(R.string.finish_and_add));
         }
         buildVendorSpinner(null, null);
@@ -367,6 +379,81 @@ public class AddEditCameraActivity extends ParentActivity
             {
                 externalRtspEdit.setText(String.valueOf(camera.getExtrtsp()));
             }
+            if(camera.hasName())
+            {
+                cameraNameEdit.setText(camera.getName());
+            }
+            else
+            {
+                cameraNameEdit.setText((camera.getVendor() + " " + camera.getModel()).toUpperCase());
+            }
+        }
+    }
+
+    /**
+     * Auto populate camera name as 'Camera + number'
+     */
+    private void autoPopulateCameraName()
+    {
+        if(cameraNameEdit.getText().toString().isEmpty())
+        {
+            int number = 1;
+            boolean matches = true;
+            String cameraName;
+
+            while(matches)
+            {
+                boolean duplicate = false;
+
+                cameraName = "Camera " + number;
+                for(EvercamCamera evercamCamera : AppData.evercamCameraList)
+                {
+                    if(evercamCamera.getName().equals(cameraName))
+                    {
+                        duplicate = true;
+                        break;
+                    }
+                }
+
+                if(duplicate)
+                {
+                    number ++;
+                }
+                else
+                {
+                    matches = false;
+                }
+            }
+
+            cameraNameEdit.setText("Camera " + number);
+        }
+    }
+
+    private void autoPopulateExternalIP()
+    {
+        /**
+         * Auto populate IP as external IP address if on WiFi
+         */
+        if(new DataCollector(this).isConnectedWifi())
+        {
+            if(externalHostEdit.getText().toString().isEmpty())
+            {
+
+                new AsyncTask<Void, Void, String>()
+                {
+                    @Override
+                    protected String doInBackground(Void... params)
+                    {
+                        return io.evercam.network.discovery.NetworkInfo.getExternalIP();
+                    }
+
+                    @Override
+                    protected void onPostExecute(String externalIp)
+                    {
+                        externalHostEdit.setText(externalIp);
+                    }
+                }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }
         }
     }
 
@@ -400,15 +487,11 @@ public class AddEditCameraActivity extends ParentActivity
     private CameraBuilder buildCameraWithLocalCheck()
     {
         CameraBuilder cameraBuilder = null;
-        String cameraId = cameraIdEdit.getText().toString();
 
         String cameraName = cameraNameEdit.getText().toString();
 
-        if(cameraId.isEmpty())
-        {
-            CustomToast.showInCenter(this, getString(R.string.id_required));
-            return null;
-        }
+        String cameraId = UUID.randomUUID().toString();
+
         if(cameraName.isEmpty())
         {
             CustomToast.showInCenter(this, getString(R.string.name_required));
@@ -490,6 +573,27 @@ public class AddEditCameraActivity extends ParentActivity
         if(!jpgUrl.isEmpty())
         {
             cameraBuilder.setJpgUrl(jpgUrl);
+        }
+
+        //Attach additional info for discovered camera as well
+        if(discoveredCamera != null)
+        {
+            cameraBuilder.setInternalHost(discoveredCamera.getIP());
+
+            if(discoveredCamera.hasMac())
+            {
+                cameraBuilder.setMacAddress(discoveredCamera.getMAC());
+            }
+
+            if(discoveredCamera.hasHTTP())
+            {
+                cameraBuilder.setInternalHttpPort(discoveredCamera.getHttp());
+            }
+
+            if(discoveredCamera.hasRTSP())
+            {
+                cameraBuilder.setInternalRtspPort(discoveredCamera.getRtsp());
+            }
         }
 
         return cameraBuilder;
@@ -706,7 +810,7 @@ public class AddEditCameraActivity extends ParentActivity
                 {
                     try
                     {
-                        modelMap.put(model.getName(), model.getId());
+                        modelMap.put(model.getId(),model.getName());
                     }
                     catch(EvercamException e)
                     {
@@ -715,9 +819,10 @@ public class AddEditCameraActivity extends ParentActivity
                 }
             }
         }
-        Set<String> set = modelMap.keySet();
+        Collection<String> modelNameCollection = modelMap.values();
+
         String[] fullModelArray = Commons.joinStringArray(new String[]{getResources().getString(R
-                .string.select_model)}, set.toArray(new String[0]));
+                .string.select_model)}, modelNameCollection.toArray(new String[0]));
         ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, fullModelArray);
         spinnerArrayAdapter.setDropDownViewResource(R.layout.spinner);
@@ -728,7 +833,8 @@ public class AddEditCameraActivity extends ParentActivity
         {
             if(modelMap.get(selectedModel) != null)
             {
-                selectedPosition = spinnerArrayAdapter.getPosition(selectedModel);
+                String selectedModelName = modelMap.get(selectedModel);
+                selectedPosition = spinnerArrayAdapter.getPosition(selectedModelName);
             }
         }
         if(selectedPosition != 0)
@@ -759,16 +865,18 @@ public class AddEditCameraActivity extends ParentActivity
             }
             jpgUrlEdit.setText(defaults.getJpgURL());
 
-            //If user specified a specific model, make it not editable
-            if(!model.getName().equals(Model.DEFAULT_MODEL_NAME))
+            if(!model.getName().equals(Model.DEFAULT_MODEL_NAME) && !jpgUrlEdit.getText().toString().isEmpty())
             {
+                //If user specified a specific model, make it not editable
                 jpgUrlEdit.setFocusable(false);
                 jpgUrlEdit.setClickable(true);
             }
             else
             {
+                //For default model or
                 jpgUrlEdit.setFocusable(true);
                 jpgUrlEdit.setClickable(true);
+                jpgUrlEdit.setFocusableInTouchMode(true);
             }
         }
         catch(EvercamException e)
@@ -782,6 +890,11 @@ public class AddEditCameraActivity extends ParentActivity
         usernameEdit.setText("");
         passwordEdit.setText("");
         jpgUrlEdit.setText("");
+
+        //Make it editable when defaults are cleared
+        jpgUrlEdit.setFocusable(true);
+        jpgUrlEdit.setClickable(true);
+        jpgUrlEdit.setFocusableInTouchMode(true);
     }
 
     private String getVendorIdFromSpinner()
@@ -807,8 +920,15 @@ public class AddEditCameraActivity extends ParentActivity
         }
         else
         {
-            return modelMap.get(modelName).toLowerCase(Locale.UK);
+            for (Map.Entry<String, String> entry : modelMap.entrySet())
+            {
+                if(entry.getValue().equals(modelName))
+                {
+                    return entry.getKey();
+                }
+            }
         }
+        return "";
     }
 
     private String getModelNameFromSpinner()
@@ -966,7 +1086,7 @@ public class AddEditCameraActivity extends ParentActivity
                 {
                     buildModelSpinner(modelList, cameraEdit.getModel());
                 }
-                else if(discoveredCamera != null && !discoveredCamera.getModel().isEmpty())
+                else if(discoveredCamera != null && discoveredCamera.hasModel())
                 {
                     buildModelSpinner(modelList, discoveredCamera.getModel());
                 }

@@ -12,12 +12,9 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.net.Uri;
-import android.util.Log;
 
-import io.evercam.EvercamException;
 import io.evercam.androidapp.R;
 import io.evercam.androidapp.dto.EvercamCamera;
-import io.evercam.androidapp.utils.EvercamFile;
 
 public class HomeShortcut
 {
@@ -28,7 +25,7 @@ public class HomeShortcut
     /**
      * Create a shortcut that link to specific camera live view on home screen
      */
-    public static void create(Context context, EvercamCamera evercamCamera)
+    public static void create(Context context, EvercamCamera evercamCamera, Bitmap snapshotBitmap)
     {
         //The intent that launches the live view for specific camera
         Intent shortcutIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getLiveViewUri(context)));
@@ -37,7 +34,7 @@ public class HomeShortcut
         Intent addIntent = new Intent();
         addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
         addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, evercamCamera.getName());
-        addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON, getIconForShortcut(evercamCamera, context));
+        addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON, getIconForShortcut(context, snapshotBitmap));
         addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
         addIntent.putExtra("duplicate", false);
 
@@ -55,52 +52,37 @@ public class HomeShortcut
                 .data_host) + context.getString(R.string.data_path);
     }
 
-    private static Bitmap getIconForShortcut(EvercamCamera evercamCamera, Context context)
+    private static Bitmap getIconForShortcut(Context context, Bitmap snapshotBitmap)
     {
-        Bitmap bitmap = null;
-        try
+        Bitmap bitmap = snapshotBitmap;
+
+        if(bitmap == null)
         {
-            bitmap = getThumbnailFor(context, evercamCamera);
-
-            if(bitmap == null)
-            {
-                bitmap = BitmapFactory.decodeResource(context.getResources(),
-                        R.drawable.icon_evercam);
-                return Bitmap.createScaledBitmap(bitmap, 192, 192, false);
-            }
-
-            //Resize the thumbnail for desktop icon size
-            bitmap = Bitmap.createScaledBitmap(bitmap, 192, 192, false);
-
-            //Rounded image corner
-            bitmap = getRoundedCornerBitmap(bitmap);
-
-            //Rounded gray corner
-            bitmap = addBorder(bitmap, 3, 3, 3, 3, Color.GRAY);
-            bitmap = getRoundedCornerBitmap(bitmap);
-
-            //Transparent border that makes the icon smaller to enlarge Evercam logo
-            bitmap = addBorder(bitmap, 0, 30, 20, 30, Color.TRANSPARENT);
-
-            //Append Evercam logo as overlay
-            Bitmap logoBitmap = BitmapFactory.decodeResource(context.getResources(),
-                    R.drawable.icon_50x50);
-            logoBitmap = Bitmap.createScaledBitmap(logoBitmap, 80, 80, false);
-            appendOverlay(bitmap, logoBitmap);
+            bitmap = BitmapFactory.decodeResource(context.getResources(),
+                    R.drawable.icon_evercam);
+            return Bitmap.createScaledBitmap(bitmap, 192, 192, false);
         }
-        catch(EvercamException e)
-        {
-            Log.e(TAG, e.getMessage());
-        }
+
+        //Resize the thumbnail for desktop icon size
+        bitmap = Bitmap.createScaledBitmap(bitmap, 192, 192, false);
+
+        //Rounded image corner
+        bitmap = getRoundedCornerBitmap(bitmap);
+
+        //Rounded gray corner
+        bitmap = addBorder(bitmap, 3, 3, 3, 3, Color.GRAY);
+        bitmap = getRoundedCornerBitmap(bitmap);
+
+        //Transparent border that makes the icon smaller to enlarge Evercam logo
+        bitmap = addBorder(bitmap, 0, 30, 20, 30, Color.TRANSPARENT);
+
+        //Append Evercam logo as overlay
+        Bitmap logoBitmap = BitmapFactory.decodeResource(context.getResources(),
+                R.drawable.icon_50x50);
+        logoBitmap = Bitmap.createScaledBitmap(logoBitmap, 80, 80, false);
+        appendOverlay(bitmap, logoBitmap);
 
         return bitmap;
-    }
-
-    private static Bitmap getThumbnailFor(Context context, EvercamCamera evercamCamera) throws
-            EvercamException
-    {
-         // Load from cache
-         return EvercamFile.loadBitmapForCamera(context, evercamCamera.getCameraId());
     }
 
     /**
