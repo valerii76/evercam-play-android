@@ -792,16 +792,18 @@ public class AddEditCameraActivity extends ParentActivity
             }
             jpgUrlEdit.setText(defaults.getJpgURL());
 
-            //If user specified a specific model, make it not editable
-            if(!model.getName().equals(Model.DEFAULT_MODEL_NAME))
+            if(!model.getName().equals(Model.DEFAULT_MODEL_NAME) && !jpgUrlEdit.getText().toString().isEmpty())
             {
+                //If user specified a specific model, make it not editable
                 jpgUrlEdit.setFocusable(false);
                 jpgUrlEdit.setClickable(true);
             }
             else
             {
+                //For default model or
                 jpgUrlEdit.setFocusable(true);
                 jpgUrlEdit.setClickable(true);
+                jpgUrlEdit.setFocusableInTouchMode(true);
             }
         }
         catch(EvercamException e)
@@ -815,6 +817,11 @@ public class AddEditCameraActivity extends ParentActivity
         usernameEdit.setText("");
         passwordEdit.setText("");
         jpgUrlEdit.setText("");
+
+        //Make it editable when defaults are cleared
+        jpgUrlEdit.setFocusable(true);
+        jpgUrlEdit.setClickable(true);
+        jpgUrlEdit.setFocusableInTouchMode(true);
     }
 
     private String getVendorIdFromSpinner()
