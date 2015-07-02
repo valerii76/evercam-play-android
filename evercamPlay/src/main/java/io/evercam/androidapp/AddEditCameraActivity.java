@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -22,6 +23,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.UUID;
 
 import io.evercam.Auth;
 import io.evercam.CameraBuilder;
@@ -44,7 +46,7 @@ import io.evercam.network.discovery.DiscoveredCamera;
 public class AddEditCameraActivity extends ParentActivity
 {
     private final String TAG = "AddEditCameraActivity";
-    private EditText cameraIdEdit;
+    private LinearLayout cameraIdLayout;
     private TextView cameraIdTextView;
     private EditText cameraNameEdit;
     private Spinner vendorSpinner;
@@ -131,7 +133,6 @@ public class AddEditCameraActivity extends ParentActivity
         //If add camera
         else
         {
-            String cameraId = cameraIdEdit.getText().toString();
             String cameraName = cameraNameEdit.getText().toString();
             String username = usernameEdit.getText().toString();
             String password = passwordEdit.getText().toString();
@@ -140,7 +141,7 @@ public class AddEditCameraActivity extends ParentActivity
             String externalRtsp = externalRtspEdit.getText().toString();
             String jpgUrl = jpgUrlEdit.getText().toString();
 
-            if(!(cameraId.isEmpty() && cameraName.isEmpty() && username.isEmpty() && password
+            if(!(cameraName.isEmpty() && username.isEmpty() && password
                     .isEmpty() && externalHost.isEmpty() && externalHttp.isEmpty() &&
                     externalRtsp.isEmpty() && jpgUrl.isEmpty()))
             {
@@ -156,7 +157,7 @@ public class AddEditCameraActivity extends ParentActivity
 
     private void initialScreen()
     {
-        cameraIdEdit = (EditText) findViewById(R.id.add_id_edit);
+        cameraIdLayout = (LinearLayout) findViewById(R.id.add_camera_id_layout);
         cameraIdTextView = (TextView) findViewById(R.id.add_id_txt_view);
         cameraNameEdit = (EditText) findViewById(R.id.add_name_edit);
         vendorSpinner = (Spinner) findViewById(R.id.vendor_spinner);
@@ -174,11 +175,11 @@ public class AddEditCameraActivity extends ParentActivity
         if(cameraEdit != null)
         {
             addEditButton.setText(getString(R.string.save_changes));
-            cameraIdEdit.setVisibility(View.GONE);
-            cameraIdTextView.setVisibility(View.VISIBLE);
+            cameraIdLayout.setVisibility(View.VISIBLE);
         }
         else
         {
+            cameraIdLayout.setVisibility(View.GONE);
             addEditButton.setText(getString(R.string.finish_and_add));
         }
         buildVendorSpinner(null, null);
@@ -410,15 +411,11 @@ public class AddEditCameraActivity extends ParentActivity
     private CameraBuilder buildCameraWithLocalCheck()
     {
         CameraBuilder cameraBuilder = null;
-        String cameraId = cameraIdEdit.getText().toString();
 
         String cameraName = cameraNameEdit.getText().toString();
 
-        if(cameraId.isEmpty())
-        {
-            CustomToast.showInCenter(this, getString(R.string.id_required));
-            return null;
-        }
+        String cameraId = UUID.randomUUID().toString();
+
         if(cameraName.isEmpty())
         {
             CustomToast.showInCenter(this, getString(R.string.name_required));
