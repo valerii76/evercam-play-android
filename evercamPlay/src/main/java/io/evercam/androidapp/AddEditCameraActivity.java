@@ -34,12 +34,14 @@ import io.evercam.PatchCameraBuilder;
 import io.evercam.Vendor;
 import io.evercam.androidapp.custom.CustomToast;
 import io.evercam.androidapp.custom.CustomedDialog;
+import io.evercam.androidapp.dto.AppData;
 import io.evercam.androidapp.dto.EvercamCamera;
 import io.evercam.androidapp.tasks.AddCameraTask;
 import io.evercam.androidapp.tasks.PatchCameraTask;
 import io.evercam.androidapp.tasks.TestSnapshotTask;
 import io.evercam.androidapp.utils.Commons;
 import io.evercam.androidapp.utils.Constants;
+import io.evercam.androidapp.utils.DataCollector;
 import io.evercam.androidapp.video.VideoActivity;
 import io.evercam.network.discovery.DiscoveredCamera;
 
@@ -100,6 +102,13 @@ public class AddEditCameraActivity extends ParentActivity
         initialScreen();
 
         fillDiscoveredCameraDetails(discoveredCamera);
+
+        if(cameraEdit == null)
+        {
+            //Populate name and IP only when adding camera
+            autoPopulateCameraName();
+            autoPopulateExternalIP();
+        }
 
         fillEditCameraDetails(cameraEdit);
     }
@@ -377,6 +386,73 @@ public class AddEditCameraActivity extends ParentActivity
             else
             {
                 cameraNameEdit.setText((camera.getVendor() + " " + camera.getModel()).toUpperCase());
+            }
+        }
+    }
+
+    /**
+     * Auto populate camera name as 'Camera + number'
+     */
+    private void autoPopulateCameraName()
+    {
+        if(cameraNameEdit.getText().toString().isEmpty())
+        {
+            int number = 1;
+            boolean matches = true;
+            String cameraName;
+
+            while(matches)
+            {
+                boolean duplicate = false;
+
+                cameraName = "Camera " + number;
+                for(EvercamCamera evercamCamera : AppData.evercamCameraList)
+                {
+                    if(evercamCamera.getName().equals(cameraName))
+                    {
+                        duplicate = true;
+                        break;
+                    }
+                }
+
+                if(duplicate)
+                {
+                    number ++;
+                }
+                else
+                {
+                    matches = false;
+                }
+            }
+
+            cameraNameEdit.setText("Camera " + number);
+        }
+    }
+
+    private void autoPopulateExternalIP()
+    {
+        /**
+         * Auto populate IP as external IP address if on WiFi
+         */
+        if(new DataCollector(this).isConnectedWifi())
+        {
+            if(externalHostEdit.getText().toString().isEmpty())
+            {
+
+                new AsyncTask<Void, Void, String>()
+                {
+                    @Override
+                    protected String doInBackground(Void... params)
+                    {
+                        return io.evercam.network.discovery.NetworkInfo.getExternalIP();
+                    }
+
+                    @Override
+                    protected void onPostExecute(String externalIp)
+                    {
+                        externalHostEdit.setText(externalIp);
+                    }
+                }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
         }
     }
