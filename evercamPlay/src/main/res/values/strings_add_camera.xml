@@ -50,7 +50,7 @@
 
     <!-- Option Items -->
     <string name="add_ip_camera">Add camera manually</string>
-    <string name="scan_for_cameras">Scan for cameras (beta)</string>
+    <string name="scan_for_cameras">Scan for cameras</string>
 
     <!-- Test snapshot options -->
     <string name="test_external_text">External</string>
