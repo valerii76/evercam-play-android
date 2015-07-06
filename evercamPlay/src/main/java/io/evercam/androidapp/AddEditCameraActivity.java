@@ -23,7 +23,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.UUID;
 
 import io.evercam.Auth;
 import io.evercam.CameraBuilder;
@@ -490,8 +489,6 @@ public class AddEditCameraActivity extends ParentActivity
 
         String cameraName = cameraNameEdit.getText().toString();
 
-        String cameraId = UUID.randomUUID().toString();
-
         if(cameraName.isEmpty())
         {
             CustomToast.showInCenter(this, getString(R.string.name_required));
@@ -499,7 +496,7 @@ public class AddEditCameraActivity extends ParentActivity
         }
         try
         {
-            cameraBuilder = new CameraBuilder(cameraId, cameraName, false);
+            cameraBuilder = new CameraBuilder(cameraName, false);
         }
         catch(EvercamException e)
         {
