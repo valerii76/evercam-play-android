@@ -861,6 +861,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
     {
         Log.d("GStreamer", "Surface changed to format " + format + " width " + width + " height " + height);
         onMediaSizeChanged(width, height);
+        nativeSurfaceInit(surfaceholder.getSurface());
     }
 
     @Override
