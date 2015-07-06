@@ -14,7 +14,8 @@ public class MultiCameraActivity extends Activity
 {
     private final String TAG = "MultiCameraActivity";
 
-    private native void nativeRequestSample(String format); // supported values are png and jpeg
+
+    /*private native void nativeRequestSample(String format); // supported values are png and jpeg
     private native void nativeSetUri(String uri, int connectionTimeout);
     private native void nativeInit();     // Initialize native code, build pipeline, etc
     private native void nativeFinalize(); // Destroy pipeline and shutdown native code
@@ -24,14 +25,14 @@ public class MultiCameraActivity extends Activity
     private native void nativeSurfaceInit(Object surface);
     private native void nativeSurfaceFinalize();
     private long native_custom_data;      // Native code will use this to keep private data
-
+*/
     private final int TCP_TIMEOUT = 10 * 1000000; // 10 seconds in micro seconds
 
     static
     {
         System.loadLibrary("gstreamer_android");
         System.loadLibrary("evercam");
-        nativeClassInit();
+        //nativeClassInit();
     }
 
     @Override
@@ -51,14 +52,16 @@ public class MultiCameraActivity extends Activity
             finish();
             return;
         }
-        nativeInit();
+
+        //nativeInit();
 
         setContentView(R.layout.video_activity_layout);
 
-        String rtspURL = "rtsp://adming:mehcam@89.101.245.146:9100/h264/ch1/main/av_stream";
+        String rtspURL = "";
         GStreamerSurfaceView firstSurfaceView = (GStreamerSurfaceView) findViewById(R.id.surface_view_1);
-        nativeSetUri(rtspURL, TCP_TIMEOUT);
-        nativePlay();
+
+        /*nativeSetUri(rtspURL, TCP_TIMEOUT);
+        nativePlay();*/
     }
 
     @Override

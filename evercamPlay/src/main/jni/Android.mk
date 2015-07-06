@@ -8,7 +8,8 @@ GSTREAMER_ROOT_ANDROID := /Users/liutingdu/Android3rdParty/gstreamer-1.0-android
 SHELL := PATH=/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin /bin/bash
 
 LOCAL_MODULE    := evercam
-LOCAL_SRC_FILES := evercam.c
+LOCAL_SRC_FILES := evercam.cpp mediaplayer.cpp eventloop.cpp
+LOCAL_CPPFLAGS = -std=c++0x -fexceptions -frtti
 LOCAL_SHARED_LIBRARIES := gstreamer_android
 LOCAL_LDLIBS := -llog -landroid
 include $(BUILD_SHARED_LIBRARY)
