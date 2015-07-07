@@ -41,9 +41,3 @@ If you have experience with Android SDK and IP cameras, we look forward to your 
 For any bugs and discussions, please use [Github Issues](https://github.com/evercam/evercam-play-android/issues).
 
 Any questions or suggestions around Evercam, drop us a line: http://www.evercam.io/contact
-
-
-
-
-
-
