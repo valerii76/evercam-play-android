@@ -24,7 +24,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
-import android.view.OrientationEventListener;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -153,8 +152,6 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
     private AndroidLogger logger;
     private KeenClient client;
     private String username = "";
-
-    private OrientationEventListener mOritentationListener;
 
     /**
      * Gstreamer
@@ -856,8 +853,6 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
     public void surfaceCreated(SurfaceHolder surfaceHolder)
     {
         Log.d("GStreamer", "Surface created: " + surfaceHolder.getSurface());
-
-        nativeSurfaceInit(surfaceHolder.getSurface());
     }
 
     @Override
@@ -866,7 +861,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
         Log.d("GStreamer", "Surface changed to format " + format + " width " + width + " height " + height);
         onMediaSizeChanged(width, height);
 
-        //nativeSurfaceInit(surfaceholder.getSurface());
+        nativeSurfaceInit(surfaceholder.getSurface());
         nativeExpose();
     }
 
@@ -898,7 +893,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
         {
             Log.e(TAG, "uri " + createUri(camera));
             nativeSetUri(createUri(camera), TCP_TIMEOUT);
-            play(camera);
+            play();
         }
         else
         {
@@ -908,7 +903,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
         }
     }
 
-    private void play(EvercamCamera camera)
+    private void play()
     {
         nativePlay();
     }
