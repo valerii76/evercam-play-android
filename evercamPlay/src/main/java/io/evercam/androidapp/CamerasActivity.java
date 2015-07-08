@@ -185,10 +185,6 @@ public class CamerasActivity extends ParentActivity
         {
             startActivity(new Intent(CamerasActivity.this, FeedbackActivity.class));
         }
-        else if(itemId == R.id.menu_test)
-        {
-            startActivity(new Intent(this, MultiCameraActivity.class));
-        }
         else
         {
             return super.onOptionsItemSelected(item);
