@@ -3,11 +3,9 @@ package io.evercam.androidapp.video;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Surface;
 
 import org.freedesktop.gstreamer.GStreamer;
 
-import io.evercam.androidapp.EvercamPlayApplication;
 import io.evercam.androidapp.R;
 
 public class MultiCameraActivity extends Activity

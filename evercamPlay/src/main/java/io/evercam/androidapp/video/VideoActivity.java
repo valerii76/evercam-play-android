@@ -1177,7 +1177,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
 
     private Bitmap getBitmapFromImageView(ImageView imageView)
     {
-        final Bitmap bitmap;
+        Bitmap bitmap = null;
         if(imageView.getDrawable() instanceof BitmapDrawable)
         {
             bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
@@ -1185,10 +1185,13 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
         else
         {
             Drawable drawable = imageView.getDrawable();
-            bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
-                    drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(bitmap);
-            drawable.draw(canvas);
+            if(drawable != null)
+            {
+                bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+
+                Canvas canvas = new Canvas(bitmap);
+                drawable.draw(canvas);
+            }
         }
         return bitmap;
     }

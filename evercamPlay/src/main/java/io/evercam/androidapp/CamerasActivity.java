@@ -47,7 +47,6 @@ import io.evercam.androidapp.utils.Commons;
 import io.evercam.androidapp.utils.Constants;
 import io.evercam.androidapp.utils.PrefsManager;
 import io.evercam.androidapp.utils.PropertyReader;
-import io.evercam.androidapp.video.MultiCameraActivity;
 import io.keen.client.java.KeenClient;
 
 public class CamerasActivity extends ParentActivity
