@@ -15,22 +15,18 @@ import io.evercam.androidapp.dto.AppData;
 import io.evercam.androidapp.feedback.ScanFeedbackItem;
 import io.evercam.androidapp.utils.Commons;
 import io.evercam.androidapp.utils.NetInfo;
-import io.evercam.network.Constants;
 import io.evercam.network.EvercamDiscover;
+import io.evercam.network.IdentifyCameraRunnable;
+import io.evercam.network.NatRunnable;
+import io.evercam.network.OnvifRunnable;
+import io.evercam.network.UpnpRunnable;
 import io.evercam.network.discovery.DiscoveredCamera;
-import io.evercam.network.discovery.GatewayDevice;
 import io.evercam.network.discovery.IpScan;
-import io.evercam.network.discovery.MacAddress;
 import io.evercam.network.discovery.NatMapEntry;
 import io.evercam.network.discovery.NetworkInfo;
-import io.evercam.network.discovery.PortScan;
 import io.evercam.network.discovery.ScanRange;
 import io.evercam.network.discovery.ScanResult;
 import io.evercam.network.discovery.UpnpDevice;
-import io.evercam.network.discovery.UpnpDiscovery;
-import io.evercam.network.discovery.UpnpResult;
-import io.evercam.network.onvif.OnvifDiscovery;
-import io.evercam.network.query.EvercamQuery;
 
 public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayList<DiscoveredCamera>>
 {
@@ -84,9 +80,35 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
 
             if(!pool.isShutdown() && ! isCancelled())
             {
-                pool.execute(new OnvifRunnable());
-                pool.execute(new UpnpRunnable());
-                pool.execute(new NatRunnable(netInfo.getGatewayIp()));
+                pool.execute(onvifRunnable);
+                pool.execute(upnpRunnable);
+                pool.execute(new NatRunnable(netInfo.getGatewayIp())
+                {
+                    @Override
+                    public void onFinished(ArrayList<NatMapEntry> mapEntries)
+                    {
+                        if(mapEntries != null)
+                        {
+                            if(mapEntries.size() > 0)
+                            {
+                                for(NatMapEntry mapEntry : mapEntries)
+                                {
+                                    for(DiscoveredCamera discoveredCamera : cameraList)
+                                    {
+                                        DiscoveredCamera publishCamera = EvercamDiscover.mergeNatEntryToCameraIfMatches(discoveredCamera, mapEntry);
+
+                                        publishProgress(publishCamera);
+
+                                        break; //break the inner loop
+                                    }
+                                }
+                            }
+                        }
+                        natDone = true;
+                        scanPercentage += PER__DISCOVERY_METHOD_PERCENT;
+                        updatePercentageOnActivity(scanPercentage);
+                    }
+                });
             }
 
             IpScan ipScan = new IpScan(new ScanResult(){
@@ -95,7 +117,26 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
                 {
                     if(!pool.isShutdown() && !isCancelled())
                     {
-                        pool.execute(new IpScanRunnable(ip));
+                        pool.execute(new IdentifyCameraRunnable(ip) {
+                            @Override
+                            public void onCameraFound(DiscoveredCamera camera, Vendor
+                                    vendor)
+                            {
+                                camera.setExternalIp(externalIp);
+
+                                //Iterate UPnP device list and publish the UPnP details if matches
+                                EvercamDiscover.mergeUpnpDevicesToCamera(camera, upnpDeviceList);
+
+                                publishProgress(camera);
+                            }
+
+                            @Override
+                            public void onFinished()
+                            {
+                                singleIpEndedCount ++;
+                            }
+                        });
+                        singleIpStartedCount++;
                     }
                 }
 
@@ -195,187 +236,53 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
         }
     }
 
-    private class OnvifRunnable implements Runnable
+    private OnvifRunnable onvifRunnable = new OnvifRunnable()
     {
         @Override
-        public void run()
+        public void onFinished()
         {
-            new OnvifDiscovery(){
-                @Override
-                public void onActiveOnvifDevice(DiscoveredCamera discoveredCamera)
-                {
-                    discoveredCamera.setExternalIp(externalIp);
-                    publishProgress(discoveredCamera);
-                }
-            }.probe();
-
             scanPercentage += PER__DISCOVERY_METHOD_PERCENT;
             updatePercentageOnActivity(scanPercentage);
             onvifDone = true;
         }
-    }
-
-    private class IpScanRunnable implements Runnable
-    {
-        private String ip;
-
-        public IpScanRunnable(String ip)
-        {
-            this.ip = ip;
-            singleIpStartedCount++;
-        }
 
         @Override
-        public void run()
+        public void onDeviceFound(DiscoveredCamera discoveredCamera)
         {
-            try
+            discoveredCamera.setExternalIp(externalIp);
+            publishProgress(discoveredCamera);
+        }
+    };
+
+    private UpnpRunnable upnpRunnable = new UpnpRunnable(){
+        @Override
+        public void onDeviceFound(UpnpDevice upnpDevice)
+        {
+            Log.d(TAG, "UPnP device found: " + upnpDevice.toString());
+            upnpDeviceList.add(upnpDevice);
+            // If IP address matches
+            String ipFromUpnp = upnpDevice.getIp();
+            if (ipFromUpnp != null && !ipFromUpnp.isEmpty())
             {
-                String macAddress = MacAddress.getByIpAndroid(ip);
-                if (!macAddress.equals(Constants.EMPTY_MAC))
+                for(DiscoveredCamera discoveredCamera : cameraList)
                 {
-                    Vendor vendor = EvercamQuery.getCameraVendorByMac(macAddress);
-                    if (vendor != null)
+                    if(discoveredCamera.getIP().equals(upnpDevice.getIp()))
                     {
-                        String vendorId = vendor.getId();
-                        if (!vendorId.isEmpty())
-                        {
-                            // Then fill details discovered from IP scan
-                            DiscoveredCamera camera = new DiscoveredCamera(ip);
-                            camera.setMAC(macAddress);
-                            camera.setVendor(vendorId);
-                            camera.setExternalIp(externalIp);
-
-                            // Start port scan
-                            PortScan portScan = new PortScan(null);
-                            portScan.start(ip);
-                            ArrayList<Integer> activePortList = portScan.getActivePorts();
-
-                            if(activePortList.size() > 0)
-                            {
-                                // Add active ports to camera object
-                                for (Integer port : activePortList)
-                                {
-                                    camera = PortScan.mergePort(camera, port);
-                                }
-
-                                //Iterate UPnP device list and publish the UPnP details if matches
-                                if(upnpDeviceList.size() > 0)
-                                {
-                                    for(UpnpDevice upnpDevice : upnpDeviceList)
-                                    {
-                                        String ipFromUpnp = upnpDevice.getIp();
-                                        if (ipFromUpnp != null && !ipFromUpnp.isEmpty())
-                                        {
-                                            if(ipFromUpnp.equals(camera.getIP()))
-                                            {
-                                                EvercamDiscover.mergeSingleUpnpDeviceToCamera(upnpDevice, camera);
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-                                publishProgress(camera);
-                            }
-                        }
+                        DiscoveredCamera publishCamera = new DiscoveredCamera(discoveredCamera.getIP());
+                        EvercamDiscover.mergeSingleUpnpDeviceToCamera(upnpDevice, publishCamera);
+                        publishProgress(publishCamera);
+                        break;
                     }
                 }
             }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
-
-            singleIpEndedCount ++;
         }
-    }
 
-    private class UpnpRunnable implements Runnable
-    {
         @Override
-        public void run()
+        public void onFinished(ArrayList<UpnpDevice> arrayList)
         {
-            try
-            {
-                UpnpDiscovery upnpDiscovery = new UpnpDiscovery(new UpnpResult(){
-
-                    @Override
-                    public void onUpnpDeviceFound(UpnpDevice upnpDevice)
-                    {
-                        Log.d(TAG, "UPnP device found: " + upnpDevice.toString());
-                        upnpDeviceList.add(upnpDevice);
-                        // If IP address matches
-                        String ipFromUpnp = upnpDevice.getIp();
-                        if (ipFromUpnp != null && !ipFromUpnp.isEmpty())
-                        {
-                            for(DiscoveredCamera discoveredCamera : cameraList)
-                            {
-                                if(discoveredCamera.getIP().equals(upnpDevice.getIp()))
-                                {
-                                    DiscoveredCamera publishCamera = new DiscoveredCamera(discoveredCamera.getIP());
-                                    EvercamDiscover.mergeSingleUpnpDeviceToCamera(upnpDevice, publishCamera);
-                                    publishProgress(publishCamera);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                });
-                upnpDiscovery.discoverAll();
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
             upnpDone = true;
             scanPercentage += PER__DISCOVERY_METHOD_PERCENT;
             updatePercentageOnActivity(scanPercentage);
         }
-    }
-
-    private class NatRunnable implements Runnable
-    {
-        private String routerIp;
-
-        public NatRunnable(String routerIp)
-        {
-            this.routerIp = routerIp;
-        }
-
-        @Override
-        public void run()
-        {
-            try
-            {
-                GatewayDevice gatewayDevice = new GatewayDevice(routerIp);
-                ArrayList<NatMapEntry> mapEntries = gatewayDevice.getNatTableArray(); //NAT Table
-
-                if(mapEntries.size() > 0)
-                {
-                    for(NatMapEntry mapEntry : mapEntries)
-                    {
-                        String natIp = mapEntry.getIpAddress();
-
-                        for(DiscoveredCamera discoveredCamera : cameraList)
-                        {
-                            if(discoveredCamera.getIP().equals(natIp))
-                            {
-                                DiscoveredCamera publishCamera = EvercamDiscover.mergeNatEntryToCameraIfMatches(discoveredCamera, mapEntry);
-
-                                publishProgress(publishCamera);
-
-                                break; //break the inner loop
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
-            natDone = true;
-            scanPercentage += PER__DISCOVERY_METHOD_PERCENT;
-            updatePercentageOnActivity(scanPercentage);
-        }
-    }
+    };
 }
