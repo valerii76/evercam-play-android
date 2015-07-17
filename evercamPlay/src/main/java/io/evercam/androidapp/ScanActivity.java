@@ -492,7 +492,7 @@ public class ScanActivity extends ParentActivity
         showCancelMenuItem(true);
     }
 
-    public void onScanningFinished()
+    public void onScanningFinished(ArrayList<DiscoveredCamera> cameraList)
     {
         //Hide the scanning percentage
         updateScanPercentage(null);
@@ -502,6 +502,16 @@ public class ScanActivity extends ParentActivity
         showHorizontalProgress(false);
         //Hide the cancel button
         showCancelMenuItem(false);
+
+        updateActionBarTitle("Finished. " + cameraList.size() + " Camera Found.");
+    }
+
+    public void updateActionBarTitle(String title)
+    {
+        if(getActionBar() != null)
+        {
+            getActionBar().setTitle(title);
+        }
     }
 
     public void updateScanPercentage(final Float percentageFloat)
@@ -510,21 +520,18 @@ public class ScanActivity extends ParentActivity
             @Override
             public void run()
             {
-                if(getActionBar() != null)
+                if(percentageFloat == null)
                 {
-                    if(percentageFloat == null)
+                    updateActionBarTitle("");
+                }
+                else
+                {
+                    float percentf = percentageFloat;
+                    int percentageInt = (int) percentf;
+                    if(percentageInt < 100)
                     {
-                        getActionBar().setTitle("");
-                    }
-                    else
-                    {
-                        float percentf = percentageFloat;
-                        int percentageInt = (int) percentf;
-                        if(percentageInt < 100)
-                        {
-                            getActionBar().setTitle("Scanning... " + percentageInt + '%');
-                            progressBar.setProgress(percentageInt);
-                        }
+                        updateActionBarTitle("Scanning... " + percentageInt + '%');
+                        progressBar.setProgress(percentageInt);
                     }
                 }
             }

@@ -192,7 +192,7 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
         if(getScanActivity() != null)
         {
             getScanActivity().showScanResults(cameraList);
-            getScanActivity().onScanningFinished();
+            getScanActivity().onScanningFinished(cameraList);
         }
 
         pool.shutdown();
