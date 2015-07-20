@@ -12,7 +12,7 @@
     <string name="colon">:</string>
     <string name="external_title">External</string>
     <string name="internal_title">Internal</string>
-    <string name="jpg_url">Snapshot URL</string>
+    <string name="jpg_url">Snapshot*</string>
     <string name="http_port">HTTP port*</string>
     <string name="rtsp_port">RTSP port</string>
     <string name="finish_and_add">Finish &amp; Add</string>
