@@ -58,8 +58,8 @@ repositories {
 
 dependencies {
     compile project(':supertoasts')
-    compile files('libs/evercam-java-1.0-withDependency-ShadedForAndroid.jar')
-    compile files('libs/evercam-discovery-lib.jar')
+    compile files('libs/evercam-java-1.0-android.jar')
+    compile files('libs/evercam-discovery-lib-20150720.jar')
     compile files('libs/logentries-android-2.1.4.jar')
     compile files('libs/sendgrid-0.1.2-jar.jar')
     compile files('libs/upnplib-mobile.jar')
