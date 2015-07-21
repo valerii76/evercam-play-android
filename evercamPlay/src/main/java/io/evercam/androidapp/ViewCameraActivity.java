@@ -16,7 +16,7 @@ import io.evercam.androidapp.video.VideoActivity;
 
 public class ViewCameraActivity extends ParentActivity
 {
-    private final String TAG = "evercamplay-ViewCameraActivity";
+    private final String TAG = "ViewCameraActivity";
     private LinearLayout canEditDetailLayout;
     private TextView cameraIdTextView;
     private TextView cameraNameTextView;
@@ -27,6 +27,7 @@ public class ViewCameraActivity extends ParentActivity
     private TextView cameraUsernameTextView;
     private TextView cameraPasswordTextView;
     private TextView cameraSnapshotUrlTextView;
+    private TextView cameraRtspUrlTextView;
     private TextView cameraInternalHostTextView;
     private TextView cameraInternalHttpTextView;
     private TextView cameraInternalRtspTextView;
@@ -128,6 +129,7 @@ public class ViewCameraActivity extends ParentActivity
         cameraUsernameTextView = (TextView) findViewById(R.id.view_username_value);
         cameraPasswordTextView = (TextView) findViewById(R.id.view_password_value);
         cameraSnapshotUrlTextView = (TextView) findViewById(R.id.view_jpg_url_value);
+        cameraRtspUrlTextView = (TextView) findViewById(R.id.view_rtsp_url_value);
         cameraInternalHostTextView = (TextView) findViewById(R.id.view_internal_host_value);
         cameraInternalHttpTextView = (TextView) findViewById(R.id.view_internal_http_value);
         cameraInternalRtspTextView = (TextView) findViewById(R.id.view_internal_rtsp_value);
@@ -209,6 +211,15 @@ public class ViewCameraActivity extends ParentActivity
             else
             {
                 cameraSnapshotUrlTextView.setText(camera.getJpgPath());
+            }
+
+            if(camera.getH264Path().isEmpty())
+            {
+                setAsNotSpecified(cameraRtspUrlTextView);
+            }
+            else
+            {
+                cameraRtspUrlTextView.setText(camera.getH264Path());
             }
 
             if(camera.getExternalHost().isEmpty())

@@ -188,7 +188,7 @@ public class AddCameraTask extends AsyncTask<Void, Boolean, EvercamCamera>
         final String password = cameraDetail.getCameraPassword();
         String jpgUrlString = cameraDetail.getJpgUrl();
 
-        final String jpgUrl = AddEditCameraActivity.buildJpgUrlWithSlash(jpgUrlString);
+        final String jpgUrl = AddEditCameraActivity.buildUrlEndingWithSlash(jpgUrlString);
 
         if(externalHost != null && !externalHost.isEmpty())
         {
@@ -200,7 +200,6 @@ public class AddCameraTask extends AsyncTask<Void, Boolean, EvercamCamera>
                 Snapshot snapshot = Camera.testSnapshot(externalUrl, jpgUrl, username, password);
                 byte[] snapshotData = snapshot.getData();
                 Bitmap bitmap = BitmapFactory.decodeByteArray(snapshotData, 0, snapshotData.length);
-
 
                 if(bitmap != null)
                 {

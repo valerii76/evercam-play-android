@@ -5,6 +5,8 @@ import android.util.Log;
 import org.apache.http.cookie.Cookie;
 
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -15,7 +17,6 @@ import io.evercam.EvercamException;
 public class EvercamCamera
 {
     public ImageLoadingStatus loadingStatus = ImageLoadingStatus.not_started;
-    public ArrayList<Cookie> cookies = null;
 
     private final String TAG = "EvercamCamera";
     private boolean isLocal = false;
@@ -395,22 +396,22 @@ public class EvercamCamera
         return "";
     }
 
-    public String getH264Pash()
+    public String getH264Path()
     {
         try
         {
             if(!internalRtspUrl.isEmpty())
             {
-                return new URL(internalRtspUrl).getPath();
+                return new URI(internalRtspUrl).getPath();
             }
             else if(!externalRtspUrl.isEmpty())
             {
-                return new URL(externalRtspUrl).getPath();
+                return new URI(externalRtspUrl).getPath();
             }
         }
-        catch(MalformedURLException e)
+        catch(URISyntaxException e)
         {
-            Log.e(TAG, e.toString());
+            e.printStackTrace();
         }
         return "";
     }

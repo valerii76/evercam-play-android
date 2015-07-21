@@ -58,6 +58,7 @@ public class AddEditCameraActivity extends ParentActivity
     private EditText externalHttpEdit;
     private EditText externalRtspEdit;
     private EditText jpgUrlEdit;
+    private EditText rtspUrlEdit;
     private Button addEditButton;
     private TreeMap<String, String> vendorMap;
     private TreeMap<String, String> vendorMapIdAsKey;
@@ -148,10 +149,10 @@ public class AddEditCameraActivity extends ParentActivity
             String externalHttp = externalHttpEdit.getText().toString();
             String externalRtsp = externalRtspEdit.getText().toString();
             String jpgUrl = jpgUrlEdit.getText().toString();
-
+            String rtspUrl = rtspUrlEdit.getText().toString();
             if(!(cameraName.isEmpty() && username.isEmpty() && password
                     .isEmpty() && externalHost.isEmpty() && externalHttp.isEmpty() &&
-                    externalRtsp.isEmpty() && jpgUrl.isEmpty()))
+                    externalRtsp.isEmpty() && jpgUrl.isEmpty() && rtspUrl.isEmpty()))
             {
                 CustomedDialog.getConfirmCancelAddCameraDialog(this).show();
             }
@@ -177,6 +178,7 @@ public class AddEditCameraActivity extends ParentActivity
         externalHttpEdit = (EditText) findViewById(R.id.add_external_http_edit);
         externalRtspEdit = (EditText) findViewById(R.id.add_external_rtsp_edit);
         jpgUrlEdit = (EditText) findViewById(R.id.add_jpg_edit);
+        rtspUrlEdit = (EditText) findViewById(R.id.add_rtsp_edit);
         addEditButton = (Button) findViewById(R.id.button_add_edit_camera);
         Button testButton = (Button) findViewById(R.id.button_test_snapshot);
 
@@ -466,6 +468,7 @@ public class AddEditCameraActivity extends ParentActivity
             usernameEdit.setText(camera.getUsername());
             passwordEdit.setText(camera.getPassword());
             jpgUrlEdit.setText(camera.getJpgPath());
+            rtspUrlEdit.setText(camera.getH264Path());
             externalHostEdit.setText(camera.getExternalHost());
             int externalHttp = camera.getExternalHttp();
             int externalRtsp = camera.getExternalRtsp();
@@ -566,10 +569,16 @@ public class AddEditCameraActivity extends ParentActivity
             }
         }
 
-        String jpgUrl = buildJpgUrlWithSlash(jpgUrlEdit.getText().toString());
+        String jpgUrl = buildUrlEndingWithSlash(jpgUrlEdit.getText().toString());
         if(!jpgUrl.isEmpty())
         {
             cameraBuilder.setJpgUrl(jpgUrl);
+        }
+
+        String rtspUrl = buildUrlEndingWithSlash(rtspUrlEdit.getText().toString());
+        if(!rtspUrl.isEmpty())
+        {
+            cameraBuilder.setH264Url(rtspUrl);
         }
 
         //Attach additional info for discovered camera as well
@@ -711,10 +720,16 @@ public class AddEditCameraActivity extends ParentActivity
             }
         }
 
-        String jpgUrl = buildJpgUrlWithSlash(jpgUrlEdit.getText().toString());
-        if(jpgUrl.equals(cameraEdit.getJpgPath()))
+        String jpgUrl = buildUrlEndingWithSlash(jpgUrlEdit.getText().toString());
+        if(!jpgUrl.equals(cameraEdit.getJpgPath()))
         {
             patchCameraBuilder.setJpgUrl(jpgUrl);
+        }
+
+        String rtspUrl = buildUrlEndingWithSlash(rtspUrlEdit.getText().toString());
+        if(!rtspUrl.equals(cameraEdit.getH264Path()))
+        {
+            patchCameraBuilder.setH264Url(rtspUrl);
         }
 
         return patchCameraBuilder;
@@ -861,6 +876,7 @@ public class AddEditCameraActivity extends ParentActivity
                 passwordEdit.setText(basicAuth.getPassword());
             }
             jpgUrlEdit.setText(defaults.getJpgURL());
+            rtspUrlEdit.setText(defaults.getH264URL());
 
             if(!model.getName().equals(Model.DEFAULT_MODEL_NAME) && !jpgUrlEdit.getText().toString().isEmpty())
             {
@@ -887,6 +903,7 @@ public class AddEditCameraActivity extends ParentActivity
         usernameEdit.setText("");
         passwordEdit.setText("");
         jpgUrlEdit.setText("");
+        rtspUrlEdit.setText("");
 
         //Make it editable when defaults are cleared
         jpgUrlEdit.setFocusable(true);
@@ -941,18 +958,18 @@ public class AddEditCameraActivity extends ParentActivity
         }
     }
 
-    public static String buildJpgUrlWithSlash(String originalJpgUrl)
+    public static String buildUrlEndingWithSlash(String originalUrl)
     {
         String jpgUrl = "";
-        if(originalJpgUrl != null && !originalJpgUrl.equals(""))
+        if(originalUrl != null && !originalUrl.equals(""))
         {
-            if(!originalJpgUrl.startsWith("/"))
+            if(!originalUrl.startsWith("/"))
             {
-                jpgUrl = "/" + originalJpgUrl;
+                jpgUrl = "/" + originalUrl;
             }
             else
             {
-                jpgUrl = originalJpgUrl;
+                jpgUrl = originalUrl;
             }
         }
         return jpgUrl;
@@ -971,7 +988,7 @@ public class AddEditCameraActivity extends ParentActivity
             final String username = usernameEdit.getText().toString();
             final String password = passwordEdit.getText().toString();
             String jpgUrlString = jpgUrlEdit.getText().toString();
-            final String jpgUrl = buildJpgUrlWithSlash(jpgUrlString);
+            final String jpgUrl = buildUrlEndingWithSlash(jpgUrlString);
 
             String externalUrl = getExternalUrl();
             if(externalUrl != null)
