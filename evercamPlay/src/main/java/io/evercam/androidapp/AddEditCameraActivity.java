@@ -59,6 +59,8 @@ public class AddEditCameraActivity extends ParentActivity
     private EditText externalRtspEdit;
     private EditText jpgUrlEdit;
     private EditText rtspUrlEdit;
+    private LinearLayout jpgUrlLayout;
+    private LinearLayout rtspUrlLayout;
     private Button addEditButton;
     private TreeMap<String, String> vendorMap;
     private TreeMap<String, String> vendorMapIdAsKey;
@@ -179,6 +181,8 @@ public class AddEditCameraActivity extends ParentActivity
         externalRtspEdit = (EditText) findViewById(R.id.add_external_rtsp_edit);
         jpgUrlEdit = (EditText) findViewById(R.id.add_jpg_edit);
         rtspUrlEdit = (EditText) findViewById(R.id.add_rtsp_edit);
+        jpgUrlLayout = (LinearLayout) findViewById(R.id.add_jpg_url_layout);
+        rtspUrlLayout = (LinearLayout) findViewById(R.id.add_rtsp_url_layout);
         addEditButton = (Button) findViewById(R.id.button_add_edit_camera);
         Button testButton = (Button) findViewById(R.id.button_test_snapshot);
 
@@ -252,6 +256,7 @@ public class AddEditCameraActivity extends ParentActivity
                                 .THREAD_POOL_EXECUTOR);
                     }
                 }
+                showUrlEndings(position == 0);
             }
 
             @Override
@@ -462,6 +467,8 @@ public class AddEditCameraActivity extends ParentActivity
     {
         if(camera != null)
         {
+            showUrlEndings(!camera.hasModel());
+
             // Log.d(TAG, cameraEdit.toString());
             cameraIdTextView.setText(camera.getCameraId());
             cameraNameEdit.setText(camera.getName());
@@ -481,6 +488,12 @@ public class AddEditCameraActivity extends ParentActivity
                 externalRtspEdit.setText(String.valueOf(externalRtsp));
             }
         }
+    }
+
+    private void showUrlEndings(boolean show)
+    {
+        jpgUrlLayout.setVisibility(show ? View.VISIBLE : View.GONE);
+        rtspUrlLayout.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     /**

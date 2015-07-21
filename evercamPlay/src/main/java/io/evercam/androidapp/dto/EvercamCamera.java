@@ -2,13 +2,10 @@ package io.evercam.androidapp.dto;
 
 import android.util.Log;
 
-import org.apache.http.cookie.Cookie;
-
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Locale;
 
 import io.evercam.Camera;
@@ -473,6 +470,11 @@ public class EvercamCamera
     public boolean hasThumbnailUrl()
     {
         return getThumbnailUrl() != null && !getThumbnailUrl().isEmpty();
+    }
+
+    public boolean hasModel()
+    {
+        return !getModel().isEmpty();
     }
 
     @Override
