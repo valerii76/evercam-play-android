@@ -1,7 +1,9 @@
 package io.evercam.androidapp;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -10,8 +12,11 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import io.evercam.androidapp.custom.CustomedDialog;
 import io.evercam.androidapp.dto.EvercamCamera;
+import io.evercam.androidapp.tasks.DeleteCameraTask;
 import io.evercam.androidapp.utils.Constants;
+import io.evercam.androidapp.utils.EnumConstants;
 import io.evercam.androidapp.video.VideoActivity;
 
 public class ViewCameraActivity extends ParentActivity
@@ -62,14 +67,14 @@ public class ViewCameraActivity extends ParentActivity
     public boolean onCreateOptionsMenu(Menu menu)
     {
 
-        getMenuInflater().inflate(R.menu.menu_view_details, menu);
+        getMenuInflater().inflate(R.menu.menu_camera_settings, menu);
         return true;
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu)
     {
-        MenuItem editItem = menu.findItem(R.id.menu_action_edit);
+        MenuItem editItem = menu.findItem(R.id.menu_action_edit_camera);
 
         if(evercamCamera != null)
         {
@@ -88,14 +93,39 @@ public class ViewCameraActivity extends ParentActivity
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item)
     {
-        switch(item.getItemId())
+        int itemId = item.getItemId();
+
+        if(itemId == android.R.id.home)
         {
-            case android.R.id.home:
-                this.finish();
-                return true;
-            case R.id.menu_action_edit:
-                linkToEditCamera();
+            finish();
         }
+        else if(itemId == R.id.menu_action_edit_camera)
+        {
+            linkToEditCamera();
+        }
+        else if(itemId ==R.id.menu_action_delete_camera)
+        {
+            CustomedDialog.getConfirmDeleteDialog(ViewCameraActivity.this, new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(DialogInterface warningDialog, int which)
+                {
+                    if(evercamCamera.canDelete())
+                    {
+                        new DeleteCameraTask(evercamCamera.getCameraId(),
+                                ViewCameraActivity.this, EnumConstants.DeleteType
+                                .DELETE_OWNED).executeOnExecutor(AsyncTask
+                                .THREAD_POOL_EXECUTOR);
+                    }
+                    else
+                    {
+                        new DeleteCameraTask(evercamCamera.getCameraId(),
+                                ViewCameraActivity.this, EnumConstants.DeleteType.DELETE_SHARE).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    }
+                }
+            }, R.string.msg_confirm_remove_camera).show();
+        }
+
         return true;
     }
 

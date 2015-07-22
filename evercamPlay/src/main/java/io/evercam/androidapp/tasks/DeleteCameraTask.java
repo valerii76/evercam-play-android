@@ -16,7 +16,7 @@ import io.evercam.androidapp.utils.EnumConstants.DeleteType;
 
 public class DeleteCameraTask extends AsyncTask<Void, Void, Boolean>
 {
-    private final String TAG = "evercamplay-DeleteCameraTask";
+    private final String TAG = "DeleteCameraTask";
     private String cameraId;
     private CustomProgressDialog customProgressDialog;
     private Activity activity;
@@ -77,7 +77,7 @@ public class DeleteCameraTask extends AsyncTask<Void, Void, Boolean>
         if(success)
         {
             CustomToast.showInBottom(activity, R.string.msg_delete_success);
-            activity.setResult(Constants.RESULT_TRUE);
+            activity.setResult(Constants.RESULT_DELETED);
             activity.finish();
         }
         else

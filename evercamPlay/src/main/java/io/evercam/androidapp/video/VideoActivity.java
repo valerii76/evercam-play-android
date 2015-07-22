@@ -248,7 +248,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
             {
                 startPlay();
             }
-            else
+            else if(resultCode == Constants.RESULT_FALSE)
             {
                 startPlay();
             }
@@ -256,7 +256,16 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
         else
         // If back from view camera or feedback
         {
-            startPlay();
+            if(resultCode == Constants.RESULT_DELETED)
+            {
+                //Only close the activity if
+                setResult(Constants.RESULT_TRUE);
+                finish();
+            }
+            else
+            {
+                startPlay();
+            }
         }
     }
 
@@ -541,21 +550,10 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
     @Override
     public boolean onPrepareOptionsMenu(Menu menu)
     {
-        MenuItem viewItem = menu.findItem(R.id.video_menu_view_camera);
         MenuItem shortcutItem = menu.findItem(R.id.video_menu_create_shortcut);
 
         if(evercamCamera != null)
         {
-            //Hide 'Edit' option for shared camera
-            if(evercamCamera.canEdit())
-            {
-                viewItem.setVisible(true);
-            }
-            else
-            {
-                viewItem.setVisible(true);
-            }
-
             if(evercamCamera.isOffline())
             {
                 shortcutItem.setVisible(false);
@@ -578,26 +576,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
         int itemId = item.getItemId();
         try
         {
-            if(itemId == R.id.video_menu_delete_camera)
-            {
-                CustomedDialog.getConfirmRemoveDialog(VideoActivity.this, new DialogInterface.OnClickListener()
-                {
-
-                    @Override
-                    public void onClick(DialogInterface warningDialog, int which)
-                    {
-                        if(evercamCamera.canDelete())
-                        {
-                            new DeleteCameraTask(evercamCamera.getCameraId(), VideoActivity.this, DeleteType.DELETE_OWNED).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                        }
-                        else
-                        {
-                            new DeleteCameraTask(evercamCamera.getCameraId(), VideoActivity.this, DeleteType.DELETE_SHARE).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                        }
-                    }
-                }, R.string.msg_confirm_remove_camera).show();
-            }
-            else if(itemId == R.id.video_menu_view_camera)
+            if(itemId == R.id.video_menu_camera_settings)
             {
                 editStarted = true;
                 Intent viewIntent = new Intent(VideoActivity.this, ViewCameraActivity.class);
@@ -635,7 +614,8 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
             {
                 recordingsStarted = true;
                 Intent recordingIntent = new Intent(this, RecordingWebActivity.class);
-                recordingIntent.putExtra(Constants.BUNDLE_KEY_CAMERA_ID, evercamCamera.getCameraId());
+                recordingIntent.putExtra(Constants.BUNDLE_KEY_CAMERA_ID, evercamCamera
+                        .getCameraId());
                 startActivity(recordingIntent);
             }
         }
