@@ -1,5 +1,6 @@
 package io.evercam.androidapp;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -37,6 +38,8 @@ import java.util.Map;
 
 import io.evercam.EvercamException;
 import io.evercam.androidapp.custom.CustomedDialog;
+import io.evercam.androidapp.dto.AppData;
+import io.evercam.androidapp.dto.EvercamCamera;
 import io.evercam.androidapp.tasks.CheckInternetTask;
 import io.evercam.androidapp.tasks.ScanForCameraTask;
 import io.evercam.androidapp.utils.Constants;
@@ -63,6 +66,7 @@ public class ScanActivity extends ParentActivity
     private final String ADAPTER_KEY_LOGO = "camera_logo";
     private final String ADAPTER_KEY_IP = "camera_id";
     private final String ADAPTER_KEY_MODEL = "camera_model";
+    private final String ADAPTER_KEY_ADDED = "camera_added";
 
     private ScanForCameraTask scanTask;
 
@@ -91,8 +95,8 @@ public class ScanActivity extends ParentActivity
 
         deviceArrayList = new ArrayList<>();
         deviceAdapter = new ScanResultAdapter(this, deviceArrayList, R.layout.scan_list_layout,
-                new String[]{ADAPTER_KEY_LOGO, ADAPTER_KEY_IP, ADAPTER_KEY_MODEL},
-                new int[]{R.id.camera_img, R.id.camera_ip, R.id.camera_model});
+                new String[]{ADAPTER_KEY_LOGO, ADAPTER_KEY_IP, ADAPTER_KEY_MODEL, ADAPTER_KEY_ADDED},
+                new int[]{R.id.camera_img, R.id.camera_ip, R.id.camera_model, R.id.camera_added});
         cameraListView.setAdapter(deviceAdapter);
 
         cameraListView.setOnItemClickListener(new OnItemClickListener()
@@ -108,15 +112,23 @@ public class ScanActivity extends ParentActivity
                 {
                     cameraIp = cameraIpText.substring(0, cameraIpText.indexOf(':'));
                 }
-                for(DiscoveredCamera camera : discoveredCameras)
+                final String ipFinal = cameraIp;
+
+                String added = (String) map.get(ADAPTER_KEY_ADDED);
+                if(added.isEmpty())
                 {
-                    if(camera.getIP().equals(cameraIp))
-                    {
-                        Intent intentAddCamera = new Intent(ScanActivity.this,
-                                AddEditCameraActivity.class);
-                        intentAddCamera.putExtra("camera", camera);
-                        startActivityForResult(intentAddCamera, Constants.REQUEST_CODE_ADD_CAMERA);
-                    }
+                    launchAddCameraPageWithSelectedIp(cameraIp);
+                }
+                else //If camera has been added, show
+                {
+                    CustomedDialog.getStandardAlertDialog(ScanActivity.this, new Dialog.OnClickListener(){
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            launchAddCameraPageWithSelectedIp(ipFinal);
+                        }
+                    }, R.string.msg_camera_has_been_added).show();
                 }
             }
         });
@@ -219,6 +231,21 @@ public class ScanActivity extends ParentActivity
     public void onConfigurationChanged(Configuration newConfig)
     {
         super.onConfigurationChanged(newConfig);
+    }
+
+    private void launchAddCameraPageWithSelectedIp(String ip)
+    {
+
+        for(DiscoveredCamera camera : discoveredCameras)
+        {
+            if(camera.getIP().equals(ip))
+            {
+                Intent intentAddCamera = new Intent(ScanActivity.this,
+                        AddEditCameraActivity.class);
+                intentAddCamera.putExtra("camera", camera);
+                startActivityForResult(intentAddCamera, Constants.REQUEST_CODE_ADD_CAMERA);
+            }
+        }
     }
 
     private void startDiscovery()
@@ -394,7 +421,33 @@ public class ScanActivity extends ParentActivity
             deviceMap.put(ADAPTER_KEY_MODEL, vendor);
         }
 
+        if(isCameraAdded(camera))
+        {
+            deviceMap.put(ADAPTER_KEY_ADDED, "(Added)");
+        }
+        else
+        {
+            deviceMap.put(ADAPTER_KEY_ADDED, "");
+        }
+
         return deviceMap;
+    }
+
+    private boolean isCameraAdded(DiscoveredCamera discoveredCamera)
+    {
+        ArrayList<EvercamCamera> cameras = AppData.evercamCameraList;
+        if(cameras.size() > 0)
+        {
+            String discoveredMacAddress = discoveredCamera.getMAC();
+            for(EvercamCamera camera : cameras)
+            {
+                if(camera.getMac().equals(discoveredMacAddress))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private class ScanResultAdapter extends SimpleAdapter
