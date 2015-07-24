@@ -372,7 +372,7 @@ public class AddEditCameraActivity extends ParentActivity
     {
         if(camera != null)
         {
-            // Log.d(TAG, camera.toString());
+            Log.d(TAG, camera.toString());
             if(camera.hasExternalIp())
             {
                 externalHostEdit.setText(camera.getExternalIp());
@@ -387,7 +387,13 @@ public class AddEditCameraActivity extends ParentActivity
             }
             if(camera.hasName())
             {
-                cameraNameEdit.setText(camera.getName());
+                //The maximum camera name length is 24
+                String cameraName = camera.getName();
+                if(cameraName.length() > 24)
+                {
+                    cameraName = cameraName.substring(0, 23);
+                }
+                cameraNameEdit.setText(cameraName);
             }
             else
             {
