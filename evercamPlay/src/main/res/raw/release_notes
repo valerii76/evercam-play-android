@@ -1,9 +1,10 @@
 <h4>Evercam Play - IP Camera Viewer</h4>
 
-<h5>1.4.7 Alpha 22/07</h5>
+<h5>1.4.7</h5>
 <ul>
     <li>- Added RTSP URL in add/edit camera<br/></li>
     <li>- Now view,edit,delete camera options are all in 'Camera Settings'<br/></li>
+    <li>- Recognise camera that has been added when scanning for cameras<br/></li>
 </ul>
 <br/>
 
