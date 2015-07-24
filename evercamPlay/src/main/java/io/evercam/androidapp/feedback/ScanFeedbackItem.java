@@ -74,6 +74,22 @@ public class ScanFeedbackItem extends FeedbackItem
                 {
                     client.addEvent(Constants.KEEN_COLLECTION_SCANNING_METRIC, feedbackItem.toHashMap());
 
+                    try
+                    {
+                        if(cameraList.size() != 0)
+                        {
+                            for(DiscoveredCamera camera : cameraList)
+                            {
+                                client.addEvent(Constants.KEEN_COLLECTION_DISCOVERED_CAMERAS, toCameraHashMap(camera));
+
+                            }
+                        }
+                    }
+                    catch(Exception e)
+                    {
+                        //Don't crash when exception happens
+                        e.printStackTrace();
+                    }
 
                     if(cameraList.size() != 0)
                     {
@@ -82,7 +98,6 @@ public class ScanFeedbackItem extends FeedbackItem
                             client.addEvent(Constants.KEEN_COLLECTION_DISCOVERED_CAMERAS, toCameraHashMap(camera));
                         }
                     }
-
                 }
             }).start();
         }

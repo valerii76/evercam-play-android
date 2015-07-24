@@ -1,7 +1,9 @@
 package io.evercam.androidapp;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -10,13 +12,16 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import io.evercam.androidapp.custom.CustomedDialog;
 import io.evercam.androidapp.dto.EvercamCamera;
+import io.evercam.androidapp.tasks.DeleteCameraTask;
 import io.evercam.androidapp.utils.Constants;
+import io.evercam.androidapp.utils.EnumConstants;
 import io.evercam.androidapp.video.VideoActivity;
 
 public class ViewCameraActivity extends ParentActivity
 {
-    private final String TAG = "evercamplay-ViewCameraActivity";
+    private final String TAG = "ViewCameraActivity";
     private LinearLayout canEditDetailLayout;
     private TextView cameraIdTextView;
     private TextView cameraNameTextView;
@@ -27,6 +32,7 @@ public class ViewCameraActivity extends ParentActivity
     private TextView cameraUsernameTextView;
     private TextView cameraPasswordTextView;
     private TextView cameraSnapshotUrlTextView;
+    private TextView cameraRtspUrlTextView;
     private TextView cameraInternalHostTextView;
     private TextView cameraInternalHttpTextView;
     private TextView cameraInternalRtspTextView;
@@ -61,14 +67,14 @@ public class ViewCameraActivity extends ParentActivity
     public boolean onCreateOptionsMenu(Menu menu)
     {
 
-        getMenuInflater().inflate(R.menu.menu_view_details, menu);
+        getMenuInflater().inflate(R.menu.menu_camera_settings, menu);
         return true;
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu)
     {
-        MenuItem editItem = menu.findItem(R.id.menu_action_edit);
+        MenuItem editItem = menu.findItem(R.id.menu_action_edit_camera);
 
         if(evercamCamera != null)
         {
@@ -87,14 +93,39 @@ public class ViewCameraActivity extends ParentActivity
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item)
     {
-        switch(item.getItemId())
+        int itemId = item.getItemId();
+
+        if(itemId == android.R.id.home)
         {
-            case android.R.id.home:
-                this.finish();
-                return true;
-            case R.id.menu_action_edit:
-                linkToEditCamera();
+            finish();
         }
+        else if(itemId == R.id.menu_action_edit_camera)
+        {
+            linkToEditCamera();
+        }
+        else if(itemId ==R.id.menu_action_delete_camera)
+        {
+            CustomedDialog.getConfirmDeleteDialog(ViewCameraActivity.this, new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(DialogInterface warningDialog, int which)
+                {
+                    if(evercamCamera.canDelete())
+                    {
+                        new DeleteCameraTask(evercamCamera.getCameraId(),
+                                ViewCameraActivity.this, EnumConstants.DeleteType
+                                .DELETE_OWNED).executeOnExecutor(AsyncTask
+                                .THREAD_POOL_EXECUTOR);
+                    }
+                    else
+                    {
+                        new DeleteCameraTask(evercamCamera.getCameraId(),
+                                ViewCameraActivity.this, EnumConstants.DeleteType.DELETE_SHARE).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    }
+                }
+            }, R.string.msg_confirm_remove_camera).show();
+        }
+
         return true;
     }
 
@@ -128,6 +159,7 @@ public class ViewCameraActivity extends ParentActivity
         cameraUsernameTextView = (TextView) findViewById(R.id.view_username_value);
         cameraPasswordTextView = (TextView) findViewById(R.id.view_password_value);
         cameraSnapshotUrlTextView = (TextView) findViewById(R.id.view_jpg_url_value);
+        cameraRtspUrlTextView = (TextView) findViewById(R.id.view_rtsp_url_value);
         cameraInternalHostTextView = (TextView) findViewById(R.id.view_internal_host_value);
         cameraInternalHttpTextView = (TextView) findViewById(R.id.view_internal_http_value);
         cameraInternalRtspTextView = (TextView) findViewById(R.id.view_internal_rtsp_value);
@@ -209,6 +241,15 @@ public class ViewCameraActivity extends ParentActivity
             else
             {
                 cameraSnapshotUrlTextView.setText(camera.getJpgPath());
+            }
+
+            if(camera.getH264Path().isEmpty())
+            {
+                setAsNotSpecified(cameraRtspUrlTextView);
+            }
+            else
+            {
+                cameraRtspUrlTextView.setText(camera.getH264Path());
             }
 
             if(camera.getExternalHost().isEmpty())

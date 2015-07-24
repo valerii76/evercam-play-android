@@ -58,19 +58,18 @@ repositories {
 
 dependencies {
     compile project(':supertoasts')
-    compile 'com.android.support:support-v4:22.2.0'
-    compile 'joda-time:joda-time:2.6'
-    compile files('libs/evercam-java-1.0-withDependency-ShadedForAndroid.jar')
-    compile files('libs/evercam-networkscan.jar')
-    compile files('libs/httpmime-4.3.4.jar')
+    compile files('libs/evercam-java-1.0-android.jar')
+    compile files('libs/evercam-discovery-lib-20150720.jar')
     compile files('libs/logentries-android-2.1.4.jar')
     compile files('libs/sendgrid-0.1.2-jar.jar')
     compile files('libs/upnplib-mobile.jar')
+    compile 'com.android.support:support-v4:22.2.0'
+    compile 'joda-time:joda-time:2.6'
     compile 'com.squareup.picasso:picasso:2.5.0'
     compile 'io.keen:keen-client-api-android:2.1.1@aar'
     compile 'com.squareup.okhttp:okhttp:2.2.0'
     compile "com.mixpanel.android:mixpanel-android:4.5.3"
-    compile 'com.google.android.gms:play-services:7.3.0'
+    compile 'com.google.android.gms:play-services:7.5.0'
     compile "com.splunk.mint:mint:4.2"
     compile('org.simpleframework:simple-xml:2.7.1') {
         exclude module: 'stax'

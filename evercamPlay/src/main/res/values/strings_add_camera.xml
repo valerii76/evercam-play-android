@@ -12,7 +12,8 @@
     <string name="colon">:</string>
     <string name="external_title">External</string>
     <string name="internal_title">Internal</string>
-    <string name="jpg_url">Snapshot URL</string>
+    <string name="jpg_url">Snapshot*</string>
+    <string name="rtsp_url">RTSP URL</string>
     <string name="http_port">HTTP port*</string>
     <string name="rtsp_port">RTSP port</string>
     <string name="finish_and_add">Finish &amp; Add</string>
@@ -24,6 +25,7 @@
     <string name="hint_username">Username</string>
     <string name="hint_camera_password">Password</string>
     <string name="hint_jpg_path">/snapshot.jpg</string>
+    <string name="hint_rtsp_path">/h264/ch1/main/av_stream</string>
     <string name="hint_external_host">149.5.43.10</string>
     <string name="hint_external_http">80</string>
     <string name="hint_external_rtsp">554</string>
@@ -72,6 +74,7 @@
     <string name="view_username">Username:</string>
     <string name="view_password">Password:</string>
     <string name="view_snapshot_url">Snapshot:</string>
+    <string name="view_rtsp_url">RTSP URL:</string>
     <string name="view_host">IP address:</string>
     <string name="view_http">HTTP Port:</string>
     <string name="view_rtsp">RTSP Port:</string>

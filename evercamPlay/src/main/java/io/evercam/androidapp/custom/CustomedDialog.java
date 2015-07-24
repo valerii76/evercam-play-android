@@ -87,9 +87,7 @@ public class CustomedDialog
         titleTextView.setText(title);
         messageTextView.setText(message);
 
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity).setView
-                (dialogLayout).setCancelable(false).setPositiveButton(positiveButton,
-                positiveListener);
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity).setView(dialogLayout).setCancelable(false).setPositiveButton(positiveButton, positiveListener);
         if(negativeButton != 0)
         {
             dialogBuilder.setNegativeButton(negativeButton, negativeListener);
@@ -245,6 +243,25 @@ public class CustomedDialog
         AlertDialog confirmLogoutDialog = new AlertDialog.Builder(activity)
 
                 .setMessage(message).setPositiveButton(R.string.remove,
+                        listener).setNegativeButton(R.string.cancel,
+                        new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                return;
+                            }
+                        }).create();
+        return confirmLogoutDialog;
+    }
+
+    public static AlertDialog getConfirmDeleteDialog(Activity activity,
+                                                     DialogInterface.OnClickListener listener,
+                                                     int message)
+    {
+        AlertDialog confirmLogoutDialog = new AlertDialog.Builder(activity)
+
+                .setMessage(message).setPositiveButton(R.string.delete,
                         listener).setNegativeButton(R.string.cancel,
                         new DialogInterface.OnClickListener()
                         {

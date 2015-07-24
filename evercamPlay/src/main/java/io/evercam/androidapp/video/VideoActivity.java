@@ -73,10 +73,8 @@ import io.evercam.androidapp.feedback.ShortcutFeedbackItem;
 import io.evercam.androidapp.feedback.StreamFeedbackItem;
 import io.evercam.androidapp.recordings.RecordingWebActivity;
 import io.evercam.androidapp.tasks.CaptureSnapshotRunnable;
-import io.evercam.androidapp.tasks.DeleteCameraTask;
 import io.evercam.androidapp.utils.Commons;
 import io.evercam.androidapp.utils.Constants;
-import io.evercam.androidapp.utils.EnumConstants.DeleteType;
 import io.evercam.androidapp.utils.PrefsManager;
 import io.evercam.androidapp.utils.PropertyReader;
 import io.evercam.androidapp.video.SnapshotManager.FileType;
@@ -170,6 +168,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
     private static native boolean nativeClassInit(); // Initialize native class: cache Method IDs for callbacks
     private native void nativeSurfaceInit(Object surface);
     private native void nativeSurfaceFinalize();
+    private native void nativeExpose();
     private long native_custom_data;      // Native code will use this to keep private data
 
     private final int TCP_TIMEOUT = 10 * 1000000; // 10 seconds in micro seconds
@@ -252,7 +251,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
             {
                 startPlay();
             }
-            else
+            else if(resultCode == Constants.RESULT_FALSE)
             {
                 startPlay();
             }
@@ -260,7 +259,16 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
         else
         // If back from view camera or feedback
         {
-            startPlay();
+            if(resultCode == Constants.RESULT_DELETED)
+            {
+                //Only close the activity if
+                setResult(Constants.RESULT_TRUE);
+                finish();
+            }
+            else
+            {
+                startPlay();
+            }
         }
     }
 
@@ -545,21 +553,10 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
     @Override
     public boolean onPrepareOptionsMenu(Menu menu)
     {
-        MenuItem viewItem = menu.findItem(R.id.video_menu_view_camera);
         MenuItem shortcutItem = menu.findItem(R.id.video_menu_create_shortcut);
 
         if(evercamCamera != null)
         {
-            //Hide 'Edit' option for shared camera
-            if(evercamCamera.canEdit())
-            {
-                viewItem.setVisible(true);
-            }
-            else
-            {
-                viewItem.setVisible(true);
-            }
-
             if(evercamCamera.isOffline())
             {
                 shortcutItem.setVisible(false);
@@ -582,26 +579,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
         int itemId = item.getItemId();
         try
         {
-            if(itemId == R.id.video_menu_delete_camera)
-            {
-                CustomedDialog.getConfirmRemoveDialog(VideoActivity.this, new DialogInterface.OnClickListener()
-                {
-
-                    @Override
-                    public void onClick(DialogInterface warningDialog, int which)
-                    {
-                        if(evercamCamera.canDelete())
-                        {
-                            new DeleteCameraTask(evercamCamera.getCameraId(), VideoActivity.this, DeleteType.DELETE_OWNED).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                        }
-                        else
-                        {
-                            new DeleteCameraTask(evercamCamera.getCameraId(), VideoActivity.this, DeleteType.DELETE_SHARE).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                        }
-                    }
-                }, R.string.msg_confirm_remove_camera).show();
-            }
-            else if(itemId == R.id.video_menu_view_camera)
+            if(itemId == R.id.video_menu_camera_settings)
             {
                 editStarted = true;
                 Intent viewIntent = new Intent(VideoActivity.this, ViewCameraActivity.class);
@@ -639,7 +617,8 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
             {
                 recordingsStarted = true;
                 Intent recordingIntent = new Intent(this, RecordingWebActivity.class);
-                recordingIntent.putExtra(Constants.BUNDLE_KEY_CAMERA_ID, evercamCamera.getCameraId());
+                recordingIntent.putExtra(Constants.BUNDLE_KEY_CAMERA_ID, evercamCamera
+                        .getCameraId());
                 startActivity(recordingIntent);
             }
         }
@@ -857,8 +836,6 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
     public void surfaceCreated(SurfaceHolder surfaceHolder)
     {
         Log.d("GStreamer", "Surface created: " + surfaceHolder.getSurface());
-
-        nativeSurfaceInit(surfaceHolder.getSurface());
     }
 
     @Override
@@ -866,6 +843,9 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
     {
         Log.d("GStreamer", "Surface changed to format " + format + " width " + width + " height " + height);
         onMediaSizeChanged(width, height);
+
+        nativeSurfaceInit(surfaceholder.getSurface());
+        nativeExpose();
     }
 
     @Override
@@ -896,7 +876,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
         {
             Log.e(TAG, "uri " + createUri(camera));
             nativeSetUri(createUri(camera), TCP_TIMEOUT);
-            play(camera);
+            play();
         }
         else
         {
@@ -906,7 +886,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
         }
     }
 
-    private void play(EvercamCamera camera)
+    private void play()
     {
         nativePlay();
     }
@@ -1182,7 +1162,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
 
     private Bitmap getBitmapFromImageView(ImageView imageView)
     {
-        final Bitmap bitmap;
+        Bitmap bitmap = null;
         if(imageView.getDrawable() instanceof BitmapDrawable)
         {
             bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
@@ -1190,10 +1170,13 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
         else
         {
             Drawable drawable = imageView.getDrawable();
-            bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
-                    drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(bitmap);
-            drawable.draw(canvas);
+            if(drawable != null)
+            {
+                bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+
+                Canvas canvas = new Canvas(bitmap);
+                drawable.draw(canvas);
+            }
         }
         return bitmap;
     }
@@ -1708,3 +1691,4 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
         });
     }
 }
+
