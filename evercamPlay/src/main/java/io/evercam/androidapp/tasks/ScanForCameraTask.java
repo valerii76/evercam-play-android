@@ -87,23 +87,12 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
                     @Override
                     public void onFinished(ArrayList<NatMapEntry> mapEntries)
                     {
-                        if(mapEntries != null)
+                        for(DiscoveredCamera discoveredCamera : cameraList)
                         {
-                            if(mapEntries.size() > 0)
-                            {
-                                for(NatMapEntry mapEntry : mapEntries)
-                                {
-                                    for(DiscoveredCamera discoveredCamera : cameraList)
-                                    {
-                                        DiscoveredCamera publishCamera = EvercamDiscover.mergeNatEntryToCameraIfMatches(discoveredCamera, mapEntry);
-
-                                        publishProgress(publishCamera);
-                                        //FIXME: Bug here - this for statement doesn't loop
-                                        break; //break the inner loop
-                                    }
-                                }
-                            }
+                            DiscoveredCamera mergedCamera = EvercamDiscover.mergeNatTableToCamera(discoveredCamera, mapEntries);
+                            publishProgress(mergedCamera);
                         }
+
                         natDone = true;
                         scanPercentage += PER__DISCOVERY_METHOD_PERCENT;
                         updatePercentageOnActivity(scanPercentage);
