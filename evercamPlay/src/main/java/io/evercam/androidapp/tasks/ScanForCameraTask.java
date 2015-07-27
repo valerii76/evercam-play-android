@@ -98,7 +98,7 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
                                         DiscoveredCamera publishCamera = EvercamDiscover.mergeNatEntryToCameraIfMatches(discoveredCamera, mapEntry);
 
                                         publishProgress(publishCamera);
-
+                                        //FIXME: Bug here - this for statement doesn't loop
                                         break; //break the inner loop
                                     }
                                 }
