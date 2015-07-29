@@ -24,6 +24,7 @@ public class RecordingWebActivity extends WebActivity
         }
         else
         {
+            setResult(Constants.RESULT_TRUE);
             finish();
         }
     }
@@ -36,5 +37,12 @@ public class RecordingWebActivity extends WebActivity
         RecordingWebView webView = (RecordingWebView) findViewById(R.id.recordings_webview);
         webView.webActivity = this;
         webView.loadRecordingWidget(cameraId);
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        setResult(Constants.RESULT_TRUE);
     }
 }

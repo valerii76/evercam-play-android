@@ -252,7 +252,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
             }
         }
         else
-        // If back from view camera or feedback
+        // If back from view camera or feedback or recording
         {
             if(resultCode == Constants.RESULT_DELETED)
             {
@@ -614,7 +614,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
                 Intent recordingIntent = new Intent(this, RecordingWebActivity.class);
                 recordingIntent.putExtra(Constants.BUNDLE_KEY_CAMERA_ID, evercamCamera
                         .getCameraId());
-                startActivity(recordingIntent);
+                startActivityForResult(recordingIntent, Constants.REQUEST_CODE_RECORDING);
             }
         }
         catch(OutOfMemoryError e)
