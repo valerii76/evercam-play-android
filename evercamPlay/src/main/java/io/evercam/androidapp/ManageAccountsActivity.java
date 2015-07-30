@@ -123,7 +123,7 @@ public class ManageAccountsActivity extends ParentActivity
                                         if(AppData.appUsers != null && AppData.appUsers.size() == 2)
                                         {
                                             // If only one user exists, log out the user
-                                            CamerasActivity.logOutUser(ManageAccountsActivity.this);
+                                            CamerasActivity.logOutDefaultUser(ManageAccountsActivity.this);
                                         }
                                         else
                                         {

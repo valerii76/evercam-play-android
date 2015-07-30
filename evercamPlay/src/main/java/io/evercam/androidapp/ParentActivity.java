@@ -15,7 +15,7 @@ public class ParentActivity extends Activity
 {
     private PropertyReader propertyReader;
 
-    private MixpanelHelper mixpanelHelper;
+    private static MixpanelHelper mixpanelHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -68,7 +68,7 @@ public class ParentActivity extends Activity
     /**
      * @return the Mixpanel helper class
      */
-    public MixpanelHelper getMixpanel()
+    public static MixpanelHelper getMixpanel()
     {
         mixpanelHelper.registerSuperProperty("Client-Type", "Play-Android");
 

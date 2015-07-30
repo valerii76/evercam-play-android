@@ -7,11 +7,14 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.os.Bundle;
 
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
+
 import java.util.ArrayList;
 
 import io.evercam.androidapp.R;
 import io.evercam.androidapp.dto.AppData;
 import io.evercam.androidapp.dto.AppUser;
+import io.evercam.androidapp.feedback.MixpanelHelper;
 
 public class EvercamAccount
 {
@@ -61,6 +64,7 @@ public class EvercamAccount
         if(isDefaultString.equals(TRUE))
         {
             AppData.defaultUser = null;
+            AppData.evercamCameraList.clear();
         }
 
         mAccountManager.removeAccount(account, callback, null);
@@ -176,6 +180,7 @@ public class EvercamAccount
                 {
                     mAccountManager.setUserData(account, KEY_IS_DEFAULT, TRUE);
                     AppData.defaultUser = retrieveUserByEmail(email);
+                    new MixpanelHelper(mContext).identifyUser(AppData.defaultUser.getUsername());
                 }
                 else
                 {

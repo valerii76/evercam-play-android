@@ -27,6 +27,7 @@ import com.logentries.android.AndroidLogger;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.UUID;
 import java.util.concurrent.RejectedExecutionException;
 
 import io.evercam.androidapp.authentication.EvercamAccount;
@@ -676,8 +677,9 @@ public class CamerasActivity extends ParentActivity
         });
     }
 
-    public static void logOutUser(Activity activity)
+    public static void logOutDefaultUser(Activity activity)
     {
+        getMixpanel().identifyUser(UUID.randomUUID().toString());
         new EvercamAccount(activity).remove(AppData.defaultUser.getEmail(), null);
 
         // clear real-time default app data
@@ -696,7 +698,7 @@ public class CamerasActivity extends ParentActivity
             {
                 EvercamPlayApplication.sendEventAnalytics(CamerasActivity.this,
                         R.string.category_menu, R.string.action_logout, R.string.label_user_logout);
-                logOutUser(CamerasActivity.this);
+                logOutDefaultUser(CamerasActivity.this);
             }
         }).show();
     }
