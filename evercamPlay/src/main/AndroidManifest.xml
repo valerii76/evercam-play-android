@@ -39,6 +39,9 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version"/>
 
+        <meta-data android:name="com.mixpanel.android.MPConfig.ResourcePackageName"
+                   android:value="io.evercam.androidapp" />
+
         <provider
             android:name=".sync.DummyProvider"
             android:authorities="@string/content_provider_authorities"

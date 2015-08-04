@@ -556,7 +556,7 @@ public class ScanActivity extends ParentActivity
         //Hide the cancel button
         showCancelMenuItem(false);
 
-        updateActionBarTitle("Finished. " + cameraList.size() + " Camera Found.");
+        updateActionBarTitle("Finished. " + cameraList.size() + " Camera(s) Found.");
     }
 
     public void updateActionBarTitle(String title)
