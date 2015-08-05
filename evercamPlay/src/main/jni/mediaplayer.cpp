@@ -29,6 +29,7 @@ void MediaPlayer::play()
     GstState currentTarget = m_target_state;
     m_target_state = GST_STATE_PLAYING;
     gst_element_set_state(msp_pipeline.get(), m_target_state);
+    msp_last_sample.reset();
 
     if (currentTarget == GST_STATE_PAUSED)
         mfn_stream_sucess_handler();
@@ -37,6 +38,13 @@ void MediaPlayer::play()
 void MediaPlayer::pause()
 {
     m_target_state = GST_STATE_PAUSED;
+
+    GstSample *sample;
+    g_object_get(msp_pipeline.get(), "sample", &sample, NULL);
+
+    if (sample)
+        msp_last_sample = std::shared_ptr<GstSample>(sample, gst_object_unref);
+
     gst_element_set_state(msp_pipeline.get(), m_target_state);
 }
 
