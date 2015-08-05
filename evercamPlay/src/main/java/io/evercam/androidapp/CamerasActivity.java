@@ -88,6 +88,7 @@ public class CamerasActivity extends ParentActivity
             this.getActionBar().setHomeButtonEnabled(true);
             this.getActionBar().setDisplayShowTitleEnabled(false);
         }
+
         setContentView(R.layout.camslayoutwithslide);
 
         initDataCollectionObjects();

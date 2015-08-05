@@ -23,28 +23,33 @@ public class CustomScrollView extends ScrollView
     {
         super(context, attrs);
 
-        scrollerTask = new Runnable()
-        {
-
-            @Override
-            public void run()
-            {
-                int newPosition = getScrollY();
-                if(initialPosition - newPosition == 0)
-                {// has stopped
-
-                    if(onScrollStoppedListener != null)
-                    {
-                        onScrollStoppedListener.onScrollStopped();
-                    }
-                }
-                else
-                {
-                    initialPosition = getScrollY();
-                    CustomScrollView.this.postDelayed(scrollerTask, 100);
-                }
-            }
-        };
+        /**
+         * FIXME: Temporarily disabled scroll stop check to avoid the crash on Android 4.1.1
+         * The scroll stop check has been disabled because camera doesn't request live snapshot anymore
+         * This should be re-enabled or removed in the future
+         */
+        //
+//        scrollerTask = new Runnable()
+//        {
+//            @Override
+//            public void run()
+//            {
+//                int newPosition = getScrollY();
+//                if(initialPosition - newPosition == 0)
+//                {// has stopped
+//
+//                    if(onScrollStoppedListener != null)
+//                    {
+//                        onScrollStoppedListener.onScrollStopped();
+//                    }
+//                }
+//                else
+//                {
+//                    initialPosition = getScrollY();
+//                    CustomScrollView.this.postDelayed(scrollerTask, 100);
+//                }
+//            }
+//        };
     }
 
     public void setOnScrollStoppedListener(CustomScrollView.OnScrollStoppedListener listener)
