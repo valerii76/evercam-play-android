@@ -2,6 +2,7 @@ package io.evercam.androidapp;
 
 import android.app.Activity;
 import android.app.Application;
+import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
@@ -10,7 +11,7 @@ import com.google.android.gms.analytics.Tracker;
 
 import java.util.HashMap;
 
-public class EvercamPlayApplication extends Application
+public class EvercamPlayApplication extends MultiDexApplication
 {
     private static final String PROPERTY_ID = "UA-52483995-1";
 
