@@ -7,8 +7,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.os.Bundle;
 
-import com.mixpanel.android.mpmetrics.MixpanelAPI;
-
 import java.util.ArrayList;
 
 import io.evercam.androidapp.R;
