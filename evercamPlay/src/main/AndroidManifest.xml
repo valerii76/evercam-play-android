@@ -27,6 +27,9 @@
     <uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>
     <uses-permission android:name="android.permission.READ_SYNC_STATS"/>
 
+    <!-- Need location access for public cameras-->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <application
         android:name=".EvercamPlayApplication"
         android:allowBackup="true"
@@ -176,6 +179,12 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".video.VideoActivity"/>
+        </activity>
+        <activity
+            android:name=".publiccameras.PublicCamerasWebActivity"
+            android:icon="@drawable/icon_evercam"
+            android:label="@string/title_activity_public_cameras"
+            android:configChanges="keyboard|keyboardHidden|screenSize|orientation">
         </activity>
         <activity
             android:name=".AboutWebActivity"

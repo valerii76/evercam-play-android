@@ -2,12 +2,12 @@ package io.evercam.androidapp.recordings;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.webkit.WebView;
 
 import io.evercam.API;
+import io.evercam.androidapp.BaseWebView;
 import io.evercam.androidapp.WebActivity;
 
-public class RecordingWebView extends WebView
+public class RecordingWebView extends BaseWebView
 {
     private final String TAG = "RecordingWebView";
     public WebActivity webActivity;
@@ -24,7 +24,8 @@ public class RecordingWebView extends WebView
 
     public void loadRecordingWidget(String cameraId)
     {
-        getSettings().setJavaScriptEnabled(true);
+        enableJavascript(true);
+        enableChromeDebugging();
 
         setWebViewClient(webActivity.getWebViewClient());
 

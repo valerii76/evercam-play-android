@@ -42,6 +42,7 @@ import io.evercam.androidapp.dto.EvercamCamera;
 import io.evercam.androidapp.dto.ImageLoadingStatus;
 import io.evercam.androidapp.feedback.KeenHelper;
 import io.evercam.androidapp.feedback.LoadTimeFeedbackItem;
+import io.evercam.androidapp.publiccameras.PublicCamerasWebActivity;
 import io.evercam.androidapp.tasks.CheckInternetTask;
 import io.evercam.androidapp.tasks.LoadCameraListTask;
 import io.evercam.androidapp.utils.Commons;
@@ -185,6 +186,10 @@ public class CamerasActivity extends ParentActivity
         else if(itemId == R.id.menu_feedback)
         {
             startActivity(new Intent(CamerasActivity.this, FeedbackActivity.class));
+        }
+        else if(itemId == R.id.menu_test) //Test public cameras web view
+        {
+            startActivity(new Intent(CamerasActivity.this, PublicCamerasWebActivity.class));
         }
         else
         {

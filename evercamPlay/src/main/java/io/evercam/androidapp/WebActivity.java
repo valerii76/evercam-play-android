@@ -32,10 +32,6 @@ public abstract class WebActivity  extends ParentActivity
         {
             this.bundle = bundle;
         }
-        else
-        {
-            finish();
-        }
     }
 
     @Override

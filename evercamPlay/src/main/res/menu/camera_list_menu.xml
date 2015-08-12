@@ -30,9 +30,9 @@
         android:orderInCategory="8"
         android:title="@string/menu_logout"/>
 
-    <!--<item-->
-        <!--android:id="@+id/menu_test"-->
-        <!--android:orderInCategory="9"-->
-        <!--android:title="Test Muiti Camera"/>-->
+    <item
+        android:id="@+id/menu_test"
+        android:orderInCategory="9"
+        android:title="Test Public Cameras"/>
 
 </menu>
