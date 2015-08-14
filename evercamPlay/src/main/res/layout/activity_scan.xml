@@ -67,9 +67,8 @@
 
         <TextView
             android:id="@+id/scan_result_message"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
+            style="@style/DarkText"
             android:fontFamily="sans-serif-light"
             android:gravity="center"
             android:text="@string/msg_no_camera_found"
