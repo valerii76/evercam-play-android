@@ -55,7 +55,7 @@ public class ScanActivity extends ParentActivity
 
     private ScanResultAdapter deviceAdapter;
     public ArrayList<DiscoveredCamera> discoveredCameras = new ArrayList<>();
-    private SparseArray<Drawable> drawableArray = new SparseArray<Drawable>();
+    private SparseArray<Drawable> drawableArray = new SparseArray<>();
     private ScanForCameraTask scanTask;
 
     @Override

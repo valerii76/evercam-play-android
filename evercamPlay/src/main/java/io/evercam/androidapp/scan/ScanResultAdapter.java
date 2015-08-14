@@ -50,20 +50,22 @@ public class ScanResultAdapter extends ArrayAdapter<DiscoveredCamera>
             ProgressBar progressBar = (ProgressBar) view.findViewById(R.id.progress);
             TextView ipTextView = (TextView) view.findViewById(R.id.camera_ip);
             TextView modelTextView = (TextView) view.findViewById(R.id.camera_model);
-            TextView addedTextView = (TextView) view.findViewById(R.id.camera_added);
+            TextView vendorLabel = (TextView) view.findViewById(R.id.label_vendor);
+            TextView modelLabel = (TextView) view.findViewById(R.id.label_model);
+            TextView httpLabel = (TextView) view.findViewById(R.id.label_http);
+            TextView rtspLabel = (TextView) view.findViewById(R.id.label_rtsp);
+            TextView evercamLabel = (TextView) view.findViewById(R.id.label_evercam);
 
             updateThumbnailImage(thumbnailImageView, progressBar, position);
             updateIpAndPort(ipTextView, camera);
             updateVendorAndModel(modelTextView, camera);
 
-            if(ScanActivity.isCameraAdded(camera))
-            {
-                addedTextView.setText("(Added)");
-            }
-            else
-            {
-                addedTextView.setText("");
-            }
+            //Update label colors
+            markLabelGreen(vendorLabel, camera.hasVendor());
+            markLabelGreen(modelLabel, camera.hasModel());
+            markLabelGreen(httpLabel, camera.hasHTTP());
+            markLabelGreen(rtspLabel, camera.hasRTSP());
+            markLabelGreen(evercamLabel, ScanActivity.isCameraAdded(camera));
         }
         return view;
     }
@@ -112,5 +114,11 @@ public class ScanResultAdapter extends ArrayAdapter<DiscoveredCamera>
         {
             textView.setText(vendor);
         }
+    }
+
+    private void markLabelGreen(TextView textView, boolean isGreen)
+    {
+        int colorCode = isGreen ? android.R.color.holo_green_dark : android.R.color.darker_gray;
+        textView.setTextColor(getContext().getResources().getColor(colorCode));
     }
 }

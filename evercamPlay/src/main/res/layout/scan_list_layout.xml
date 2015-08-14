@@ -50,10 +50,6 @@
             <TextView
                 android:id="@+id/camera_ip"
                 style="@style/DarkTextSmall"/>
-            <TextView
-                android:id="@+id/camera_added"
-                style="@style/DarkTextSmall"
-                android:layout_marginLeft="5sp"/>
         </LinearLayout>
 
     </LinearLayout>
@@ -72,6 +68,7 @@
             android:id="@+id/label_ip"
             style="@style/ScanResultLabel"
             android:text="@string/label_ip"
+            android:textColor="@android:color/holo_green_dark"
             android:layout_weight="3"/>
 
         <TextView
