@@ -58,11 +58,6 @@
     <string name="test_external_text">External</string>
     <string name="test_snapshot_title">Please choose IP address</string>
 
-    <!-- Network Scan -->
-    <string name="msg_scanning">Hang on a sec while we search\nfor cameras on your network\n\nScanning for cameras&#8230;</string>
-    <string name="msg_no_camera_found">No cameras were found in your local network</string>
-    <string name="btn_text_add_manually">Add camera manually</string>
-
     <!-- View Camera Details -->
     <string name="view_evercam_id">Evercam ID:</string>
     <string name="view_owner">Owner:</string>

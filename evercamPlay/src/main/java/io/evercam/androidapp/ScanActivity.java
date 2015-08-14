@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -81,6 +82,8 @@ public class ScanActivity extends ParentActivity
         }
 
         setContentView(R.layout.activity_scan);
+
+        setActivityBackgroundColor(Color.WHITE);
 
         scanProgressView = findViewById(R.id.scan_status_layout);
         scanResultListView = findViewById(R.id.scan_result_layout);
@@ -589,6 +592,12 @@ public class ScanActivity extends ParentActivity
                 }
             }
         });
+    }
+
+    public void setActivityBackgroundColor(int color)
+    {
+        View view = this.getWindow().getDecorView();
+        view.setBackgroundColor(color);
     }
 
     class ScanCheckInternetTask extends CheckInternetTask
