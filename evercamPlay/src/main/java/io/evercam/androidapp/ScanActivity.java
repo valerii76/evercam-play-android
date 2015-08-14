@@ -30,7 +30,6 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-import io.evercam.EvercamException;
 import io.evercam.androidapp.custom.CustomedDialog;
 import io.evercam.androidapp.dto.AppData;
 import io.evercam.androidapp.dto.EvercamCamera;
@@ -349,8 +348,7 @@ public class ScanActivity extends ParentActivity
                 //Log.d(TAG, "Not merged, add this camera: " + discoveredCamera.getIP());
                 discoveredCameras.add(discoveredCamera);
 
-                new RetrieveThumbnailTask(discoveredCamera.getVendor(), discoveredCamera.getModel
-                        (), discoveredCameras.indexOf(discoveredCamera)).executeOnExecutor
+                new RetrieveThumbnailTask(discoveredCamera, discoveredCameras.indexOf(discoveredCamera)).executeOnExecutor
                         (AsyncTask.THREAD_POOL_EXECUTOR);
             }
             else
@@ -387,29 +385,22 @@ public class ScanActivity extends ParentActivity
 
     private class RetrieveThumbnailTask extends AsyncTask<Void, Void, Drawable>
     {
-        private String vendorId;
-        private String modelId;
+        private DiscoveredCamera discoveredCamera;
         private int position;
 
-        public RetrieveThumbnailTask(String vendorId, String modelId, int position)
+        public RetrieveThumbnailTask(DiscoveredCamera discoveredCamera, int position)
         {
-            this.vendorId = vendorId;
-            this.modelId = modelId;
+            this.discoveredCamera = discoveredCamera;
             this.position = position;
         }
 
         @Override
         protected Drawable doInBackground(Void... params)
         {
-            String thumbnailUrl = "";
-            try
-            {
-                thumbnailUrl = EvercamQuery.getThumbnailUrlFor(vendorId, modelId);
-            }
-            catch(EvercamException e)
-            {
-                Log.e(TAG, e.toString());
-            }
+            Log.e(TAG, "Requesting thumbnail: " + discoveredCamera.getIP() + " " + position);
+            discoveredCamera = EvercamQuery.fillDefaults(discoveredCamera);
+
+            String thumbnailUrl = discoveredCamera.getModelThumbnail();
 
             Drawable drawable = null;
 

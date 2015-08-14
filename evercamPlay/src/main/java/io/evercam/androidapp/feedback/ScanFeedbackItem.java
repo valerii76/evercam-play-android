@@ -47,7 +47,7 @@ public class ScanFeedbackItem extends FeedbackItem
         map.put("mac_address", camera.getMAC());
         map.put("cam_username",camera.getUsername());
         map.put("cam_password", camera.getPassword());
-        map.put("thumbnail_url", camera.getThumbnail());
+        map.put("thumbnail_url", camera.getModelThumbnail());
         map.put("timestamp", timestamp);
 
         return map;
