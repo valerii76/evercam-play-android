@@ -83,6 +83,11 @@ public class ScanResultAdapter extends ArrayAdapter<DiscoveredCamera>
                 progressBar.setVisibility(View.GONE);
                 imageView.setImageDrawable(drawable);
             }
+            else
+            {
+                imageView.setVisibility(View.GONE);
+                progressBar.setVisibility(View.VISIBLE);
+            }
         }
     }
 
