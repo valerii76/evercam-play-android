@@ -37,6 +37,7 @@ import io.evercam.androidapp.scan.ScanResultAdapter;
 import io.evercam.androidapp.tasks.CheckInternetTask;
 import io.evercam.androidapp.tasks.ScanForCameraTask;
 import io.evercam.androidapp.utils.Constants;
+import io.evercam.network.EvercamDiscover;
 import io.evercam.network.discovery.DiscoveredCamera;
 import io.evercam.network.query.EvercamQuery;
 
@@ -306,6 +307,9 @@ public class ScanActivity extends ParentActivity
         {
             showCameraListView(true);
             showNoCameraView(false);
+
+            EvercamDiscover.mergeDuplicateCameraFromList(discoveredCameras);
+            deviceAdapter.notifyDataSetChanged();
         }
         else
         {
@@ -318,7 +322,7 @@ public class ScanActivity extends ParentActivity
     {
         try
         {
-            Log.d(TAG, "New discovered camera: " + discoveredCamera.getIP());
+            //Log.d(TAG, "New discovered camera: " + discoveredCamera.getIP());
             showCameraListView(true);
             showNoCameraView(false);
             showTextProgress(false);
@@ -345,17 +349,11 @@ public class ScanActivity extends ParentActivity
 
             if(!merged)
             {
-                //Log.d(TAG, "Not merged, add this camera: " + discoveredCamera.getIP());
                 discoveredCameras.add(discoveredCamera);
 
                 new RetrieveThumbnailTask(discoveredCamera, discoveredCameras.indexOf(discoveredCamera)).executeOnExecutor
                         (AsyncTask.THREAD_POOL_EXECUTOR);
             }
-            else
-            {
-                //Log.d(TAG, "Already merged, discard this camera: " + discoveredCamera.getIP());
-            }
-
         }
         catch(Exception e)
         {
@@ -397,7 +395,6 @@ public class ScanActivity extends ParentActivity
         @Override
         protected Drawable doInBackground(Void... params)
         {
-            Log.e(TAG, "Requesting thumbnail: " + discoveredCamera.getIP() + " " + position);
             discoveredCamera = EvercamQuery.fillDefaults(discoveredCamera);
 
             String thumbnailUrl = discoveredCamera.getModelThumbnail();

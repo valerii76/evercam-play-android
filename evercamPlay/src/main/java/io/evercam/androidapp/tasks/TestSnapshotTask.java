@@ -18,7 +18,7 @@ import io.evercam.androidapp.custom.CustomedDialog;
 import io.evercam.androidapp.dto.AppData;
 import io.evercam.androidapp.feedback.KeenHelper;
 import io.evercam.androidapp.feedback.TestSnapshotFeedbackItem;
-import io.evercam.network.discovery.PortScan;
+import io.evercam.network.discovery.Port;
 import io.keen.client.java.KeenClient;
 
 public class TestSnapshotTask extends AsyncTask<Void, Void, Drawable>
@@ -54,8 +54,8 @@ public class TestSnapshotTask extends AsyncTask<Void, Void, Drawable>
         try
         {
             URL urlObject = new URL(url);
-            boolean isReachable = PortScan.isPortReachable(urlObject.getHost(),
-                    urlObject.getPort());
+            boolean isReachable = Port.isReachable(urlObject.getHost(),
+                                        urlObject.getPort());
             if(!isReachable)
             {
                 errorMessage = activity.getString(R.string.snapshot_test_port_closed);

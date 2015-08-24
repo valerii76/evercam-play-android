@@ -2,7 +2,6 @@ package io.evercam.androidapp.scan;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,7 +56,6 @@ public class ScanResultAdapter extends ArrayAdapter<DiscoveredCamera>
             TextView rtspLabel = (TextView) view.findViewById(R.id.label_rtsp);
             TextView evercamLabel = (TextView) view.findViewById(R.id.label_evercam);
 
-            Log.e(TAG, "Update image: " + camera.getIP() + " at " + position);
             updateThumbnailImage(thumbnailImageView, progressBar, position);
             updateIpAndPort(ipTextView, camera);
             updateVendorAndModel(modelTextView, camera);
