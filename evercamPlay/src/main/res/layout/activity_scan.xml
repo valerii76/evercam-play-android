@@ -13,20 +13,22 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="-8dp"
             android:visibility="gone"/>
-        <!-- Scan Result -->
 
+        <!-- Scan Result -->
         <RelativeLayout
             android:id="@+id/scan_result_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5sp"
-            android:layout_marginTop="5sp"
+            android:layout_marginTop="3sp"
             android:visibility="gone">
 
             <ListView
                 android:id="@+id/scan_result_list"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:dividerHeight="0.3dp"
+                android:divider="@android:color/darker_gray">
             </ListView>
         </RelativeLayout>
 
@@ -42,8 +44,7 @@
 
             <TextView
                 android:id="@+id/scan_status_message"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/DarkText"
                 android:layout_marginBottom="16dp"
                 android:fontFamily="sans-serif-light"
                 android:gravity="center"
@@ -55,7 +56,6 @@
     </RelativeLayout>
 
     <!-- No Camera Found -->
-
     <LinearLayout
         android:id="@+id/scan_result_no_camera_layout"
         android:layout_width="wrap_content"
@@ -67,9 +67,8 @@
 
         <TextView
             android:id="@+id/scan_result_message"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
+            style="@style/DarkText"
             android:fontFamily="sans-serif-light"
             android:gravity="center"
             android:text="@string/msg_no_camera_found"

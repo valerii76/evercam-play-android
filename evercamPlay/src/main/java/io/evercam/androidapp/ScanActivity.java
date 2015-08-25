@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -17,32 +18,26 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.SimpleAdapter;
 
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
-import io.evercam.EvercamException;
 import io.evercam.androidapp.custom.CustomedDialog;
 import io.evercam.androidapp.dto.AppData;
 import io.evercam.androidapp.dto.EvercamCamera;
+import io.evercam.androidapp.scan.ScanResultAdapter;
 import io.evercam.androidapp.tasks.CheckInternetTask;
 import io.evercam.androidapp.tasks.ScanForCameraTask;
 import io.evercam.androidapp.utils.Constants;
+import io.evercam.network.EvercamDiscover;
 import io.evercam.network.discovery.DiscoveredCamera;
 import io.evercam.network.query.EvercamQuery;
 
@@ -58,16 +53,9 @@ public class ScanActivity extends ParentActivity
     private ListView cameraListView;
     private MenuItem cancelMenuItem;
 
-    private ArrayList<HashMap<String, Object>> deviceArrayList;
     private ScanResultAdapter deviceAdapter;
-    private ArrayList<DiscoveredCamera> discoveredCameras = new ArrayList<>();
-    private SparseArray<Drawable> drawableArray;
-
-    private final String ADAPTER_KEY_LOGO = "camera_logo";
-    private final String ADAPTER_KEY_IP = "camera_id";
-    private final String ADAPTER_KEY_MODEL = "camera_model";
-    private final String ADAPTER_KEY_ADDED = "camera_added";
-
+    public ArrayList<DiscoveredCamera> discoveredCameras = new ArrayList<>();
+    private SparseArray<Drawable> drawableArray = new SparseArray<>();
     private ScanForCameraTask scanTask;
 
     @Override
@@ -82,21 +70,20 @@ public class ScanActivity extends ParentActivity
 
         setContentView(R.layout.activity_scan);
 
+        setActivityBackgroundColor(Color.WHITE);
+
         scanProgressView = findViewById(R.id.scan_status_layout);
         scanResultListView = findViewById(R.id.scan_result_layout);
         scanResultNoCameraView = findViewById(R.id.scan_result_no_camera_layout);
-        progressBar = (ProgressBar)findViewById(R.id.horizontal_progress_bar);
-        progressBar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.evercam_color), PorterDuff.Mode.SRC_IN);
-
-        drawableArray = new SparseArray<Drawable>();
+        progressBar = (ProgressBar) findViewById(R.id.horizontal_progress_bar);
+        progressBar.getProgressDrawable().setColorFilter(getResources().getColor(R.color
+                .evercam_color), PorterDuff.Mode.SRC_IN);
 
         cameraListView = (ListView) findViewById(R.id.scan_result_list);
         Button addManuallyButton = (Button) findViewById(R.id.button_add_camera_manually);
 
-        deviceArrayList = new ArrayList<>();
-        deviceAdapter = new ScanResultAdapter(this, deviceArrayList, R.layout.scan_list_layout,
-                new String[]{ADAPTER_KEY_LOGO, ADAPTER_KEY_IP, ADAPTER_KEY_MODEL, ADAPTER_KEY_ADDED},
-                new int[]{R.id.camera_img, R.id.camera_ip, R.id.camera_model, R.id.camera_added});
+        deviceAdapter = new ScanResultAdapter(this, R.layout.scan_list_layout, discoveredCameras,
+                drawableArray);
         cameraListView.setAdapter(deviceAdapter);
 
         cameraListView.setOnItemClickListener(new OnItemClickListener()
@@ -104,31 +91,29 @@ public class ScanActivity extends ParentActivity
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3)
             {
-                @SuppressWarnings("unchecked") HashMap<String, Object> map = (HashMap<String,
-                        Object>) cameraListView.getItemAtPosition(position);
-                String cameraIpText = (String) map.get(ADAPTER_KEY_IP);
-                String cameraIp = cameraIpText;
-                if(cameraIpText.contains(":"))
-                {
-                    cameraIp = cameraIpText.substring(0, cameraIpText.indexOf(':'));
-                }
-                final String ipFinal = cameraIp;
+                final DiscoveredCamera cameraInList = (DiscoveredCamera) cameraListView
+                        .getItemAtPosition(position);
 
-                String added = (String) map.get(ADAPTER_KEY_ADDED);
-                if(added.isEmpty())
+                if(cameraInList != null)
                 {
-                    launchAddCameraPageWithSelectedIp(cameraIp);
-                }
-                else //If camera has been added, show
-                {
-                    CustomedDialog.getStandardAlertDialog(ScanActivity.this, new Dialog.OnClickListener(){
-
-                        @Override
-                        public void onClick(DialogInterface dialog, int which)
+                    //If camera has been added to Evercam, show warning dialog
+                    if(isCameraAdded(cameraInList))
+                    {
+                        CustomedDialog.getStandardAlertDialog(ScanActivity.this, new Dialog
+                                .OnClickListener()
                         {
-                            launchAddCameraPageWithSelectedIp(ipFinal);
-                        }
-                    }, R.string.msg_camera_has_been_added).show();
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                launchAddCameraPage(cameraInList);
+                            }
+                        }, R.string.msg_camera_has_been_added).show();
+                    }
+                    else
+                    {
+                        launchAddCameraPage(cameraInList);
+                    }
                 }
             }
         });
@@ -233,19 +218,11 @@ public class ScanActivity extends ParentActivity
         super.onConfigurationChanged(newConfig);
     }
 
-    private void launchAddCameraPageWithSelectedIp(String ip)
+    private void launchAddCameraPage(DiscoveredCamera camera)
     {
-
-        for(DiscoveredCamera camera : discoveredCameras)
-        {
-            if(camera.getIP().equals(ip))
-            {
-                Intent intentAddCamera = new Intent(ScanActivity.this,
-                        AddEditCameraActivity.class);
-                intentAddCamera.putExtra("camera", camera);
-                startActivityForResult(intentAddCamera, Constants.REQUEST_CODE_ADD_CAMERA);
-            }
-        }
+        Intent intentAddCamera = new Intent(ScanActivity.this, AddEditCameraActivity.class);
+        intentAddCamera.putExtra("camera", camera);
+        startActivityForResult(intentAddCamera, Constants.REQUEST_CODE_ADD_CAMERA);
     }
 
     private void startDiscovery()
@@ -303,8 +280,8 @@ public class ScanActivity extends ParentActivity
 
     public void showConfirmCancelScanDialog()
     {
-        CustomedDialog.getConfirmCancelScanDialog(ScanActivity.this,
-                new DialogInterface.OnClickListener()
+        CustomedDialog.getConfirmCancelScanDialog(ScanActivity.this, new DialogInterface
+                .OnClickListener()
                 {
                     @Override
                     public void onClick(DialogInterface dialog, int which)
@@ -330,6 +307,9 @@ public class ScanActivity extends ParentActivity
         {
             showCameraListView(true);
             showNoCameraView(false);
+
+            EvercamDiscover.mergeDuplicateCameraFromList(discoveredCameras);
+            deviceAdapter.notifyDataSetChanged();
         }
         else
         {
@@ -342,7 +322,7 @@ public class ScanActivity extends ParentActivity
     {
         try
         {
-            Log.d(TAG, "New discovered camera: " + discoveredCamera.getIP());
+            //Log.d(TAG, "New discovered camera: " + discoveredCamera.getIP());
             showCameraListView(true);
             showNoCameraView(false);
             showTextProgress(false);
@@ -359,10 +339,7 @@ public class ScanActivity extends ParentActivity
                     {
                         originalCamera.merge(discoveredCamera);
 
-                        Log.d(TAG, "Camera after merging: " + originalCamera.toString());
-
-                        //Update the UI camera list
-                        deviceArrayList.set(index, cameraToDeviceMap(originalCamera));
+                        //Log.d(TAG, "Camera after merging: " + originalCamera.toString());
 
                         merged = true;
                         break;
@@ -372,68 +349,21 @@ public class ScanActivity extends ParentActivity
 
             if(!merged)
             {
-                Log.d(TAG, "Not merged, add this camera: " + discoveredCamera.getIP());
-                ScanForCameraTask.cameraList.add(discoveredCamera);
-                deviceArrayList.add(cameraToDeviceMap(discoveredCamera));
-                new RetrieveThumbnailTask(discoveredCamera.getVendor(), discoveredCamera.getModel(),
-                        ScanForCameraTask.cameraList.indexOf(discoveredCamera)).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            }
-            else
-            {
-                Log.d(TAG, "Already merged, discard this camera: " + discoveredCamera.getIP());
-            }
+                discoveredCameras.add(discoveredCamera);
 
-            deviceAdapter.notifyDataSetChanged();
-            discoveredCameras = ScanForCameraTask.cameraList;
-
-        } catch(Exception e)
+                new RetrieveThumbnailTask(discoveredCamera, discoveredCameras.indexOf(discoveredCamera)).executeOnExecutor
+                        (AsyncTask.THREAD_POOL_EXECUTOR);
+            }
+        }
+        catch(Exception e)
         {
             e.printStackTrace();
         }
+
+        deviceAdapter.notifyDataSetChanged();
     }
 
-    private HashMap<String, Object> cameraToDeviceMap(DiscoveredCamera camera)
-    {
-        HashMap<String, Object> deviceMap = new HashMap<String, Object>();
-        String ipTextShowing = camera.getIP();
-        if(camera.hasHTTP())
-        {
-            ipTextShowing = ipTextShowing + ":" + camera.getHttp();
-        }
-        deviceMap.put(ADAPTER_KEY_IP, ipTextShowing);
-
-        String vendor = camera.getVendor().toUpperCase(Locale.UK);
-
-        if(camera.hasModel())
-        {
-            String model = camera.getModel().toUpperCase(Locale.UK);
-            if(model.startsWith(vendor))
-            {
-                deviceMap.put(ADAPTER_KEY_MODEL, model);
-            }
-            else
-            {
-                deviceMap.put(ADAPTER_KEY_MODEL, vendor + " " + model);
-            }
-        }
-        else
-        {
-            deviceMap.put(ADAPTER_KEY_MODEL, vendor);
-        }
-
-        if(isCameraAdded(camera))
-        {
-            deviceMap.put(ADAPTER_KEY_ADDED, "(Added)");
-        }
-        else
-        {
-            deviceMap.put(ADAPTER_KEY_ADDED, "");
-        }
-
-        return deviceMap;
-    }
-
-    private boolean isCameraAdded(DiscoveredCamera discoveredCamera)
+    public static boolean isCameraAdded(DiscoveredCamera discoveredCamera)
     {
         ArrayList<EvercamCamera> cameras = AppData.evercamCameraList;
         if(cameras.size() > 0)
@@ -441,7 +371,8 @@ public class ScanActivity extends ParentActivity
             String discoveredMacAddress = discoveredCamera.getMAC();
             for(EvercamCamera camera : cameras)
             {
-                if(camera.getMac().equals(discoveredMacAddress))
+                String evercamCameraMac = camera.getMac();
+                if(!evercamCameraMac.isEmpty() && evercamCameraMac.equals(discoveredMacAddress))
                 {
                     return true;
                 }
@@ -450,57 +381,23 @@ public class ScanActivity extends ParentActivity
         return false;
     }
 
-    private class ScanResultAdapter extends SimpleAdapter
-    {
-        public ScanResultAdapter(Context context, List<? extends Map<String, ?>> data,
-                                 int resource, String[] from, int[] to)
-        {
-            super(context, data, resource, from, to);
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent)
-        {
-            View superView = super.getView(position, convertView, parent);
-            ImageView imageView = (ImageView) superView.findViewById(R.id.camera_img);
-            ProgressBar progressBar = (ProgressBar) superView.findViewById(R.id.progress);
-
-            Drawable drawable = drawableArray.get(position);
-            if(drawable != null)
-            {
-                imageView.setVisibility(View.VISIBLE);
-                progressBar.setVisibility(View.GONE);
-                imageView.setImageDrawable(drawable);
-            }
-            return superView;
-        }
-    }
-
     private class RetrieveThumbnailTask extends AsyncTask<Void, Void, Drawable>
     {
-        private String vendorId;
-        private String modelId;
+        private DiscoveredCamera discoveredCamera;
         private int position;
 
-        public RetrieveThumbnailTask(String vendorId, String modelId, int position)
+        public RetrieveThumbnailTask(DiscoveredCamera discoveredCamera, int position)
         {
-            this.vendorId = vendorId;
-            this.modelId = modelId;
+            this.discoveredCamera = discoveredCamera;
             this.position = position;
         }
 
         @Override
         protected Drawable doInBackground(Void... params)
         {
-            String thumbnailUrl = "";
-            try
-            {
-                thumbnailUrl = EvercamQuery.getThumbnailUrlFor(vendorId, modelId);
-            }
-            catch(EvercamException e)
-            {
-                Log.e(TAG, e.toString());
-            }
+            discoveredCamera = EvercamQuery.fillDefaults(discoveredCamera);
+
+            String thumbnailUrl = discoveredCamera.getModelThumbnail();
 
             Drawable drawable = null;
 
@@ -569,7 +466,8 @@ public class ScanActivity extends ParentActivity
 
     public void updateScanPercentage(final Float percentageFloat)
     {
-        runOnUiThread(new Runnable() {
+        runOnUiThread(new Runnable()
+        {
             @Override
             public void run()
             {
@@ -589,6 +487,12 @@ public class ScanActivity extends ParentActivity
                 }
             }
         });
+    }
+
+    public void setActivityBackgroundColor(int color)
+    {
+        View view = this.getWindow().getDecorView();
+        view.setBackgroundColor(color);
     }
 
     class ScanCheckInternetTask extends CheckInternetTask

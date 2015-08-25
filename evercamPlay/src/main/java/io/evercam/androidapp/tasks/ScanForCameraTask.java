@@ -36,7 +36,6 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
     private NetInfo netInfo;
     private Date startTime;
     public ExecutorService pool;
-    public static ArrayList<DiscoveredCamera> cameraList;
     public ArrayList<UpnpDevice> upnpDeviceList;
     private boolean upnpDone = false;
     private boolean natDone = false;
@@ -57,7 +56,6 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
         this.scanActivityReference = new WeakReference<>(scanActivity);
         netInfo = new NetInfo(scanActivity);
         pool = Executors.newFixedThreadPool(EvercamDiscover.DEFAULT_FIXED_POOL);
-        cameraList = new ArrayList<>();
         upnpDeviceList = new ArrayList<>();
     }
 
@@ -87,7 +85,7 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
                     @Override
                     public void onFinished(ArrayList<NatMapEntry> mapEntries)
                     {
-                        for(DiscoveredCamera discoveredCamera : cameraList)
+                        for(DiscoveredCamera discoveredCamera : getScanActivity().discoveredCameras)
                         {
                             DiscoveredCamera mergedCamera = EvercamDiscover.mergeNatTableToCamera(discoveredCamera, mapEntries);
                             publishProgress(mergedCamera);
@@ -163,7 +161,7 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
                 e.printStackTrace();
             }
         }
-        return cameraList;
+        return getScanActivity().discoveredCameras;
     }
 
     @Override
@@ -253,7 +251,7 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
             String ipFromUpnp = upnpDevice.getIp();
             if (ipFromUpnp != null && !ipFromUpnp.isEmpty())
             {
-                for(DiscoveredCamera discoveredCamera : cameraList)
+                for(DiscoveredCamera discoveredCamera : getScanActivity().discoveredCameras)
                 {
                     if(discoveredCamera.getIP().equals(upnpDevice.getIp()))
                     {
