@@ -1,10 +1,17 @@
-<resources xmlns:android="http://schemas.android.com/apk/res/android">
+<resources> xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="AppTheme" parent="@android:style/Theme.Holo"> <!-- Theme.DeviceDefault -->
-        <item name="android:actionBarStyle">@style/ActionBar</item>
-        <item name="android:actionOverflowButtonStyle">@style/OverFlow</item>
-        <item name="android:editTextBackground">@drawable/evercamtheme_edit_text_holo_dark</item>
-        <!-- <item name="android:windowContentOverlay">@drawable/actionbar_shadow</item> -->
+    <!--<style name="AppTheme" parent="@android:style/Theme.Holo"> &lt;!&ndash; Theme.DeviceDefault &ndash;&gt;-->
+        <!--<item name="android:actionBarStyle">@style/ActionBar</item>-->
+        <!--<item name="android:actionOverflowButtonStyle">@style/OverFlow</item>-->
+        <!--<item name="android:editTextBackground">@drawable/evercamtheme_edit_text_holo_dark</item>-->
+        <!--&lt;!&ndash; <item name="android:windowContentOverlay">@drawable/actionbar_shadow</item> &ndash;&gt;-->
+    <!--</style>-->
+
+    <style name="AppTheme" parent="ThemeOverlay.AppCompat.ActionBar"> <!-- Theme.DeviceDefault -->
+    <!--<item name="android:actionBarStyle">@style/ActionBar</item>-->
+    <!--<item name="android:actionOverflowButtonStyle">@style/OverFlow</item>-->
+    <!--<item name="android:editTextBackground">@drawable/evercamtheme_edit_text_holo_dark</item>-->
+    <!-- <item name="android:windowContentOverlay">@drawable/actionbar_shadow</item> -->
     </style>
 
     <style name="ActionBarOverlayTheme" parent="AppTheme">
