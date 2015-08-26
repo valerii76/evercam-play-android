@@ -68,8 +68,11 @@ import io.evercam.androidapp.dto.EvercamCamera;
 import io.evercam.androidapp.feedback.KeenHelper;
 import io.evercam.androidapp.feedback.ShortcutFeedbackItem;
 import io.evercam.androidapp.feedback.StreamFeedbackItem;
+import io.evercam.androidapp.ptz.PTZBuilder;
+import io.evercam.androidapp.ptz.PTZHome;
 import io.evercam.androidapp.recordings.RecordingWebActivity;
 import io.evercam.androidapp.tasks.CaptureSnapshotRunnable;
+import io.evercam.androidapp.tasks.PTZMoveTask;
 import io.evercam.androidapp.utils.Commons;
 import io.evercam.androidapp.utils.Constants;
 import io.evercam.androidapp.utils.PrefsManager;
@@ -99,6 +102,11 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
     private ImageView mediaPlayerView;
     private ImageView snapshotMenuView;
     private Animation fadeInAnimation = null;
+    private ImageView ptzLeftImageView;
+    private ImageView ptzRightImageView;
+    private ImageView ptzUpImageView;
+    private ImageView ptzDownImageView;
+    private ImageView ptzHomeImageView;
 
     private long downloadStartCount = 0;
     private long downloadEndCount = 0;
@@ -1016,6 +1024,52 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
 
         offlineTextView = (TextView) findViewById(R.id.offline_text_view);
         timeCountTextView = (TextView) findViewById(R.id.time_text_view);
+        ptzLeftImageView = (ImageView) findViewById(R.id.arrow_left);
+        ptzRightImageView = (ImageView) findViewById(R.id.arrow_right);
+        ptzUpImageView = (ImageView) findViewById(R.id.arrow_up);
+        ptzDownImageView = (ImageView) findViewById(R.id.arrow_down);
+        ptzHomeImageView = (ImageView) findViewById(R.id.ptz_home);
+
+        /** The click listeners for PTZ control */
+        ptzLeftImageView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                PTZMoveTask.launch(new PTZBuilder(evercamCamera.getCameraId()).relativeLeft(4)
+                        .build());
+            }
+        });
+        ptzRightImageView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                PTZMoveTask.launch(new PTZBuilder(evercamCamera.getCameraId()).relativeRight(4)
+                        .build());
+            }
+        });
+        ptzUpImageView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                PTZMoveTask.launch(new PTZBuilder(evercamCamera.getCameraId()).relativeUp(3)
+                        .build());
+            }
+        });
+        ptzDownImageView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                PTZMoveTask.launch(new PTZBuilder(evercamCamera.getCameraId()).relativeDown(3)
+                        .build());
+            }
+        });
+        ptzHomeImageView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                PTZMoveTask.launch(new PTZHome(evercamCamera.getCameraId()));
+            }
+        });
 
         /** The click listener for pause/play button */
         mediaPlayerView.setOnClickListener(new OnClickListener()
@@ -1059,7 +1113,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
                 else
                 // video is currently playing. Now we need to pause video
                 {
-                    timeCountTextView.setVisibility(View.GONE);
+                    timeCountTextView.setVisibility(View.INVISIBLE);
                     mediaPlayerView.clearAnimation();
                     snapshotMenuView.clearAnimation();
                     if(fadeInAnimation != null && fadeInAnimation.hasStarted() &&

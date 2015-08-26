@@ -31,7 +31,7 @@
     <style name="ActionBar" parent="@android:style/Widget.Holo.ActionBar"> <!-- Widget.DeviceDefault.ActionBar -->
 
         <item name="android:horizontalSpacing">15sp</item>
-        <item name="android:background">@drawable/title_background</item>
+        <item name="android:background">@color/evercam_color_title_black</item>
     </style>
 
     <style name="ActionBarTitle">
