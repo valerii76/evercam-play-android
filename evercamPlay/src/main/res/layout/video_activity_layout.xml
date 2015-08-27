@@ -70,17 +70,47 @@
             android:visibility="gone"/>
 
         <RelativeLayout
-            android:id="@+id/video_gredient_layout"
+            android:id="@+id/video_gradient_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/gredient_image">
+            android:background="@drawable/gradient_image">
+
+            <RelativeLayout
+                android:id="@+id/ptz_zoom_control_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:background="@drawable/zoom_background">
+
+                <ImageView
+                    android:id="@+id/zoom_in_image_view"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_zoom_in"
+                    style="@style/PtzImageButtonStyle"/>
+
+                <ImageView
+                    android:id="@+id/zoom_out_image_view"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="10dp"
+                    android:src="@drawable/ic_zoom_out"
+                    android:layout_below="@+id/zoom_in_image_view"
+                    style="@style/PtzImageButtonStyle"/>
+            </RelativeLayout>
 
             <RelativeLayout
                 android:id="@+id/ptz_control_layout"
-                android:layout_width="150dp"
+                android:layout_width="fill_parent"
                 android:layout_height="120dp"
-                android:layout_above="@+id/time_text_view"
-                android:layout_centerHorizontal="true">
+                android:layout_above="@+id/time_text_view">
+
+                <RelativeLayout
+                    android:id="@+id/ptz_move_control_layout"
+                    android:layout_width="150dp"
+                    android:layout_height="120dp"
+                    android:layout_centerHorizontal="true">
 
                 <ImageView
                     android:id="@+id/arrow_left"
@@ -125,7 +155,7 @@
                     android:layout_centerHorizontal="true"
                     android:src="@drawable/ic_arrow_down"
                     style="@style/PtzImageButtonStyle"/>
-
+                </RelativeLayout>
             </RelativeLayout>
 
             <TextView

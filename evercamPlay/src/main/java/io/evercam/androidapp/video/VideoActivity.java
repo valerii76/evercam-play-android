@@ -70,6 +70,7 @@ import io.evercam.androidapp.feedback.ShortcutFeedbackItem;
 import io.evercam.androidapp.feedback.StreamFeedbackItem;
 import io.evercam.androidapp.ptz.PTZBuilder;
 import io.evercam.androidapp.ptz.PTZHome;
+import io.evercam.androidapp.ptz.PTZRelative;
 import io.evercam.androidapp.recordings.RecordingWebActivity;
 import io.evercam.androidapp.tasks.CaptureSnapshotRunnable;
 import io.evercam.androidapp.tasks.PTZMoveTask;
@@ -1025,8 +1026,10 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
         ImageView ptzUpImageView = (ImageView) findViewById(R.id.arrow_up);
         ImageView ptzDownImageView = (ImageView) findViewById(R.id.arrow_down);
         ImageView ptzHomeImageView = (ImageView) findViewById(R.id.ptz_home);
+        ImageView ptzZoomInImageView = (ImageView) findViewById(R.id.zoom_in_image_view);
+        ImageView ptzZoomOutImageView = (ImageView) findViewById(R.id.zoom_out_image_view);
 
-        /** The click listeners for PTZ control */
+        /** The click listeners for PTZ control - move and zoom */
         ptzLeftImageView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v)
@@ -1064,6 +1067,22 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
             public void onClick(View v)
             {
                 PTZMoveTask.launch(new PTZHome(evercamCamera.getCameraId()));
+            }
+        });
+        ptzZoomInImageView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                PTZMoveTask.launch(new PTZBuilder(evercamCamera.getCameraId()).relativeZoom(1)
+                        .build());
+            }
+        });
+        ptzZoomOutImageView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                PTZMoveTask.launch(new PTZBuilder(evercamCamera.getCameraId()).relativeZoom(-1)
+                        .build());
             }
         });
 
