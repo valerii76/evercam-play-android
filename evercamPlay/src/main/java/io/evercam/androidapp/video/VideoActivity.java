@@ -102,11 +102,6 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
     private ImageView mediaPlayerView;
     private ImageView snapshotMenuView;
     private Animation fadeInAnimation = null;
-    private ImageView ptzLeftImageView;
-    private ImageView ptzRightImageView;
-    private ImageView ptzUpImageView;
-    private ImageView ptzDownImageView;
-    private ImageView ptzHomeImageView;
 
     private long downloadStartCount = 0;
     private long downloadEndCount = 0;
@@ -1024,11 +1019,12 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
 
         offlineTextView = (TextView) findViewById(R.id.offline_text_view);
         timeCountTextView = (TextView) findViewById(R.id.time_text_view);
-        ptzLeftImageView = (ImageView) findViewById(R.id.arrow_left);
-        ptzRightImageView = (ImageView) findViewById(R.id.arrow_right);
-        ptzUpImageView = (ImageView) findViewById(R.id.arrow_up);
-        ptzDownImageView = (ImageView) findViewById(R.id.arrow_down);
-        ptzHomeImageView = (ImageView) findViewById(R.id.ptz_home);
+
+        ImageView ptzLeftImageView = (ImageView) findViewById(R.id.arrow_left);
+        ImageView ptzRightImageView = (ImageView) findViewById(R.id.arrow_right);
+        ImageView ptzUpImageView = (ImageView) findViewById(R.id.arrow_up);
+        ImageView ptzDownImageView = (ImageView) findViewById(R.id.arrow_down);
+        ImageView ptzHomeImageView = (ImageView) findViewById(R.id.ptz_home);
 
         /** The click listeners for PTZ control */
         ptzLeftImageView.setOnClickListener(new OnClickListener() {

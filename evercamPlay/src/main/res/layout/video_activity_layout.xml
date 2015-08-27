@@ -86,11 +86,10 @@
                     android:id="@+id/arrow_left"
                     android:layout_width="35dp"
                     android:layout_height="70dp"
-                    android:layout_marginTop="10dp"
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/ic_arrow_left"/>
+                    android:src="@drawable/ic_arrow_left"
+                    style="@style/PtzImageButtonStyle"/>
 
                 <ImageView
                     android:id="@+id/arrow_up"
@@ -98,16 +97,16 @@
                     android:layout_height="35dp"
                     android:layout_alignParentTop="true"
                     android:layout_centerHorizontal="true"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/ic_arrow_up"/>
+                    android:src="@drawable/ic_arrow_up"
+                    style="@style/PtzImageButtonStyle"/>
 
                 <ImageView
                     android:id="@+id/ptz_home"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:layout_centerInParent="true"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/ic_home"/>
+                    android:src="@drawable/ic_home"
+                    style="@style/PtzImageButtonStyle"/>
 
                 <ImageView
                     android:id="@+id/arrow_right"
@@ -115,8 +114,8 @@
                     android:layout_height="70dp"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/ic_arrow_right"/>
+                    android:src="@drawable/ic_arrow_right"
+                    style="@style/PtzImageButtonStyle"/>
 
                 <ImageView
                     android:id="@+id/arrow_down"
@@ -124,8 +123,8 @@
                     android:layout_height="35dp"
                     android:layout_alignParentBottom="true"
                     android:layout_centerHorizontal="true"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/ic_arrow_down"/>
+                    android:src="@drawable/ic_arrow_down"
+                    style="@style/PtzImageButtonStyle"/>
 
             </RelativeLayout>
 
