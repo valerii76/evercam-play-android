@@ -47,7 +47,10 @@ public class CheckOnvifTask extends AsyncTask<Void, Void, Boolean>
     @Override
     protected void onPostExecute(Boolean hasPtz)
     {
-        getVideoActivity().isPtz = hasPtz;
+        if(getVideoActivity() != null)
+        {
+            getVideoActivity().isPtz = hasPtz;
+        }
     }
 
     private VideoActivity getVideoActivity()

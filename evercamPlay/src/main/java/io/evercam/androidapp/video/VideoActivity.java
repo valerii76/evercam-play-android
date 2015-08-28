@@ -816,7 +816,10 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
                     {
                         snapshotMenuView.setVisibility(View.VISIBLE);
                     }
-                    ptzSwitchImageView.setVisibility(View.VISIBLE);
+                    if(isPtz)
+                    {
+                        ptzSwitchImageView.setVisibility(View.VISIBLE);
+                    }
                 }
 
                 int orientation = VideoActivity.this.getResources().getConfiguration().orientation;
@@ -847,7 +850,8 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
     @Override
     public void surfaceChanged(SurfaceHolder surfaceholder, int format, int width, int height)
     {
-        Log.d("GStreamer", "Surface changed to format " + format + " width " + width + " height " + height);
+        Log.d("GStreamer", "Surface changed to format " + format + " width " + width + " height "
+                + height);
         onMediaSizeChanged(width, height);
 
         nativeSurfaceInit(surfaceholder.getSurface());
@@ -1146,7 +1150,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
                         fadeInAnimation.cancel();
                         fadeInAnimation.reset();
                     }
-                    showAllControlMenus(false);
+                    showAllControlMenus(true);
 
                     playPauseImageView.setImageBitmap(null);
                     playPauseImageView.setImageResource(android.R.drawable.ic_media_play);
