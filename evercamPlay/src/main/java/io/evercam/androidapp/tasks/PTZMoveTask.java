@@ -1,11 +1,14 @@
 package io.evercam.androidapp.tasks;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
-import io.evercam.androidapp.ptz.PTZControl;
+import io.evercam.PTZControl;
+import io.evercam.PTZException;
 
 public class PTZMoveTask extends AsyncTask<Void, Void, Void>
 {
+    private final String TAG = "PTZMoveTask";
     private PTZControl ptzControl;
 
     public PTZMoveTask(PTZControl ptzControl)
@@ -16,7 +19,14 @@ public class PTZMoveTask extends AsyncTask<Void, Void, Void>
     @Override
     protected Void doInBackground(Void... params)
     {
-        ptzControl.move();
+        try
+        {
+            ptzControl.move();
+        }
+        catch(PTZException e)
+        {
+            Log.e(TAG, e.getMessage());
+        }
         return null;
     }
 

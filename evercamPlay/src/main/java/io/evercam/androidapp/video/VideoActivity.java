@@ -51,6 +51,9 @@ import java.util.Locale;
 import java.util.concurrent.RejectedExecutionException;
 
 import io.evercam.Camera;
+import io.evercam.PTZHome;
+import io.evercam.PTZRelative;
+import io.evercam.PTZRelativeBuilder;
 import io.evercam.androidapp.CamerasActivity;
 import io.evercam.androidapp.EvercamPlayApplication;
 import io.evercam.androidapp.FeedbackActivity;
@@ -70,9 +73,6 @@ import io.evercam.androidapp.dto.EvercamCamera;
 import io.evercam.androidapp.feedback.KeenHelper;
 import io.evercam.androidapp.feedback.ShortcutFeedbackItem;
 import io.evercam.androidapp.feedback.StreamFeedbackItem;
-import io.evercam.androidapp.ptz.PTZBuilder;
-import io.evercam.androidapp.ptz.PTZHome;
-import io.evercam.androidapp.ptz.PTZRelative;
 import io.evercam.androidapp.recordings.RecordingWebActivity;
 import io.evercam.androidapp.tasks.CaptureSnapshotRunnable;
 import io.evercam.androidapp.tasks.CheckOnvifTask;
@@ -1049,7 +1049,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
             @Override
             public void onClick(View v)
             {
-                PTZMoveTask.launch(new PTZBuilder(evercamCamera.getCameraId()).relativeLeft(4)
+                PTZMoveTask.launch(new PTZRelativeBuilder(evercamCamera.getCameraId()).left(4)
                         .build());
             }
         });
@@ -1057,7 +1057,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
             @Override
             public void onClick(View v)
             {
-                PTZMoveTask.launch(new PTZBuilder(evercamCamera.getCameraId()).relativeRight(4)
+                PTZMoveTask.launch(new PTZRelativeBuilder(evercamCamera.getCameraId()).right(4)
                         .build());
             }
         });
@@ -1065,7 +1065,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
             @Override
             public void onClick(View v)
             {
-                PTZMoveTask.launch(new PTZBuilder(evercamCamera.getCameraId()).relativeUp(3)
+                PTZMoveTask.launch(new PTZRelativeBuilder(evercamCamera.getCameraId()).up(3)
                         .build());
             }
         });
@@ -1073,7 +1073,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
             @Override
             public void onClick(View v)
             {
-                PTZMoveTask.launch(new PTZBuilder(evercamCamera.getCameraId()).relativeDown(3)
+                PTZMoveTask.launch(new PTZRelativeBuilder(evercamCamera.getCameraId()).down(3)
                         .build());
             }
         });
@@ -1088,7 +1088,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
             @Override
             public void onClick(View v)
             {
-                PTZMoveTask.launch(new PTZBuilder(evercamCamera.getCameraId()).relativeZoom(1)
+                PTZMoveTask.launch(new PTZRelativeBuilder(evercamCamera.getCameraId()).zoom(1)
                         .build());
             }
         });
@@ -1096,7 +1096,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
             @Override
             public void onClick(View v)
             {
-                PTZMoveTask.launch(new PTZBuilder(evercamCamera.getCameraId()).relativeZoom(-1)
+                PTZMoveTask.launch(new PTZRelativeBuilder(evercamCamera.getCameraId()).zoom(-1)
                         .build());
             }
         });
