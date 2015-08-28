@@ -12,10 +12,11 @@
         android:layout_gravity="center">
 
         <ImageView
-            android:id="@+id/img_camera1"
+            android:id="@+id/jpg_image_view"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_centerInParent="true"
+            android:scaleType="fitCenter"
             android:layout_gravity="center"/>
 
         <io.evercam.androidapp.video.GStreamerSurfaceView
@@ -30,10 +31,10 @@
             android:id="@+id/player_control_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true">
+            android:layout_centerInParent="true"  >
 
             <ImageView
-                android:id="@+id/ivmediaplayer1"
+                android:id="@+id/play_pause_image_view"
                 android:background="@drawable/play_button_background_selector"
                 android:visibility="gone"
                 style="@style/PlayControlImageButtonStyle"
@@ -42,19 +43,19 @@
             <ImageView
                 android:id="@+id/player_savesnapshot"
                 android:background="@drawable/play_button_background_selector"
-                android:layout_toRightOf="@+id/ivmediaplayer1"
+                android:layout_toRightOf="@+id/play_pause_image_view"
                 android:src="@drawable/ic_action_save"
                 style="@style/PlayControlImageButtonStyle"
                 android:visibility="gone"/>
 
             <io.evercam.androidapp.custom.ProgressView
-                android:id="@+id/ivprogressspinner1"
+                android:id="@+id/live_progress_view"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:layout_alignLeft="@+id/ivmediaplayer1"
-                android:layout_alignRight="@+id/ivmediaplayer1"
-                android:layout_alignTop="@+id/ivmediaplayer1"
-                android:layout_alignBottom="@+id/ivmediaplayer1"/>
+                android:layout_alignLeft="@+id/play_pause_image_view"
+                android:layout_alignRight="@+id/play_pause_image_view"
+                android:layout_alignTop="@+id/play_pause_image_view"
+                android:layout_alignBottom="@+id/play_pause_image_view"/>
 
             <ImageView
                 android:id="@+id/player_ptz_switch"

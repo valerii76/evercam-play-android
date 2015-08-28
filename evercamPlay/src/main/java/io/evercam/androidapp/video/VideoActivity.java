@@ -103,7 +103,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
     private TextView timeCountTextView;
     private RelativeLayout imageViewLayout;
     private ImageView imageView;
-    private ImageView mediaPlayerView;
+    private ImageView playPauseImageView;
     private ImageView snapshotMenuView;
     private ImageView ptzSwitchImageView;
     private Animation fadeInAnimation = null;
@@ -811,7 +811,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
                 }
                 else
                 {
-                    mediaPlayerView.setVisibility(View.VISIBLE);
+                    playPauseImageView.setVisibility(View.VISIBLE);
                     if(surfaceView.getVisibility() != View.VISIBLE)
                     {
                         snapshotMenuView.setVisibility(View.VISIBLE);
@@ -827,7 +827,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
             }
         });
 
-        mediaPlayerView.startAnimation(fadeInAnimation);
+        playPauseImageView.startAnimation(fadeInAnimation);
         snapshotMenuView.startAnimation(fadeInAnimation);
         ptzSwitchImageView.startAnimation(fadeInAnimation);
     }
@@ -1008,8 +1008,8 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
     private void initialPageElements()
     {
         imageViewLayout = (RelativeLayout) this.findViewById(R.id.camera_view_layout);
-        imageView = (ImageView) this.findViewById(R.id.img_camera1);
-        mediaPlayerView = (ImageView) this.findViewById(R.id.ivmediaplayer1);
+        imageView = (ImageView) this.findViewById(R.id.jpg_image_view);
+        playPauseImageView = (ImageView) this.findViewById(R.id.play_pause_image_view);
         snapshotMenuView = (ImageView) this.findViewById(R.id.player_savesnapshot);
         ptzSwitchImageView = (ImageView) findViewById(R.id.player_ptz_switch);
 
@@ -1017,10 +1017,10 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(this);
 
-        progressView = ((ProgressView) imageViewLayout.findViewById(R.id.ivprogressspinner1));
+        progressView = ((ProgressView) imageViewLayout.findViewById(R.id.live_progress_view));
 
-        progressView.setMinimumWidth(mediaPlayerView.getWidth());
-        progressView.setMinimumHeight(mediaPlayerView.getHeight());
+        progressView.setMinimumWidth(playPauseImageView.getWidth());
+        progressView.setMinimumHeight(playPauseImageView.getHeight());
         progressView.canvasColor = Color.TRANSPARENT;
 
         isProgressShowing = true;
@@ -1098,7 +1098,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
         });
 
         /** The click listener for pause/play button */
-        mediaPlayerView.setOnClickListener(new OnClickListener()
+        playPauseImageView.setOnClickListener(new OnClickListener()
         {
 
             @Override
@@ -1117,9 +1117,9 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
                     timeCountTextView.setVisibility(View.VISIBLE);
                     showProgressView();
 
-                    mediaPlayerView.setImageBitmap(null);
+                    playPauseImageView.setImageBitmap(null);
                     showAllControlMenus(true);
-                    mediaPlayerView.setImageResource(android.R.drawable.ic_media_pause);
+                    playPauseImageView.setImageResource(android.R.drawable.ic_media_pause);
 
                     startMediaPlayerAnimation();
 
@@ -1148,8 +1148,8 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
                     }
                     showAllControlMenus(false);
 
-                    mediaPlayerView.setImageBitmap(null);
-                    mediaPlayerView.setImageResource(android.R.drawable.ic_media_play);
+                    playPauseImageView.setImageBitmap(null);
+                    playPauseImageView.setImageResource(android.R.drawable.ic_media_play);
 
                     pausePlayer();
 
@@ -1179,7 +1179,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
 
                 if(!paused && !end) // video is currently playing. Show pause button
                 {
-                    if(mediaPlayerView.getVisibility() == View.VISIBLE)
+                    if(playPauseImageView.getVisibility() == View.VISIBLE)
                     {
                         showAllControlMenus(false);
                         clearControlMenuAnimation();
@@ -1188,7 +1188,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
                     else
                     {
                         VideoActivity.this.getActionBar().show();
-                        mediaPlayerView.setImageResource(android.R.drawable.ic_media_pause);
+                        playPauseImageView.setImageResource(android.R.drawable.ic_media_pause);
 
                         showAllControlMenus(true);
 
@@ -1267,7 +1267,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
     // Hide progress view
     void hideProgressView()
     {
-        imageViewLayout.findViewById(R.id.ivprogressspinner1).setVisibility(View.GONE);
+        imageViewLayout.findViewById(R.id.live_progress_view).setVisibility(View.GONE);
         isProgressShowing = false;
     }
 
@@ -1562,7 +1562,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
                             {
                                 latestStartImageTime = myStartImageTime;
 
-                                if(mediaPlayerView.getVisibility() != View.VISIBLE &&
+                                if(playPauseImageView.getVisibility() != View.VISIBLE &&
                                         VideoActivity.this.getResources().getConfiguration()
                                                 .orientation == Configuration.ORIENTATION_LANDSCAPE)
                                     VideoActivity.this.getActionBar().hide();
@@ -1781,7 +1781,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
 
     public void showAllControlMenus(boolean show)
     {
-        mediaPlayerView.setVisibility(show ? View.VISIBLE : View.GONE);
+        playPauseImageView.setVisibility(show ? View.VISIBLE : View.GONE);
         snapshotMenuView.setVisibility(show ? View.VISIBLE : View.GONE);
 
         if(show && isPtz)
@@ -1797,7 +1797,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
     public void clearControlMenuAnimation()
     {
         snapshotMenuView.clearAnimation();
-        mediaPlayerView.clearAnimation();
+        playPauseImageView.clearAnimation();
         ptzSwitchImageView.clearAnimation();
     }
 
