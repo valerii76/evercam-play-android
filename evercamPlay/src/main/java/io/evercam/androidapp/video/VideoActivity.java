@@ -18,6 +18,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.provider.MediaStore;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -46,6 +47,7 @@ import org.json.JSONObject;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.RejectedExecutionException;
 
 import io.evercam.Camera;
@@ -73,6 +75,7 @@ import io.evercam.androidapp.ptz.PTZHome;
 import io.evercam.androidapp.ptz.PTZRelative;
 import io.evercam.androidapp.recordings.RecordingWebActivity;
 import io.evercam.androidapp.tasks.CaptureSnapshotRunnable;
+import io.evercam.androidapp.tasks.CheckOnvifTask;
 import io.evercam.androidapp.tasks.PTZMoveTask;
 import io.evercam.androidapp.utils.Commons;
 import io.evercam.androidapp.utils.Constants;
@@ -102,7 +105,10 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
     private ImageView imageView;
     private ImageView mediaPlayerView;
     private ImageView snapshotMenuView;
+    private ImageView ptzSwitchImageView;
     private Animation fadeInAnimation = null;
+    private RelativeLayout ptzZoomLayout;
+    private RelativeLayout ptzMoveLayout;
 
     private long downloadStartCount = 0;
     private long downloadEndCount = 0;
@@ -137,6 +143,8 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
     // URL for reconnecting.
     private boolean isJpgSuccessful = false; //Whether or not the JPG view ever
     //got successfully played
+
+    public boolean isPtz = false; //Whether or a PTZ camera model
 
     private boolean end = false; // whether to end this activity or not
 
@@ -722,8 +730,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
 
             optionsActivityStarted = false;
 
-            mediaPlayerView.setVisibility(View.GONE);
-            snapshotMenuView.setVisibility(View.GONE);
+            showAllControlMenus(false);
 
             paused = false;
             end = false;
@@ -775,8 +782,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
             fadeInAnimation.cancel();
             fadeInAnimation.reset();
 
-            snapshotMenuView.clearAnimation();
-            mediaPlayerView.clearAnimation();
+            clearControlMenuAnimation();
         }
 
         fadeInAnimation = AnimationUtils.loadAnimation(VideoActivity.this, R.anim.fadein);
@@ -801,8 +807,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
 
                 if(!paused)
                 {
-                    mediaPlayerView.setVisibility(View.GONE);
-                    snapshotMenuView.setVisibility(View.GONE);
+                    showAllControlMenus(false);
                 }
                 else
                 {
@@ -811,6 +816,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
                     {
                         snapshotMenuView.setVisibility(View.VISIBLE);
                     }
+                    ptzSwitchImageView.setVisibility(View.VISIBLE);
                 }
 
                 int orientation = VideoActivity.this.getResources().getConfiguration().orientation;
@@ -823,6 +829,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
 
         mediaPlayerView.startAnimation(fadeInAnimation);
         snapshotMenuView.startAnimation(fadeInAnimation);
+        ptzSwitchImageView.startAnimation(fadeInAnimation);
     }
 
     /**
@@ -978,8 +985,8 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
         }
         else
         {
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager
+                    .LayoutParams.FLAG_FULLSCREEN);
         }
     }
 
@@ -1004,6 +1011,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
         imageView = (ImageView) this.findViewById(R.id.img_camera1);
         mediaPlayerView = (ImageView) this.findViewById(R.id.ivmediaplayer1);
         snapshotMenuView = (ImageView) this.findViewById(R.id.player_savesnapshot);
+        ptzSwitchImageView = (ImageView) findViewById(R.id.player_ptz_switch);
 
         surfaceView = (SurfaceView) findViewById(R.id.surface_view);
         surfaceHolder = surfaceView.getHolder();
@@ -1028,6 +1036,9 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
         ImageView ptzHomeImageView = (ImageView) findViewById(R.id.ptz_home);
         ImageView ptzZoomInImageView = (ImageView) findViewById(R.id.zoom_in_image_view);
         ImageView ptzZoomOutImageView = (ImageView) findViewById(R.id.zoom_out_image_view);
+
+        ptzZoomLayout = (RelativeLayout) findViewById(R.id.ptz_zoom_control_layout);
+        ptzMoveLayout = (RelativeLayout) findViewById(R.id.ptz_move_control_layout);
 
         /** The click listeners for PTZ control - move and zoom */
         ptzLeftImageView.setOnClickListener(new OnClickListener() {
@@ -1107,8 +1118,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
                     showProgressView();
 
                     mediaPlayerView.setImageBitmap(null);
-                    mediaPlayerView.setVisibility(View.VISIBLE);
-                    snapshotMenuView.setVisibility(View.VISIBLE);
+                    showAllControlMenus(true);
                     mediaPlayerView.setImageResource(android.R.drawable.ic_media_pause);
 
                     startMediaPlayerAnimation();
@@ -1129,16 +1139,14 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
                 // video is currently playing. Now we need to pause video
                 {
                     timeCountTextView.setVisibility(View.INVISIBLE);
-                    mediaPlayerView.clearAnimation();
-                    snapshotMenuView.clearAnimation();
+                    clearControlMenuAnimation();
                     if(fadeInAnimation != null && fadeInAnimation.hasStarted() &&
                             !fadeInAnimation.hasEnded())
                     {
                         fadeInAnimation.cancel();
                         fadeInAnimation.reset();
                     }
-                    mediaPlayerView.setVisibility(View.VISIBLE);
-                    snapshotMenuView.setVisibility(View.VISIBLE);
+                    showAllControlMenus(false);
 
                     mediaPlayerView.setImageBitmap(null);
                     mediaPlayerView.setImageResource(android.R.drawable.ic_media_play);
@@ -1173,10 +1181,8 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
                 {
                     if(mediaPlayerView.getVisibility() == View.VISIBLE)
                     {
-                        mediaPlayerView.setVisibility(View.GONE);
-                        snapshotMenuView.setVisibility(View.GONE);
-                        mediaPlayerView.clearAnimation();
-                        snapshotMenuView.clearAnimation();
+                        showAllControlMenus(false);
+                        clearControlMenuAnimation();
                         fadeInAnimation.reset();
                     }
                     else
@@ -1184,8 +1190,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
                         VideoActivity.this.getActionBar().show();
                         mediaPlayerView.setImageResource(android.R.drawable.ic_media_pause);
 
-                        mediaPlayerView.setVisibility(View.VISIBLE);
-                        snapshotMenuView.setVisibility(View.VISIBLE);
+                        showAllControlMenus(true);
 
                         startMediaPlayerAnimation();
                     }
@@ -1201,10 +1206,8 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
                 //Hide pause/snapshot menu if the live view is not paused
                 if(!paused)
                 {
-                    mediaPlayerView.setVisibility(View.GONE);
-                    snapshotMenuView.setVisibility(View.GONE);
-                    mediaPlayerView.clearAnimation();
-                    snapshotMenuView.clearAnimation();
+                    showAllControlMenus(false);
+                    clearControlMenuAnimation();
                     fadeInAnimation.reset();
                 }
 
@@ -1218,6 +1221,24 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
                 {
                     nativeRequestSample("jpeg");
                 }
+            }
+        });
+
+        ptzSwitchImageView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                if(ptzMoveLayout.getVisibility() != View.VISIBLE)
+                {
+                    showPtzControl(true);
+                }
+                else
+                {
+                    showPtzControl(false);
+                }
+
+                showAllControlMenus(false);
+                clearControlMenuAnimation();
             }
         });
     }
@@ -1729,6 +1750,12 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
 
                     setCameraForPlaying(cameraList.get(itemPosition));
                     createPlayer(evercamCamera);
+
+                    if(evercamCamera.hasModel())
+                    {
+                        new CheckOnvifTask(VideoActivity.this, evercamCamera.getModel().toLowerCase(Locale.UK))
+                                .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    }
                 }
                 return false;
             }
@@ -1739,15 +1766,45 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
     }
 
     private void onMediaSizeChanged (int width, int height) {
-        Log.i ("GStreamer", "Media size changed to " + width + "x" + height);
+        Log.i("GStreamer", "Media size changed to " + width + "x" + height);
         final GStreamerSurfaceView gstreamerSurfaceView = (GStreamerSurfaceView) this.findViewById(R.id.surface_view);
         gstreamerSurfaceView.media_width = width;
         gstreamerSurfaceView.media_height = height;
-        runOnUiThread(new Runnable() {
-            public void run() {
+        runOnUiThread(new Runnable()
+        {
+            public void run()
+            {
                 gstreamerSurfaceView.requestLayout();
             }
         });
+    }
+
+    public void showAllControlMenus(boolean show)
+    {
+        mediaPlayerView.setVisibility(show ? View.VISIBLE : View.GONE);
+        snapshotMenuView.setVisibility(show ? View.VISIBLE : View.GONE);
+
+        if(show && isPtz)
+        {
+            ptzSwitchImageView.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            ptzSwitchImageView.setVisibility(View.GONE);
+        }
+    }
+
+    public void clearControlMenuAnimation()
+    {
+        snapshotMenuView.clearAnimation();
+        mediaPlayerView.clearAnimation();
+        ptzSwitchImageView.clearAnimation();
+    }
+
+    public void showPtzControl(boolean show)
+    {
+        ptzMoveLayout.setVisibility(show ? View.VISIBLE : View.GONE);
+        ptzZoomLayout.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 }
 

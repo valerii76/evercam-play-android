@@ -34,29 +34,35 @@
 
             <ImageView
                 android:id="@+id/ivmediaplayer1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:background="@drawable/play_button_background_selector"
                 android:visibility="gone"
+                style="@style/PlayControlImageButtonStyle"
                 />
 
             <ImageView
                 android:id="@+id/player_savesnapshot"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:background="@drawable/play_button_background_selector"
                 android:layout_toRightOf="@+id/ivmediaplayer1"
                 android:src="@drawable/ic_action_save"
+                style="@style/PlayControlImageButtonStyle"
                 android:visibility="gone"/>
 
             <io.evercam.androidapp.custom.ProgressView
                 android:id="@+id/ivprogressspinner1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 android:layout_alignLeft="@+id/ivmediaplayer1"
                 android:layout_alignRight="@+id/ivmediaplayer1"
                 android:layout_alignTop="@+id/ivmediaplayer1"
                 android:layout_alignBottom="@+id/ivmediaplayer1"/>
+
+            <ImageView
+                android:id="@+id/player_ptz_switch"
+                android:background="@drawable/play_button_background_selector"
+                android:layout_toRightOf="@+id/player_savesnapshot"
+                android:src="@drawable/ic_ptz"
+                style="@style/PlayControlImageButtonStyle"
+                android:visibility="gone"/>
         </RelativeLayout>
 
         <TextView
@@ -81,7 +87,8 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_alignParentRight="true"
-                android:background="@drawable/zoom_background">
+                android:background="@drawable/zoom_background"
+                android:visibility="gone">
 
                 <ImageView
                     android:id="@+id/zoom_in_image_view"
@@ -101,16 +108,12 @@
             </RelativeLayout>
 
             <RelativeLayout
-                android:id="@+id/ptz_control_layout"
-                android:layout_width="fill_parent"
+                android:id="@+id/ptz_move_control_layout"
+                android:layout_width="150dp"
                 android:layout_height="120dp"
-                android:layout_above="@+id/time_text_view">
-
-                <RelativeLayout
-                    android:id="@+id/ptz_move_control_layout"
-                    android:layout_width="150dp"
-                    android:layout_height="120dp"
-                    android:layout_centerHorizontal="true">
+                android:layout_centerHorizontal="true"
+                android:layout_above="@+id/time_text_view"
+                android:visibility="gone">
 
                 <ImageView
                     android:id="@+id/arrow_left"
@@ -155,7 +158,6 @@
                     android:layout_centerHorizontal="true"
                     android:src="@drawable/ic_arrow_down"
                     style="@style/PtzImageButtonStyle"/>
-                </RelativeLayout>
             </RelativeLayout>
 
             <TextView
