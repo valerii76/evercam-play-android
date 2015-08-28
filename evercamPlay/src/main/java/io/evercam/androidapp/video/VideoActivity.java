@@ -18,7 +18,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.provider.MediaStore;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -52,7 +51,6 @@ import java.util.concurrent.RejectedExecutionException;
 
 import io.evercam.Camera;
 import io.evercam.PTZHome;
-import io.evercam.PTZRelative;
 import io.evercam.PTZRelativeBuilder;
 import io.evercam.androidapp.CamerasActivity;
 import io.evercam.androidapp.EvercamPlayApplication;
