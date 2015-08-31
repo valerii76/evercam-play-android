@@ -63,6 +63,7 @@ public class CheckOnvifTask extends AsyncTask<Void, Void, Boolean>
         if(getVideoActivity() != null)
         {
             getVideoActivity().isPtz = hasPtz;
+            getVideoActivity().showPtzControl(hasPtz);
         }
     }
 

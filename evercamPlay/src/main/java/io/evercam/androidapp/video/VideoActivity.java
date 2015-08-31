@@ -823,10 +823,11 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
                     {
                         snapshotMenuView.setVisibility(View.VISIBLE);
                     }
-                    if(isPtz)
-                    {
-                        ptzSwitchImageView.setVisibility(View.VISIBLE);
-                    }
+                    //TODO: Enable PTZ switch
+//                    if(isPtz)
+//                    {
+//                        ptzSwitchImageView.setVisibility(View.VISIBLE);
+//                    }
                 }
 
                 int orientation = VideoActivity.this.getResources().getConfiguration().orientation;
@@ -1052,7 +1053,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
         ptzZoomLayout = (RelativeLayout) findViewById(R.id.ptz_zoom_control_layout);
         ptzMoveLayout = (RelativeLayout) findViewById(R.id.ptz_move_control_layout);
 
-        /** The click listeners for PTZ control - move and zoom */
+        /** The click listeners for PTZ control - move, zoom and preset */
         ptzLeftImageView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v)
@@ -1267,23 +1268,24 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
             }
         });
 
-        ptzSwitchImageView.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v)
-            {
-                if(ptzMoveLayout.getVisibility() != View.VISIBLE)
-                {
-                    showPtzControl(true);
-                }
-                else
-                {
-                    showPtzControl(false);
-                }
-
-                showAllControlMenus(false);
-                clearControlMenuAnimation();
-            }
-        });
+        //TODO: Enable PTZ switch
+//        ptzSwitchImageView.setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View v)
+//            {
+//                if(ptzMoveLayout.getVisibility() != View.VISIBLE)
+//                {
+//                    showPtzControl(true);
+//                }
+//                else
+//                {
+//                    showPtzControl(false);
+//                }
+//
+//                showAllControlMenus(false);
+//                clearControlMenuAnimation();
+//            }
+//        });
     }
 
     private Bitmap getBitmapFromImageView(ImageView imageView)
@@ -1827,14 +1829,15 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
         playPauseImageView.setVisibility(show ? View.VISIBLE : View.GONE);
         snapshotMenuView.setVisibility(show ? View.VISIBLE : View.GONE);
 
-        if(show && isPtz)
-        {
-            ptzSwitchImageView.setVisibility(View.VISIBLE);
-        }
-        else
-        {
-            ptzSwitchImageView.setVisibility(View.GONE);
-        }
+        //TODO: Enable PTZ switch
+//        if(show && isPtz)
+//        {
+//            ptzSwitchImageView.setVisibility(View.VISIBLE);
+//        }
+//        else
+//        {
+//            ptzSwitchImageView.setVisibility(View.GONE);
+//        }
     }
 
     public void clearControlMenuAnimation()

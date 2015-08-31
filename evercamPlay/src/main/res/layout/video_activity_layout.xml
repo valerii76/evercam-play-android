@@ -82,31 +82,31 @@
             android:layout_height="match_parent"
             android:background="@drawable/gradient_image">
 
-            <RelativeLayout
-                android:id="@+id/ptz_zoom_control_layout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_alignParentRight="true"
-                android:background="@drawable/zoom_background"
-                android:visibility="gone">
+            <!--<RelativeLayout-->
+                <!--android:id="@+id/ptz_zoom_control_layout"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_centerVertical="true"-->
+                <!--android:layout_alignParentRight="true"-->
+                <!--android:background="@drawable/zoom_background"-->
+                <!--android:visibility="gone">-->
 
-                <ImageView
-                    android:id="@+id/zoom_in_image_view"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/ic_zoom_in"
-                    style="@style/PtzImageButtonStyle"/>
+                <!--<ImageView-->
+                    <!--android:id="@+id/zoom_in_image_view"-->
+                    <!--android:layout_width="40dp"-->
+                    <!--android:layout_height="40dp"-->
+                    <!--android:src="@drawable/ic_zoom_in"-->
+                    <!--style="@style/PtzImageButtonStyle"/>-->
 
-                <ImageView
-                    android:id="@+id/zoom_out_image_view"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="10dp"
-                    android:src="@drawable/ic_zoom_out"
-                    android:layout_below="@+id/zoom_in_image_view"
-                    style="@style/PtzImageButtonStyle"/>
-            </RelativeLayout>
+                <!--<ImageView-->
+                    <!--android:id="@+id/zoom_out_image_view"-->
+                    <!--android:layout_width="40dp"-->
+                    <!--android:layout_height="40dp"-->
+                    <!--android:layout_marginTop="10dp"-->
+                    <!--android:src="@drawable/ic_zoom_out"-->
+                    <!--android:layout_below="@+id/zoom_in_image_view"-->
+                    <!--style="@style/PtzImageButtonStyle"/>-->
+            <!--</RelativeLayout>-->
 
             <RelativeLayout
                 android:id="@+id/ptz_move_control_layout"
@@ -119,6 +119,8 @@
                     android:id="@+id/ptz_move_layout"
                     android:layout_width="150dp"
                     android:layout_height="120dp"
+                    android:layout_marginLeft="10sp"
+                    android:layout_marginRight="15sp"
                     android:layout_centerHorizontal="true">
 
                 <ImageView
@@ -171,11 +173,36 @@
                     android:id="@+id/presets_image_view"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-                    android:padding="15dp"
-                    android:layout_toRightOf="@+id/ptz_move_layout"
+                    android:padding="13dp"
+                    android:layout_toLeftOf="@+id/ptz_move_layout"
                     android:layout_centerVertical="true"
                     android:src="@drawable/ic_presets"
                     style="@style/PtzImageButtonStyle"/>
+
+                <RelativeLayout
+                    android:id="@+id/ptz_zoom_control_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/ptz_move_layout">
+
+                    <ImageView
+                        android:id="@+id/zoom_in_image_view"
+                        style="@style/PtzImageButtonStyle"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/ic_zoom_in"/>
+
+                    <ImageView
+                        android:id="@+id/zoom_out_image_view"
+                        style="@style/PtzImageButtonStyle"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_below="@+id/zoom_in_image_view"
+                        android:layout_marginTop="10dp"
+                        android:src="@drawable/ic_zoom_out"/>
+                </RelativeLayout>
+
             </RelativeLayout>
 
             <TextView

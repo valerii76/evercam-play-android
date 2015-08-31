@@ -35,7 +35,7 @@ public class PresetsListAdapter extends ArrayAdapter<PTZPreset>
 
         PTZPreset preset = presetList.get(position);
         TextView textView = (TextView) view.findViewById(R.id.preset_text_view);
-        textView.setText(preset.toString());
+        textView.setText(preset.getName());
 
         return view;
     }
