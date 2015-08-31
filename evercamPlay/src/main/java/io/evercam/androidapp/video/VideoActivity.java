@@ -3,6 +3,7 @@ package io.evercam.androidapp.video;
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.TaskStackBuilder;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -20,6 +21,7 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -31,7 +33,10 @@ import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,6 +56,8 @@ import java.util.concurrent.RejectedExecutionException;
 
 import io.evercam.Camera;
 import io.evercam.PTZHome;
+import io.evercam.PTZPreset;
+import io.evercam.PTZPresetControl;
 import io.evercam.PTZRelativeBuilder;
 import io.evercam.androidapp.CamerasActivity;
 import io.evercam.androidapp.EvercamPlayApplication;
@@ -71,6 +78,7 @@ import io.evercam.androidapp.dto.EvercamCamera;
 import io.evercam.androidapp.feedback.KeenHelper;
 import io.evercam.androidapp.feedback.ShortcutFeedbackItem;
 import io.evercam.androidapp.feedback.StreamFeedbackItem;
+import io.evercam.androidapp.ptz.PresetsListAdapter;
 import io.evercam.androidapp.recordings.RecordingWebActivity;
 import io.evercam.androidapp.tasks.CaptureSnapshotRunnable;
 import io.evercam.androidapp.tasks.CheckOnvifTask;
@@ -88,6 +96,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
 
     private final static String TAG = "VideoActivity";
     private String liveViewCameraId = "";
+    public ArrayList<PTZPreset> presetList = new ArrayList<>();
 
     private boolean showImagesVideo = false;
 
@@ -1038,6 +1047,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
         ImageView ptzHomeImageView = (ImageView) findViewById(R.id.ptz_home);
         ImageView ptzZoomInImageView = (ImageView) findViewById(R.id.zoom_in_image_view);
         ImageView ptzZoomOutImageView = (ImageView) findViewById(R.id.zoom_out_image_view);
+        ImageView presetsImageView = (ImageView) findViewById(R.id.presets_image_view);
 
         ptzZoomLayout = (RelativeLayout) findViewById(R.id.ptz_zoom_control_layout);
         ptzMoveLayout = (RelativeLayout) findViewById(R.id.ptz_move_control_layout);
@@ -1096,6 +1106,37 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
             {
                 PTZMoveTask.launch(new PTZRelativeBuilder(evercamCamera.getCameraId()).zoom(-1)
                         .build());
+            }
+        });
+        presetsImageView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                if(presetList.size() > 0)
+                {
+                    final AlertDialog listDialog = new AlertDialog.Builder(VideoActivity.this)
+                            .setNegativeButton(R.string.cancel, null).create();
+                    LayoutInflater mInflater = LayoutInflater.from(getApplicationContext());
+                    final View view = mInflater.inflate(R.layout.list_dialog_layout, null);
+                    ListView listView = (ListView) view.findViewById(R.id.presets_list_view);
+                    listDialog.setView(view);
+                    listView.setAdapter(new PresetsListAdapter(getApplicationContext(), R.layout
+                            .preset_list_item_layout, presetList));
+                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+                    {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position,
+                                                long id)
+                        {
+                            PTZPreset preset = presetList.get(position);
+                            PTZMoveTask.launch(new PTZPresetControl(evercamCamera.getCameraId(),
+                                    preset.getToken()));
+                            listDialog.cancel();
+                        }
+                    });
+
+                    listDialog.show();
+                }
             }
         });
 
@@ -1755,7 +1796,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
 
                     if(evercamCamera.hasModel())
                     {
-                        new CheckOnvifTask(VideoActivity.this, evercamCamera.getModel().toLowerCase(Locale.UK))
+                        new CheckOnvifTask(VideoActivity.this, evercamCamera)
                                 .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     }
                 }

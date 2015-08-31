@@ -110,11 +110,16 @@
 
             <RelativeLayout
                 android:id="@+id/ptz_move_control_layout"
-                android:layout_width="150dp"
+                android:layout_width="fill_parent"
                 android:layout_height="120dp"
-                android:layout_centerHorizontal="true"
                 android:layout_above="@+id/time_text_view"
                 android:visibility="gone">
+
+                <RelativeLayout
+                    android:id="@+id/ptz_move_layout"
+                    android:layout_width="150dp"
+                    android:layout_height="120dp"
+                    android:layout_centerHorizontal="true">
 
                 <ImageView
                     android:id="@+id/arrow_left"
@@ -131,6 +136,7 @@
                     android:layout_height="35dp"
                     android:layout_alignParentTop="true"
                     android:layout_centerHorizontal="true"
+                    android:layout_marginRight="15dp"
                     android:src="@drawable/ic_arrow_up"
                     style="@style/PtzImageButtonStyle"/>
 
@@ -158,6 +164,17 @@
                     android:layout_alignParentBottom="true"
                     android:layout_centerHorizontal="true"
                     android:src="@drawable/ic_arrow_down"
+                    style="@style/PtzImageButtonStyle"/>
+                </RelativeLayout>
+
+                <ImageView
+                    android:id="@+id/presets_image_view"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:padding="15dp"
+                    android:layout_toRightOf="@+id/ptz_move_layout"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/ic_presets"
                     style="@style/PtzImageButtonStyle"/>
             </RelativeLayout>
 
