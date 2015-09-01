@@ -1120,6 +1120,8 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
                     LayoutInflater mInflater = LayoutInflater.from(getApplicationContext());
                     final View view = mInflater.inflate(R.layout.list_dialog_layout, null);
                     ListView listView = (ListView) view.findViewById(R.id.presets_list_view);
+                    View header = getLayoutInflater().inflate(R.layout.preset_list_header, null);
+                    listView.addHeaderView(header);
                     listDialog.setView(view);
                     listView.setAdapter(new PresetsListAdapter(getApplicationContext(), R.layout
                             .preset_list_item_layout, presetList));
@@ -1129,9 +1131,18 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
                         public void onItemClick(AdapterView<?> parent, View view, int position,
                                                 long id)
                         {
-                            PTZPreset preset = presetList.get(position);
-                            PTZMoveTask.launch(new PTZPresetControl(evercamCamera.getCameraId(),
-                                    preset.getToken()));
+                            if(position == 0) //Header clicked - Create preset
+                            {
+                                CustomedDialog.getCreatePresetDialog(VideoActivity.this,
+                                        evercamCamera.getCameraId()).show();
+                            }
+                            else
+                            {
+                                PTZPreset preset = presetList.get(position - 1);
+                                PTZMoveTask.launch(new PTZPresetControl(evercamCamera.getCameraId(),
+                                        preset.getToken()));
+                            }
+
                             listDialog.cancel();
                         }
                     });

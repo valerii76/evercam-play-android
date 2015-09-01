@@ -8,16 +8,21 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import io.evercam.androidapp.CamerasActivity;
 import io.evercam.androidapp.R;
+import io.evercam.androidapp.tasks.CreatePresetTask;
+import io.evercam.androidapp.video.VideoActivity;
 
 public class CustomedDialog
 {
@@ -360,8 +365,8 @@ public class CustomedDialog
     {
         AlertDialog alertDialog = new AlertDialog.Builder(activity)
 
-                .setMessage(message).setPositiveButton(R.string.yes,
-                        listener).setNegativeButton(R.string.no,
+                .setMessage(message).setPositiveButton(R.string.yes, listener).setNegativeButton
+                        (R.string.no,
                         new DialogInterface.OnClickListener()
                         {
                             @Override
@@ -371,5 +376,31 @@ public class CustomedDialog
                             }
                         }).create();
         return alertDialog;
+    }
+
+    /**
+     * The prompt dialog that ask for a preset name
+     */
+    public static AlertDialog getCreatePresetDialog(final VideoActivity videoActivity, final String cameraId)
+    {
+        Builder dialogBuilder = new AlertDialog.Builder(videoActivity);
+        LayoutInflater inflater = LayoutInflater.from(videoActivity);
+        final View view = inflater.inflate(R.layout.create_preset_dialog_layout, null);
+        final EditText editText = (EditText) view.findViewById(R.id.create_preset_edit_text);
+        dialogBuilder.setView(view);
+        dialogBuilder.setPositiveButton(R.string.add, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                String presetName = editText.getText().toString();
+                if(!presetName.isEmpty())
+                {
+                    new CreatePresetTask(videoActivity, cameraId, presetName)
+                            .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                }
+            }
+        });
+        dialogBuilder.setNegativeButton(R.string.cancel, null);
+        return dialogBuilder.create();
     }
 }
