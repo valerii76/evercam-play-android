@@ -1777,6 +1777,8 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
 
                 evercamCamera = cameraList.get(itemPosition);
 
+                //Hide the PTZ control panel when switch to another camera
+                showPtzControl(false);
 
                 if(evercamCamera.isOffline())
                 {

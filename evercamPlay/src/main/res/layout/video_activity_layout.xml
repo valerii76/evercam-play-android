@@ -82,32 +82,6 @@
             android:layout_height="match_parent"
             android:background="@drawable/gradient_image">
 
-            <!--<RelativeLayout-->
-                <!--android:id="@+id/ptz_zoom_control_layout"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_centerVertical="true"-->
-                <!--android:layout_alignParentRight="true"-->
-                <!--android:background="@drawable/zoom_background"-->
-                <!--android:visibility="gone">-->
-
-                <!--<ImageView-->
-                    <!--android:id="@+id/zoom_in_image_view"-->
-                    <!--android:layout_width="40dp"-->
-                    <!--android:layout_height="40dp"-->
-                    <!--android:src="@drawable/ic_zoom_in"-->
-                    <!--style="@style/PtzImageButtonStyle"/>-->
-
-                <!--<ImageView-->
-                    <!--android:id="@+id/zoom_out_image_view"-->
-                    <!--android:layout_width="40dp"-->
-                    <!--android:layout_height="40dp"-->
-                    <!--android:layout_marginTop="10dp"-->
-                    <!--android:src="@drawable/ic_zoom_out"-->
-                    <!--android:layout_below="@+id/zoom_in_image_view"-->
-                    <!--style="@style/PtzImageButtonStyle"/>-->
-            <!--</RelativeLayout>-->
-
             <RelativeLayout
                 android:id="@+id/ptz_move_control_layout"
                 android:layout_width="fill_parent"
