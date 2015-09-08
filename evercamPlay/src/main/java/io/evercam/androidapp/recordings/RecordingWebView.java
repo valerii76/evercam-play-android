@@ -26,6 +26,10 @@ public class RecordingWebView extends WebView
     {
         getSettings().setJavaScriptEnabled(true);
 
+        //Enable zooming in web view
+        getSettings().setBuiltInZoomControls(true);
+        getSettings().setDisplayZoomControls(false);
+
         setWebViewClient(webActivity.getWebViewClient());
 
         //TODO remove <body style='margin:0;padding:0;'>, it's here only to overwrite the widget

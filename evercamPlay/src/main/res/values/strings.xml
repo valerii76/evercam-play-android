@@ -100,5 +100,9 @@
     <string name="data_host">cameras</string>
     <string name="data_path">/streams</string>
 
+    <!-- PTZ -->
+    <string name="create_preset">Create a preset</string>
+    <string name="preset_name">Preset name</string>
+
 </resources>
 

@@ -1,18 +1,19 @@
 <h4>Evercam Play - IP Camera Viewer</h4>
 
-<h5>1.4.8 - 1.5.1</h5>
+<h5>1.5.1 - 1.5.4</h5>
 <ul>
-    <li>- Fixed the 'country is missing' error with creating account<br/></li>
-    <li>- Fixed the app crash on Android 4.x devices<br/></li>
     <li>- New design for scanning results<br/></li>
+    <li>- Added PTZ control for PTZ cameras<br/></li>
 </ul>
 <br/>
 
-<b>Version 1.4.7</b>
+<b>Version 1.4.7 - 1.5.0</b>
 <ul>
     <li><br/>- Added RTSP URL in add/edit camera<br/></li>
     <li>- Now view,edit,delete camera options are all in 'Camera Settings'<br/></li>
     <li>- Recognise camera that has been added when scanning for cameras<br/></li>
+    <li>- Fixed the 'country is missing' error with creating account<br/></li>
+    <li>- Fixed the app crash on Android 4.x devices<br/></li>
 </ul>
 <br/>
 

@@ -3,6 +3,7 @@ package io.evercam.androidapp.video;
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.TaskStackBuilder;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -20,6 +21,7 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -31,7 +33,10 @@ import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,9 +51,14 @@ import org.json.JSONObject;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.RejectedExecutionException;
 
 import io.evercam.Camera;
+import io.evercam.PTZHome;
+import io.evercam.PTZPreset;
+import io.evercam.PTZPresetControl;
+import io.evercam.PTZRelativeBuilder;
 import io.evercam.androidapp.CamerasActivity;
 import io.evercam.androidapp.EvercamPlayApplication;
 import io.evercam.androidapp.FeedbackActivity;
@@ -68,8 +78,11 @@ import io.evercam.androidapp.dto.EvercamCamera;
 import io.evercam.androidapp.feedback.KeenHelper;
 import io.evercam.androidapp.feedback.ShortcutFeedbackItem;
 import io.evercam.androidapp.feedback.StreamFeedbackItem;
+import io.evercam.androidapp.ptz.PresetsListAdapter;
 import io.evercam.androidapp.recordings.RecordingWebActivity;
 import io.evercam.androidapp.tasks.CaptureSnapshotRunnable;
+import io.evercam.androidapp.tasks.CheckOnvifTask;
+import io.evercam.androidapp.tasks.PTZMoveTask;
 import io.evercam.androidapp.utils.Commons;
 import io.evercam.androidapp.utils.Constants;
 import io.evercam.androidapp.utils.PrefsManager;
@@ -83,6 +96,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
 
     private final static String TAG = "VideoActivity";
     private String liveViewCameraId = "";
+    public ArrayList<PTZPreset> presetList = new ArrayList<>();
 
     private boolean showImagesVideo = false;
 
@@ -96,9 +110,12 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
     private TextView timeCountTextView;
     private RelativeLayout imageViewLayout;
     private ImageView imageView;
-    private ImageView mediaPlayerView;
+    private ImageView playPauseImageView;
     private ImageView snapshotMenuView;
+    private ImageView ptzSwitchImageView;
     private Animation fadeInAnimation = null;
+    private RelativeLayout ptzZoomLayout;
+    private RelativeLayout ptzMoveLayout;
 
     private long downloadStartCount = 0;
     private long downloadEndCount = 0;
@@ -133,6 +150,8 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
     // URL for reconnecting.
     private boolean isJpgSuccessful = false; //Whether or not the JPG view ever
     //got successfully played
+
+    public boolean isPtz = false; //Whether or a PTZ camera model
 
     private boolean end = false; // whether to end this activity or not
 
@@ -718,8 +737,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
 
             optionsActivityStarted = false;
 
-            mediaPlayerView.setVisibility(View.GONE);
-            snapshotMenuView.setVisibility(View.GONE);
+            showAllControlMenus(false);
 
             paused = false;
             end = false;
@@ -771,8 +789,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
             fadeInAnimation.cancel();
             fadeInAnimation.reset();
 
-            snapshotMenuView.clearAnimation();
-            mediaPlayerView.clearAnimation();
+            clearControlMenuAnimation();
         }
 
         fadeInAnimation = AnimationUtils.loadAnimation(VideoActivity.this, R.anim.fadein);
@@ -797,16 +814,20 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
 
                 if(!paused)
                 {
-                    mediaPlayerView.setVisibility(View.GONE);
-                    snapshotMenuView.setVisibility(View.GONE);
+                    showAllControlMenus(false);
                 }
                 else
                 {
-                    mediaPlayerView.setVisibility(View.VISIBLE);
+                    playPauseImageView.setVisibility(View.VISIBLE);
                     if(surfaceView.getVisibility() != View.VISIBLE)
                     {
                         snapshotMenuView.setVisibility(View.VISIBLE);
                     }
+                    //TODO: Enable PTZ switch
+//                    if(isPtz)
+//                    {
+//                        ptzSwitchImageView.setVisibility(View.VISIBLE);
+//                    }
                 }
 
                 int orientation = VideoActivity.this.getResources().getConfiguration().orientation;
@@ -817,8 +838,9 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
             }
         });
 
-        mediaPlayerView.startAnimation(fadeInAnimation);
+        playPauseImageView.startAnimation(fadeInAnimation);
         snapshotMenuView.startAnimation(fadeInAnimation);
+        ptzSwitchImageView.startAnimation(fadeInAnimation);
     }
 
     /**
@@ -836,7 +858,8 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
     @Override
     public void surfaceChanged(SurfaceHolder surfaceholder, int format, int width, int height)
     {
-        Log.d("GStreamer", "Surface changed to format " + format + " width " + width + " height " + height);
+        Log.d("GStreamer", "Surface changed to format " + format + " width " + width + " height "
+                + height);
         onMediaSizeChanged(width, height);
 
         nativeSurfaceInit(surfaceholder.getSurface());
@@ -974,8 +997,8 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
         }
         else
         {
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager
+                    .LayoutParams.FLAG_FULLSCREEN);
         }
     }
 
@@ -997,18 +1020,19 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
     private void initialPageElements()
     {
         imageViewLayout = (RelativeLayout) this.findViewById(R.id.camera_view_layout);
-        imageView = (ImageView) this.findViewById(R.id.img_camera1);
-        mediaPlayerView = (ImageView) this.findViewById(R.id.ivmediaplayer1);
+        imageView = (ImageView) this.findViewById(R.id.jpg_image_view);
+        playPauseImageView = (ImageView) this.findViewById(R.id.play_pause_image_view);
         snapshotMenuView = (ImageView) this.findViewById(R.id.player_savesnapshot);
+        ptzSwitchImageView = (ImageView) findViewById(R.id.player_ptz_switch);
 
         surfaceView = (SurfaceView) findViewById(R.id.surface_view);
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(this);
 
-        progressView = ((ProgressView) imageViewLayout.findViewById(R.id.ivprogressspinner1));
+        progressView = ((ProgressView) imageViewLayout.findViewById(R.id.live_progress_view));
 
-        progressView.setMinimumWidth(mediaPlayerView.getWidth());
-        progressView.setMinimumHeight(mediaPlayerView.getHeight());
+        progressView.setMinimumWidth(playPauseImageView.getWidth());
+        progressView.setMinimumHeight(playPauseImageView.getHeight());
         progressView.canvasColor = Color.TRANSPARENT;
 
         isProgressShowing = true;
@@ -1017,8 +1041,119 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
         offlineTextView = (TextView) findViewById(R.id.offline_text_view);
         timeCountTextView = (TextView) findViewById(R.id.time_text_view);
 
+        ImageView ptzLeftImageView = (ImageView) findViewById(R.id.arrow_left);
+        ImageView ptzRightImageView = (ImageView) findViewById(R.id.arrow_right);
+        ImageView ptzUpImageView = (ImageView) findViewById(R.id.arrow_up);
+        ImageView ptzDownImageView = (ImageView) findViewById(R.id.arrow_down);
+        ImageView ptzHomeImageView = (ImageView) findViewById(R.id.ptz_home);
+        ImageView ptzZoomInImageView = (ImageView) findViewById(R.id.zoom_in_image_view);
+        ImageView ptzZoomOutImageView = (ImageView) findViewById(R.id.zoom_out_image_view);
+        ImageView presetsImageView = (ImageView) findViewById(R.id.presets_image_view);
+
+        ptzZoomLayout = (RelativeLayout) findViewById(R.id.ptz_zoom_control_layout);
+        ptzMoveLayout = (RelativeLayout) findViewById(R.id.ptz_move_control_layout);
+
+        /** The click listeners for PTZ control - move, zoom and preset */
+        ptzLeftImageView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                PTZMoveTask.launch(new PTZRelativeBuilder(evercamCamera.getCameraId()).left(4)
+                        .build());
+            }
+        });
+        ptzRightImageView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                PTZMoveTask.launch(new PTZRelativeBuilder(evercamCamera.getCameraId()).right(4)
+                        .build());
+            }
+        });
+        ptzUpImageView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                PTZMoveTask.launch(new PTZRelativeBuilder(evercamCamera.getCameraId()).up(3)
+                        .build());
+            }
+        });
+        ptzDownImageView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                PTZMoveTask.launch(new PTZRelativeBuilder(evercamCamera.getCameraId()).down(3)
+                        .build());
+            }
+        });
+        ptzHomeImageView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                PTZMoveTask.launch(new PTZHome(evercamCamera.getCameraId()));
+            }
+        });
+        ptzZoomInImageView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                PTZMoveTask.launch(new PTZRelativeBuilder(evercamCamera.getCameraId()).zoom(1)
+                        .build());
+            }
+        });
+        ptzZoomOutImageView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                PTZMoveTask.launch(new PTZRelativeBuilder(evercamCamera.getCameraId()).zoom(-1)
+                        .build());
+            }
+        });
+        presetsImageView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                if(presetList.size() > 0)
+                {
+                    final AlertDialog listDialog = new AlertDialog.Builder(VideoActivity.this)
+                            .setNegativeButton(R.string.cancel, null).create();
+                    LayoutInflater mInflater = LayoutInflater.from(getApplicationContext());
+                    final View view = mInflater.inflate(R.layout.list_dialog_layout, null);
+                    ListView listView = (ListView) view.findViewById(R.id.presets_list_view);
+                    View header = getLayoutInflater().inflate(R.layout.preset_list_header, null);
+                    listView.addHeaderView(header);
+                    listDialog.setView(view);
+                    listView.setAdapter(new PresetsListAdapter(getApplicationContext(), R.layout
+                            .preset_list_item_layout, presetList));
+                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+                    {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position,
+                                                long id)
+                        {
+                            if(position == 0) //Header clicked - Create preset
+                            {
+                                CustomedDialog.getCreatePresetDialog(VideoActivity.this,
+                                        evercamCamera.getCameraId()).show();
+                            }
+                            else
+                            {
+                                PTZPreset preset = presetList.get(position - 1);
+                                PTZMoveTask.launch(new PTZPresetControl(evercamCamera.getCameraId(),
+                                        preset.getToken()));
+                            }
+
+                            listDialog.cancel();
+                        }
+                    });
+
+                    listDialog.show();
+                }
+            }
+        });
+
         /** The click listener for pause/play button */
-        mediaPlayerView.setOnClickListener(new OnClickListener()
+        playPauseImageView.setOnClickListener(new OnClickListener()
         {
 
             @Override
@@ -1037,10 +1172,9 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
                     timeCountTextView.setVisibility(View.VISIBLE);
                     showProgressView();
 
-                    mediaPlayerView.setImageBitmap(null);
-                    mediaPlayerView.setVisibility(View.VISIBLE);
-                    snapshotMenuView.setVisibility(View.VISIBLE);
-                    mediaPlayerView.setImageResource(android.R.drawable.ic_media_pause);
+                    playPauseImageView.setImageBitmap(null);
+                    showAllControlMenus(true);
+                    playPauseImageView.setImageResource(android.R.drawable.ic_media_pause);
 
                     startMediaPlayerAnimation();
 
@@ -1059,20 +1193,18 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
                 else
                 // video is currently playing. Now we need to pause video
                 {
-                    timeCountTextView.setVisibility(View.GONE);
-                    mediaPlayerView.clearAnimation();
-                    snapshotMenuView.clearAnimation();
+                    timeCountTextView.setVisibility(View.INVISIBLE);
+                    clearControlMenuAnimation();
                     if(fadeInAnimation != null && fadeInAnimation.hasStarted() &&
                             !fadeInAnimation.hasEnded())
                     {
                         fadeInAnimation.cancel();
                         fadeInAnimation.reset();
                     }
-                    mediaPlayerView.setVisibility(View.VISIBLE);
-                    snapshotMenuView.setVisibility(View.VISIBLE);
+                    showAllControlMenus(true);
 
-                    mediaPlayerView.setImageBitmap(null);
-                    mediaPlayerView.setImageResource(android.R.drawable.ic_media_play);
+                    playPauseImageView.setImageBitmap(null);
+                    playPauseImageView.setImageResource(android.R.drawable.ic_media_play);
 
                     pausePlayer();
 
@@ -1102,21 +1234,18 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
 
                 if(!paused && !end) // video is currently playing. Show pause button
                 {
-                    if(mediaPlayerView.getVisibility() == View.VISIBLE)
+                    if(playPauseImageView.getVisibility() == View.VISIBLE)
                     {
-                        mediaPlayerView.setVisibility(View.GONE);
-                        snapshotMenuView.setVisibility(View.GONE);
-                        mediaPlayerView.clearAnimation();
-                        snapshotMenuView.clearAnimation();
+                        showAllControlMenus(false);
+                        clearControlMenuAnimation();
                         fadeInAnimation.reset();
                     }
                     else
                     {
                         VideoActivity.this.getActionBar().show();
-                        mediaPlayerView.setImageResource(android.R.drawable.ic_media_pause);
+                        playPauseImageView.setImageResource(android.R.drawable.ic_media_pause);
 
-                        mediaPlayerView.setVisibility(View.VISIBLE);
-                        snapshotMenuView.setVisibility(View.VISIBLE);
+                        showAllControlMenus(true);
 
                         startMediaPlayerAnimation();
                     }
@@ -1132,10 +1261,8 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
                 //Hide pause/snapshot menu if the live view is not paused
                 if(!paused)
                 {
-                    mediaPlayerView.setVisibility(View.GONE);
-                    snapshotMenuView.setVisibility(View.GONE);
-                    mediaPlayerView.clearAnimation();
-                    snapshotMenuView.clearAnimation();
+                    showAllControlMenus(false);
+                    clearControlMenuAnimation();
                     fadeInAnimation.reset();
                 }
 
@@ -1151,6 +1278,25 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
                 }
             }
         });
+
+        //TODO: Enable PTZ switch
+//        ptzSwitchImageView.setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View v)
+//            {
+//                if(ptzMoveLayout.getVisibility() != View.VISIBLE)
+//                {
+//                    showPtzControl(true);
+//                }
+//                else
+//                {
+//                    showPtzControl(false);
+//                }
+//
+//                showAllControlMenus(false);
+//                clearControlMenuAnimation();
+//            }
+//        });
     }
 
     private Bitmap getBitmapFromImageView(ImageView imageView)
@@ -1177,7 +1323,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
     // Hide progress view
     void hideProgressView()
     {
-        imageViewLayout.findViewById(R.id.ivprogressspinner1).setVisibility(View.GONE);
+        imageViewLayout.findViewById(R.id.live_progress_view).setVisibility(View.GONE);
         isProgressShowing = false;
     }
 
@@ -1472,7 +1618,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
                             {
                                 latestStartImageTime = myStartImageTime;
 
-                                if(mediaPlayerView.getVisibility() != View.VISIBLE &&
+                                if(playPauseImageView.getVisibility() != View.VISIBLE &&
                                         VideoActivity.this.getResources().getConfiguration()
                                                 .orientation == Configuration.ORIENTATION_LANDSCAPE)
                                     VideoActivity.this.getActionBar().hide();
@@ -1642,6 +1788,8 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
 
                 evercamCamera = cameraList.get(itemPosition);
 
+                //Hide the PTZ control panel when switch to another camera
+                showPtzControl(false);
 
                 if(evercamCamera.isOffline())
                 {
@@ -1660,6 +1808,12 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
 
                     setCameraForPlaying(cameraList.get(itemPosition));
                     createPlayer(evercamCamera);
+
+                    if(evercamCamera.hasModel())
+                    {
+                        new CheckOnvifTask(VideoActivity.this, evercamCamera)
+                                .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    }
                 }
                 return false;
             }
@@ -1670,15 +1824,46 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
     }
 
     private void onMediaSizeChanged (int width, int height) {
-        Log.i ("GStreamer", "Media size changed to " + width + "x" + height);
+        Log.i("GStreamer", "Media size changed to " + width + "x" + height);
         final GStreamerSurfaceView gstreamerSurfaceView = (GStreamerSurfaceView) this.findViewById(R.id.surface_view);
         gstreamerSurfaceView.media_width = width;
         gstreamerSurfaceView.media_height = height;
-        runOnUiThread(new Runnable() {
-            public void run() {
+        runOnUiThread(new Runnable()
+        {
+            public void run()
+            {
                 gstreamerSurfaceView.requestLayout();
             }
         });
+    }
+
+    public void showAllControlMenus(boolean show)
+    {
+        playPauseImageView.setVisibility(show ? View.VISIBLE : View.GONE);
+        snapshotMenuView.setVisibility(show ? View.VISIBLE : View.GONE);
+
+        //TODO: Enable PTZ switch
+//        if(show && isPtz)
+//        {
+//            ptzSwitchImageView.setVisibility(View.VISIBLE);
+//        }
+//        else
+//        {
+//            ptzSwitchImageView.setVisibility(View.GONE);
+//        }
+    }
+
+    public void clearControlMenuAnimation()
+    {
+        snapshotMenuView.clearAnimation();
+        playPauseImageView.clearAnimation();
+        ptzSwitchImageView.clearAnimation();
+    }
+
+    public void showPtzControl(boolean show)
+    {
+        ptzMoveLayout.setVisibility(show ? View.VISIBLE : View.GONE);
+        ptzZoomLayout.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 }
 
