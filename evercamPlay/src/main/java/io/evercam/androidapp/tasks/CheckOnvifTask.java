@@ -41,7 +41,15 @@ public class CheckOnvifTask extends AsyncTask<Void, Void, Boolean>
             Model model = Model.getById(modelId);
             if(model.isOnvif() && model.isPTZ())
             {
-                getVideoActivity().presetList = PTZPreset.getAllPresets(cameraId);
+                ArrayList<PTZPreset> allPresets = PTZPreset.getAllPresets(cameraId);
+                getVideoActivity().presetList = allPresets;
+
+                ArrayList<PTZPreset> customPresets = removeSystemPresetsFrom(allPresets);
+
+                if(customPresets.size() > 0)
+                {
+                    getVideoActivity().presetList = customPresets;
+                }
 
                 return  true;
             }
@@ -70,5 +78,23 @@ public class CheckOnvifTask extends AsyncTask<Void, Void, Boolean>
     private VideoActivity getVideoActivity()
     {
         return videoActivityWeakReference.get();
+    }
+
+    private ArrayList<PTZPreset> removeSystemPresetsFrom(ArrayList<PTZPreset> allPresets)
+    {
+        ArrayList<PTZPreset> customPresets = new ArrayList<>();
+        if(allPresets.size() > 0)
+        {
+            //Exclude presets with token >= 33 and only keep those user defined presets
+            for(PTZPreset preset : allPresets)
+            {
+                int tokenInt = Integer.valueOf(preset.getToken());
+                if(tokenInt < 33)
+                {
+                    customPresets.add(preset);
+                }
+            }
+        }
+        return customPresets;
     }
 }
