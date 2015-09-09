@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +16,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import io.evercam.androidapp.CamerasActivity;
 import io.evercam.androidapp.R;
@@ -49,15 +47,10 @@ public class CustomedDialog
     public static AlertDialog getNoInternetDialog(final Activity activity,
                                                   DialogInterface.OnClickListener negativeistener)
     {
-        final View dialogLayout = activity.getLayoutInflater().inflate(R.layout
-                .single_message_dialogue, null);
-        TextView titleTextView = ((TextView) dialogLayout.findViewById(R.id.text_title));
-        TextView messageTextView = ((TextView) dialogLayout.findViewById(R.id.text_message));
-        titleTextView.setText(R.string.msg_network_not_connected);
-        messageTextView.setText(R.string.msg_try_network_again);
-
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity).setView
-                (dialogLayout).setCancelable(false).setPositiveButton(R.string.settings_capital,
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity)
+                .setTitle(R.string.msg_network_not_connected)
+                .setMessage(R.string.msg_try_network_again)
+                .setCancelable(false).setPositiveButton(R.string.settings_capital,
                 new DialogInterface.OnClickListener()
                 {
                     @Override
@@ -85,20 +78,15 @@ public class CustomedDialog
                                                                negativeListener,
                                                        int positiveButton, int negativeButton)
     {
-        final View dialogLayout = activity.getLayoutInflater().inflate(R.layout
-                .single_message_dialogue, null);
-        TextView titleTextView = ((TextView) dialogLayout.findViewById(R.id.text_title));
-        TextView messageTextView = ((TextView) dialogLayout.findViewById(R.id.text_message));
-        titleTextView.setText(title);
-        messageTextView.setText(message);
-
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity).setView(dialogLayout).setCancelable(false).setPositiveButton(positiveButton, positiveListener);
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity)
+                .setTitle(title)
+                .setMessage(message)
+                .setCancelable(false).setPositiveButton(positiveButton, positiveListener);
         if(negativeButton != 0)
         {
             dialogBuilder.setNegativeButton(negativeButton, negativeListener);
         }
-        AlertDialog alertDialog = dialogBuilder.create();
-        return alertDialog;
+        return dialogBuilder.create();
     }
 
     public static AlertDialog getCanNotPlayDialog(final Activity activity,
@@ -158,13 +146,11 @@ public class CustomedDialog
     }
 
     /**
-     * The alert dialog with no title, but with a cancel button Used as add
-     * camera option dialog and account management.
+     * The alert dialog with no title, but with a cancel button Used in account management.
      */
     public static AlertDialog getAlertDialogNoTitle(Context ctx, View view)
     {
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(ctx,
-                io.evercam.androidapp.R.style.ThemeDialogNoTitle);
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(ctx);
 
         view.setPadding(14, 10, 5, 21);
 

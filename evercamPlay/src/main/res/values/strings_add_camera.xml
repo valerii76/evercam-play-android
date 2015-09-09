@@ -51,7 +51,7 @@
     <string name="msg_confirm_create">We can\'t connect to your camera, are you sure you want to add it?</string>
 
     <!-- Option Items -->
-    <string name="add_ip_camera">Add camera manually</string>
+    <string name="add_camera_manually">Add cameras manually</string>
     <string name="scan_for_cameras">Scan for cameras</string>
 
     <!-- Test snapshot options -->

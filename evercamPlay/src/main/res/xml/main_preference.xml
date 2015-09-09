@@ -2,12 +2,12 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory android:title="@string/category_general">
-        <io.evercam.androidapp.custom.ThemedListPreference
+        <ListPreference
             android:defaultValue="2"
             android:key="lstgridcamerasperrow"
             android:title="@string/title_camera_per_row"/>
 
-        <io.evercam.androidapp.custom.ThemedListPreference
+        <ListPreference
             android:defaultValue="0"
             android:key="prefsAwakeTime"
             android:entries="@array/prefs_sleep_entries"

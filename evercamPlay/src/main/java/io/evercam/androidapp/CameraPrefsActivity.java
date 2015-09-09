@@ -2,6 +2,7 @@ package io.evercam.androidapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
@@ -12,7 +13,6 @@ import com.splunk.mint.Mint;
 
 import java.util.ArrayList;
 
-import io.evercam.androidapp.custom.ThemedListPreference;
 import io.evercam.androidapp.utils.Constants;
 import io.evercam.androidapp.utils.DataCollector;
 import io.evercam.androidapp.utils.PrefsManager;
@@ -139,7 +139,7 @@ public class CameraPrefsActivity extends PreferenceActivity
             }
             CharSequence[] charNumberValues = cameraNumberArrayList.toArray(new
                     CharSequence[cameraNumberArrayList.size()]);
-            final ThemedListPreference interfaceList = (ThemedListPreference)
+            final ListPreference interfaceList = (ListPreference)
                     getPreferenceManager().findPreference(PrefsManager.KEY_CAMERA_PER_ROW);
             interfaceList.setEntries(charNumberValues);
             interfaceList.setEntryValues(charNumberValues);
@@ -157,7 +157,7 @@ public class CameraPrefsActivity extends PreferenceActivity
 
         private void setUpSleepTime()
         {
-            final ThemedListPreference sleepListPrefs = (ThemedListPreference)
+            final ListPreference sleepListPrefs = (ListPreference)
                     getPreferenceManager().findPreference(PrefsManager.KEY_AWAKE_TIME);
             sleepListPrefs.setSummary(getSummary(sleepListPrefs.getEntry() + ""));
             sleepListPrefs.setOnPreferenceChangeListener(new OnPreferenceChangeListener()
