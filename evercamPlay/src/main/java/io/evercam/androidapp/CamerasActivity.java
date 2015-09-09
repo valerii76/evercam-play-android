@@ -1,7 +1,8 @@
 package io.evercam.androidapp;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -20,9 +21,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
-import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.logentries.android.AndroidLogger;
 
 import java.util.ArrayList;
@@ -89,7 +92,9 @@ public class CamerasActivity extends ParentActivity
             this.getActionBar().setDisplayShowTitleEnabled(false);
         }
 
-        setContentView(R.layout.camslayoutwithslide);
+        setContentView(R.layout.cameras_list_layout);
+
+        setUpActionButtons();
 
         initDataCollectionObjects();
 
@@ -161,10 +166,6 @@ public class CamerasActivity extends ParentActivity
 
             startCameraLoadingTask();
 
-        }
-        else if(itemId == R.id.menu_add_camera)
-        {
-            showAddCameraOptionsDialog();
         }
         else if(itemId == R.id.menu_settings)
         {
@@ -306,6 +307,85 @@ public class CamerasActivity extends ParentActivity
             CameraLayout cameraLayout = (CameraLayout) linearLayout.getChildAt(0);
             cameraLayout.stopAllActivity();
         }
+    }
+
+    private void setUpActionButtons()
+    {
+        final RelativeLayout actionButtonLayout = (RelativeLayout) findViewById(R.id
+                .action_button_layout);
+        final FloatingActionsMenu actionMenu = (FloatingActionsMenu) findViewById(R.id.add_action_menu);
+        final FloatingActionButton manuallyAddButton = (FloatingActionButton) findViewById(R.id.add_action_button_manually);
+        final FloatingActionButton scanButton = (FloatingActionButton) findViewById(R.id.add_action_button_scan);
+
+        actionMenu.setOnFloatingActionsMenuUpdateListener(new FloatingActionsMenu
+                .OnFloatingActionsMenuUpdateListener() {
+            @Override
+            public void onMenuExpanded()
+            {
+               dimBackgroundAsAnimation(actionButtonLayout);
+
+                actionButtonLayout.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        actionMenu.collapse();
+                    }
+                });
+            }
+
+            @Override
+            public void onMenuCollapsed()
+            {
+                actionButtonLayout.setBackgroundColor(getResources().getColor(R.color.transparent));
+                actionButtonLayout.setOnClickListener(null);
+                actionButtonLayout.setClickable(false);
+            }
+        });
+
+        manuallyAddButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                EvercamPlayApplication.sendEventAnalytics(CamerasActivity.this, R.string
+                        .category_menu, R.string.action_add_camera, R.string
+                        .label_add_camera_manually);
+
+                startActivityForResult(new Intent(CamerasActivity.this, AddEditCameraActivity
+                        .class), Constants.REQUEST_CODE_ADD_CAMERA);
+
+                actionMenu.collapse();
+            }
+        });
+        scanButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+
+                EvercamPlayApplication.sendEventAnalytics(CamerasActivity.this, R.string
+                        .category_menu, R.string.action_add_camera, R.string.label_add_camera_scan);
+
+                startActivityForResult(new Intent(CamerasActivity.this, ScanActivity.class),
+                        Constants.REQUEST_CODE_ADD_CAMERA);
+
+                actionMenu.collapse();
+            }
+        });
+    }
+
+    private void dimBackgroundAsAnimation(final View view)
+    {
+        Integer colorFrom = getResources().getColor(R.color.transparent);
+        Integer colorTo = getResources().getColor(R.color.black_semi_transparent);
+        ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
+        colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
+        {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animator)
+            {
+                view.setBackgroundColor((Integer)animator.getAnimatedValue());
+            }
+        });
+        colorAnimation.start();
     }
 
     boolean resizeCameras()
@@ -633,49 +713,6 @@ public class CamerasActivity extends ParentActivity
         }
 
         showOfflineOnStop = PrefsManager.showOfflineCameras(this);
-    }
-
-    private void showAddCameraOptionsDialog()
-    {
-        final View optionsView = getLayoutInflater().inflate(R.layout.add_camera_options_list,
-                null);
-        final AlertDialog dialog = CustomedDialog.getAlertDialogNoTitle(CamerasActivity.this,
-                optionsView);
-        dialog.show();
-
-        Button addCameraButton = (Button) optionsView.findViewById(R.id.btn_add_ip_camera);
-        Button scanCameraButton = (Button) optionsView.findViewById(R.id.btn_scan_for_camera);
-
-        addCameraButton.setOnClickListener(new OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                dialog.dismiss();
-
-                EvercamPlayApplication.sendEventAnalytics(CamerasActivity.this, R.string
-                        .category_menu, R.string.action_add_camera, R.string
-                        .label_add_camera_manually);
-
-                startActivityForResult(new Intent(CamerasActivity.this, AddEditCameraActivity
-                        .class), Constants.REQUEST_CODE_ADD_CAMERA);
-            }
-        });
-
-        scanCameraButton.setOnClickListener(new OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                dialog.dismiss();
-
-                EvercamPlayApplication.sendEventAnalytics(CamerasActivity.this, R.string
-                        .category_menu, R.string.action_add_camera, R.string.label_add_camera_scan);
-
-                startActivityForResult(new Intent(CamerasActivity.this, ScanActivity.class),
-                        Constants.REQUEST_CODE_ADD_CAMERA);
-            }
-        });
     }
 
     public static void logOutDefaultUser(Activity activity)

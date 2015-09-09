@@ -53,7 +53,7 @@
                 android:layout_marginTop="35dp"
                 android:background="@drawable/btn_selector"
                 android:text="@string/action_sign_in_with_evercam"
-                android:textColor="#ffffff"/>
+                android:textColor="@color/white"/>
         </LinearLayout>
 
         <TextView

@@ -3,14 +3,6 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent">
 
-    <!--
-    Disable slide menu temporarily
-    <io.evercam.androidapp.slidemenu.SlideMenu
-        android:id="@+id/slideMenu"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-    -->
-
     <io.evercam.androidapp.custom.CustomScrollView
         android:id="@+id/cameras_scroll_view"
         android:layout_width="fill_parent"
@@ -26,6 +18,9 @@
             <!-- Child linear layouts will be created and inserted here dynamically -->
 
         </io.evercam.androidapp.custom.FlowLayout>
+
     </io.evercam.androidapp.custom.CustomScrollView>
+
+    <include layout="@layout/float_action_button_layout"/>
 
 </RelativeLayout>

@@ -85,10 +85,14 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
                     @Override
                     public void onFinished(ArrayList<NatMapEntry> mapEntries)
                     {
-                        for(DiscoveredCamera discoveredCamera : getScanActivity().discoveredCameras)
+                        if(getScanActivity() != null)
                         {
-                            DiscoveredCamera mergedCamera = EvercamDiscover.mergeNatTableToCamera(discoveredCamera, mapEntries);
-                            publishProgress(mergedCamera);
+                            for(DiscoveredCamera discoveredCamera : getScanActivity().discoveredCameras)
+
+                            {
+                                DiscoveredCamera mergedCamera = EvercamDiscover.mergeNatTableToCamera(discoveredCamera, mapEntries);
+                                publishProgress(mergedCamera);
+                            }
                         }
 
                         natDone = true;

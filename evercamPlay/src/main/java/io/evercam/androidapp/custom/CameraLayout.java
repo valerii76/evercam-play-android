@@ -61,7 +61,7 @@ public class CameraLayout extends LinearLayout
 
             this.setOrientation(LinearLayout.VERTICAL);
             this.setGravity(Gravity.START);
-            this.setBackgroundColor(getResources().getColor(R.color.evercam_color_light_gray));
+            this.setBackgroundColor(getResources().getColor(R.color.custom_light_gray));
 
             cameraRelativeLayout = new RelativeLayout(context);
             RelativeLayout.LayoutParams ivParams = new RelativeLayout.LayoutParams(android.view
