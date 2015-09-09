@@ -1,6 +1,5 @@
 <resources>
 
-    <color name="transparent">#00000000</color>
     <color name="orange_red">#dc4c3f</color>
     <color name="orange_red_pressed">#ad3328</color>
     <color name="evercam_dark_gray">#404142</color>

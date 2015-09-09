@@ -336,7 +336,7 @@ public class CamerasActivity extends ParentActivity
             @Override
             public void onMenuCollapsed()
             {
-                actionButtonLayout.setBackgroundColor(getResources().getColor(R.color.transparent));
+                actionButtonLayout.setBackgroundColor(getResources().getColor(android.R.color.transparent));
                 actionButtonLayout.setOnClickListener(null);
                 actionButtonLayout.setClickable(false);
             }
@@ -374,7 +374,7 @@ public class CamerasActivity extends ParentActivity
 
     private void dimBackgroundAsAnimation(final View view)
     {
-        Integer colorFrom = getResources().getColor(R.color.transparent);
+        Integer colorFrom = getResources().getColor(android.R.color.transparent);
         Integer colorTo = getResources().getColor(R.color.black_semi_transparent);
         ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
         colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
