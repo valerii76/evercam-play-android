@@ -26,22 +26,12 @@
                 android:text="@string/evercam_id"
                 android:textSize="17sp"/>
 
-            <!--
-            <EditText-->
-                <!--android:id="@+id/add_id_edit"-->
-                <!--android:layout_width="fill_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:hint="@string/hint_id"-->
-                <!--android:inputType="text"-->
-                <!--android:singleLine="true"-->
-                <!--android:textSize="17sp"/>-->
-
             <TextView
                 android:id="@+id/add_id_txt_view"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="12sp"
-                android:textColor="#ffffff"
+                android:textColor="@color/white"
                 android:textSize="17sp"/>
         </LinearLayout>
 
@@ -74,11 +64,13 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10sp"
-            android:layout_marginRight="10sp">
+            android:layout_marginRight="10sp"
+            android:layout_marginTop="5sp"
+            android:layout_marginBottom="5sp">
 
             <TextView
                 android:id="@+id/vendor_txt"
-                android:layout_width="100sp"
+                android:layout_width="97sp"
                 android:layout_height="20sp"
                 android:layout_gravity="center"
                 android:fontFamily="sans-serif-light"
@@ -95,7 +87,9 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10sp"
-            android:layout_marginRight="10sp">
+            android:layout_marginRight="10sp"
+            android:layout_marginTop="5sp"
+            android:layout_marginBottom="5sp">
 
             <TextView
                 android:id="@+id/model_txt"
@@ -117,7 +111,7 @@
 
             <Spinner
                 android:id="@+id/model_spinner"
-                android:layout_marginLeft="30sp"
+                android:layout_marginLeft="27sp"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"/>
         </LinearLayout>
@@ -315,8 +309,7 @@
                 android:layout_weight=".25"
                 android:background="@drawable/btn_selector"
                 android:text="@string/test"
-                android:textColor="#ffffff"
-                android:textSize="17sp"/>
+                android:textColor="@color/white"/>
         </LinearLayout>
     </LinearLayout>
 
