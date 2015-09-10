@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.Window;
 
 import io.evercam.API;
 import io.evercam.EvercamException;
@@ -25,14 +26,15 @@ import io.evercam.androidapp.utils.PrefsManager;
  * */
 public class MainActivity extends ParentActivity
 {
-    private static final String TAG = "evercam-MainActivity";
+    private static final String TAG = "MainActivity";
 
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.mainactivitylayout);
+        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        setContentView(R.layout.main_activity_layout);
 
         launch();
     }

@@ -37,7 +37,7 @@ public class LoginActivity extends ParentActivity
     private String username;
     private String password;
     private LoginTask loginTask;
-    private String TAG = "evercamplay-LoginActivity";
+    private String TAG = "LoginActivity";
     private CustomProgressDialog customProgressDialog;
 
     private enum InternetCheckType

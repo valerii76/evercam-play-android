@@ -99,8 +99,7 @@
             android:theme="@android:style/Theme.Light.NoTitleBar">
         </activity>
         <activity
-            android:name=".MainActivity"
-            android:label="">
+            android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
