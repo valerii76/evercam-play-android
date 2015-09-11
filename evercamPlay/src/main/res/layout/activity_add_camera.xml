@@ -1,13 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10sp">
+            android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10sp"
+            android:layout_marginTop="5sp"
+            android:layout_marginRight="10sp">
+
+            <LinearLayout
+                android:id="@+id/vendor_model_layout"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/model_thumbnail_image_view"
+                    android:layout_width="0sp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="2"
+                    android:background="@color/white"
+                    android:paddingTop="10sp"
+                    android:paddingBottom="5sp"
+                    android:src="@drawable/thumbnail_placeholder"/>
+
+                <LinearLayout
+                    android:layout_width="0sp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:layout_marginTop="10sp"
+                    android:layout_marginBottom="5sp"
+                    android:orientation="vertical">
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5sp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/vendor_txt"
+                            android:layout_width="wrap_content"
+                            android:layout_height="20sp"
+                            android:layout_marginLeft="7sp"
+                            android:text="@string/vendor"
+                            android:textSize="15sp"/>
+
+                        <Spinner
+                            android:id="@+id/vendor_spinner"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5sp"
+                        android:layout_marginBottom="5sp"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+                            <TextView
+                                android:id="@+id/model_txt"
+                                android:layout_width="wrap_content"
+                                android:layout_marginLeft="7sp"
+                                android:layout_height="20sp"
+                                android:text="@string/model"
+                                android:textSize="15sp"/>
+
+                            <ImageView
+                                android:id="@+id/model_explanation_btn"
+                                android:layout_width="18sp"
+                                android:layout_height="18sp"
+                                android:layout_marginLeft="3sp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_question"/>
+                        </LinearLayout>
+
+                        <Spinner
+                            android:id="@+id/model_spinner"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Make the logo image view out of the proportion LinearLayout -->
+            <!-- Because adjustViewBounds doesn't take effect with LinearLayout's 'weight' -->
+            <ImageView
+                android:id="@+id/vendor_logo_image_view"
+                android:layout_width="wrap_content"
+                android:layout_height="15sp"
+                android:paddingTop="2sp"
+                android:paddingLeft="2sp"
+                android:adjustViewBounds="true"/>
+        </RelativeLayout>
 
         <LinearLayout
             android:id="@+id/add_camera_id_layout"
@@ -22,15 +117,14 @@
                 android:id="@+id/add_id_txt"
                 android:layout_width="100sp"
                 android:layout_height="20sp"
-                android:fontFamily="sans-serif-light"
                 android:text="@string/evercam_id"
-                android:textSize="17sp"/>
+                android:textSize="15sp"/>
 
             <TextView
                 android:id="@+id/add_id_txt_view"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="12sp"
+                android:layout_marginLeft="5sp"
                 android:textColor="@color/white"
                 android:textSize="17sp"/>
         </LinearLayout>
@@ -46,9 +140,8 @@
                 android:id="@+id/add_name_txt"
                 android:layout_width="100sp"
                 android:layout_height="20sp"
-                android:fontFamily="sans-serif-light"
                 android:text="@string/friendly_name"
-                android:textSize="17sp"/>
+                android:textSize="15sp"/>
 
             <EditText
                 android:id="@+id/add_name_edit"
@@ -65,71 +158,14 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10sp"
             android:layout_marginRight="10sp"
-            android:layout_marginTop="5sp"
-            android:layout_marginBottom="5sp">
-
-            <TextView
-                android:id="@+id/vendor_txt"
-                android:layout_width="97sp"
-                android:layout_height="20sp"
-                android:layout_gravity="center"
-                android:fontFamily="sans-serif-light"
-                android:text="@string/vendor"
-                android:textSize="17sp"/>
-
-            <Spinner
-                android:id="@+id/vendor_spinner"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10sp"
-            android:layout_marginRight="10sp"
-            android:layout_marginTop="5sp"
-            android:layout_marginBottom="5sp">
-
-            <TextView
-                android:id="@+id/model_txt"
-                android:layout_width="50sp"
-                android:layout_height="20sp"
-                android:layout_gravity="center"
-                android:fontFamily="sans-serif-light"
-                android:text="@string/model"
-                android:textSize="17sp"/>
-
-            <ImageView
-                android:id="@+id/model_explanation_btn"
-                android:layout_width="20sp"
-                android:layout_height="20sp"
-                android:layout_gravity="center"
-                android:layout_marginTop="2sp"
-                android:src="@drawable/ic_question"
-                android:scaleType="fitCenter"/>
-
-            <Spinner
-                android:id="@+id/model_spinner"
-                android:layout_marginLeft="27sp"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10sp"
-            android:layout_marginRight="10sp"
             android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/add_external_host_txt"
                 android:layout_width="100sp"
                 android:layout_height="20sp"
-                android:fontFamily="sans-serif-light"
                 android:text="@string/external_host"
-                android:textSize="17sp"/>
+                android:textSize="15sp"/>
 
             <EditText
                 android:id="@+id/add_external_host_edit"
@@ -152,9 +188,8 @@
                 android:id="@+id/add_external_http_txt"
                 android:layout_width="100sp"
                 android:layout_height="20sp"
-                android:fontFamily="sans-serif-light"
                 android:text="@string/http_port"
-                android:textSize="17sp"/>
+                android:textSize="15sp"/>
 
             <EditText
                 android:id="@+id/add_external_http_edit"
@@ -178,9 +213,8 @@
                 android:id="@+id/add_jpg_url_txt"
                 android:layout_width="100sp"
                 android:layout_height="20sp"
-                android:fontFamily="sans-serif-light"
                 android:text="@string/jpg_url"
-                android:textSize="17sp"/>
+                android:textSize="15sp"/>
 
             <EditText
                 android:id="@+id/add_jpg_edit"
@@ -203,9 +237,8 @@
                 android:id="@+id/add_external_rtsp_txt"
                 android:layout_width="100sp"
                 android:layout_height="20sp"
-                android:fontFamily="sans-serif-light"
                 android:text="@string/rtsp_port"
-                android:textSize="17sp"/>
+                android:textSize="15sp"/>
 
             <EditText
                 android:id="@+id/add_external_rtsp_edit"
@@ -229,9 +262,8 @@
                 android:id="@+id/add_rtsp_url_txt"
                 android:layout_width="100sp"
                 android:layout_height="20sp"
-                android:fontFamily="sans-serif-light"
                 android:text="@string/rtsp_url"
-                android:textSize="17sp"/>
+                android:textSize="15sp"/>
 
             <EditText
                 android:id="@+id/add_rtsp_edit"
@@ -254,9 +286,8 @@
                 android:layout_width="100sp"
                 android:layout_height="20sp"
                 android:layout_gravity="center"
-                android:fontFamily="sans-serif-light"
                 android:text="@string/credentials"
-                android:textSize="17sp"/>
+                android:textSize="15sp"/>
 
             <EditText
                 android:id="@+id/add_username_edit"
@@ -271,7 +302,6 @@
                 android:id="@+id/add_colon"
                 android:layout_width="wrap_content"
                 android:layout_height="20sp"
-                android:fontFamily="sans-serif-light"
                 android:text="@string/colon"
                 android:textSize="17sp"/>
 
@@ -290,7 +320,7 @@
             android:layout_marginBottom="10sp"
             android:layout_marginLeft="10sp"
             android:layout_marginRight="10sp"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="30dp"
             android:orientation="horizontal">
 
             <Button

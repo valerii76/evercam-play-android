@@ -17,6 +17,8 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
@@ -173,6 +175,8 @@ public class AddEditCameraActivity extends ParentActivity
         cameraNameEdit = (EditText) findViewById(R.id.add_name_edit);
         vendorSpinner = (Spinner) findViewById(R.id.vendor_spinner);
         modelSpinner = (Spinner) findViewById(R.id.model_spinner);
+        final ImageView vendorLogoImageView = (ImageView) findViewById(R.id.vendor_logo_image_view);
+        final ImageView modelThumbnailImageView = (ImageView) findViewById(R.id.model_thumbnail_image_view);
         ImageView modelExplanationImageButton = (ImageView) findViewById(R.id.model_explanation_btn);
         usernameEdit = (EditText) findViewById(R.id.add_username_edit);
         passwordEdit = (EditText) findViewById(R.id.add_password_edit);
@@ -209,6 +213,7 @@ public class AddEditCameraActivity extends ParentActivity
             {
                 if(position == 0)
                 {
+                    vendorLogoImageView.setImageResource(android.R.color.transparent);
                     buildModelSpinner(new ArrayList<Model>(), null);
                 }
                 else
@@ -218,6 +223,11 @@ public class AddEditCameraActivity extends ParentActivity
 
                     if(!vendorName.equals(getString(R.string.vendor_other)))
                     {
+                        //Update vendor logo when vendor is selected
+                        Picasso.with(AddEditCameraActivity.this).load(Vendor.getLogoUrl(vendorId))
+                                .placeholder(android.R.color.transparent)
+                                .into(vendorLogoImageView);
+
                         new RequestModelListTask(vendorId).executeOnExecutor(AsyncTask
                                 .THREAD_POOL_EXECUTOR);
                     }
@@ -240,6 +250,10 @@ public class AddEditCameraActivity extends ParentActivity
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView,
                                        int position, long id)
             {
+                String vendorId = getVendorIdFromSpinner();
+                String modelName = getModelNameFromSpinner();
+                String modelId = getModelIdFromSpinner();
+
                 // Do not update camera defaults in edit screen.
                 if(cameraEdit == null)
                 {
@@ -249,13 +263,25 @@ public class AddEditCameraActivity extends ParentActivity
                     }
                     else
                     {
-                        String vendorId = getVendorIdFromSpinner();
-                        String modelName = getModelNameFromSpinner();
-
                         new RequestDefaultsTask(vendorId, modelName).executeOnExecutor(AsyncTask
                                 .THREAD_POOL_EXECUTOR);
                     }
                 }
+
+                //For all situations, the logo & thumbnail should update when selected
+                if(position == 0)
+                {
+                    modelThumbnailImageView.setImageResource(R.drawable.thumbnail_placeholder);
+                }
+                else
+                {
+                    //Update model logo when model is selected
+                    Picasso.with(AddEditCameraActivity.this)
+                            .load(Model.getThumbnailUrl(vendorId, modelId))
+                            .placeholder(R.drawable.thumbnail_placeholder)
+                            .into(modelThumbnailImageView);
+                }
+
                 showUrlEndings(position == 0);
             }
 
