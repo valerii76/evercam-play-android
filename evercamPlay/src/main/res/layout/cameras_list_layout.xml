@@ -4,7 +4,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent">
 
-    <io.evercam.androidapp.custom.CustomScrollView
+    <com.github.ksoichiro.android.observablescrollview.ObservableScrollView
         android:id="@+id/cameras_scroll_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -20,7 +20,7 @@
 
         </io.evercam.androidapp.custom.FlowLayout>
 
-    </io.evercam.androidapp.custom.CustomScrollView>
+    </com.github.ksoichiro.android.observablescrollview.ObservableScrollView>
 
     <include layout="@layout/float_action_button_layout"/>
 

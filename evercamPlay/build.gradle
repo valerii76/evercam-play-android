@@ -51,6 +51,7 @@ android {
 apply plugin: 'com.android.application'
 
 repositories {
+    mavenCentral()
     maven {
         url "https://mint.splunk.com/gradle/"
     }
@@ -69,6 +70,8 @@ dependencies {
     compile 'com.google.android.gms:play-services:7.8.0'
     compile "com.splunk.mint:mint:4.2.1"
     compile 'com.getbase:floatingactionbutton:1.10.0'
+    compile 'com.github.ksoichiro:android-observablescrollview:1.6.0'
+    compile 'com.nineoldandroids:library:2.4.0'
     //Enable multidex
     compile 'com.android.support:multidex:1.0.1'
     compile('org.simpleframework:simple-xml:2.7.1') {

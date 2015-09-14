@@ -18,16 +18,18 @@ import android.view.Display;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.github.ksoichiro.android.observablescrollview.ObservableScrollView;
+import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
+import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.logentries.android.AndroidLogger;
+import com.nineoldandroids.view.ViewHelper;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -37,8 +39,6 @@ import java.util.concurrent.RejectedExecutionException;
 import io.evercam.androidapp.authentication.EvercamAccount;
 import io.evercam.androidapp.custom.CameraLayout;
 import io.evercam.androidapp.custom.CustomProgressDialog;
-import io.evercam.androidapp.custom.CustomScrollView;
-import io.evercam.androidapp.custom.CustomScrollView.OnScrollStoppedListener;
 import io.evercam.androidapp.custom.CustomedDialog;
 import io.evercam.androidapp.dto.AppData;
 import io.evercam.androidapp.dto.AppUser;
@@ -54,7 +54,8 @@ import io.evercam.androidapp.utils.PrefsManager;
 import io.evercam.androidapp.utils.PropertyReader;
 import io.keen.client.java.KeenClient;
 
-public class CamerasActivity extends ParentAppCompatActivity
+public class CamerasActivity extends ParentAppCompatActivity implements
+        ObservableScrollViewCallbacks
 {
     public static CamerasActivity activity = null;
     public MenuItem refresh;
@@ -65,6 +66,9 @@ public class CamerasActivity extends ParentAppCompatActivity
     public boolean reloadCameraList = false;
 
     public CustomProgressDialog reloadProgressDialog;
+    private Toolbar mToolbar;
+    private RelativeLayout actionButtonLayout;
+    private int lastScrollY;
 
     /**
      * For user data collection, calculate how long it takes to load camera list
@@ -87,16 +91,13 @@ public class CamerasActivity extends ParentAppCompatActivity
     {
         super.onCreate(savedInstanceState);
 
-//        if(this.getActionBar() != null)
-//        {
-//            this.getActionBar().setHomeButtonEnabled(true);
-//            this.getActionBar().setDisplayShowTitleEnabled(false);
-//        }
-
         setContentView(R.layout.cameras_list_layout);
 
-        Toolbar toolBar = (Toolbar) findViewById(R.id.tool_bar);
-        setSupportActionBar(toolBar);
+        mToolbar = (Toolbar) findViewById(R.id.tool_bar);
+        setSupportActionBar(mToolbar);
+
+        ObservableScrollView observableScrollView = (ObservableScrollView) findViewById(R.id.cameras_scroll_view);
+        observableScrollView.setScrollViewCallbacks(this);
 
         setUpActionButtons();
 
@@ -315,7 +316,7 @@ public class CamerasActivity extends ParentAppCompatActivity
 
     private void setUpActionButtons()
     {
-        final RelativeLayout actionButtonLayout = (RelativeLayout) findViewById(R.id
+        actionButtonLayout = (RelativeLayout) findViewById(R.id
                 .action_button_layout);
         final FloatingActionsMenu actionMenu = (FloatingActionsMenu) findViewById(R.id.add_action_menu);
         final FloatingActionButton manuallyAddButton = (FloatingActionButton) findViewById(R.id.add_action_button_manually);
@@ -494,13 +495,8 @@ public class CamerasActivity extends ParentAppCompatActivity
             // Recalculate camera per row
             camerasPerRow = recalculateCameraPerRow();
 
-            final CustomScrollView scrollView = (CustomScrollView) this.findViewById(R.id
-                    .cameras_scroll_view);
-
             io.evercam.androidapp.custom.FlowLayout camsLineView = (io.evercam.androidapp.custom
                     .FlowLayout) this.findViewById(R.id.cameras_flow_layout);
-
-            final Rect bounds = readLiveBoundsOfScrollView();
 
             int screen_width = readScreenWidth(this);
 
@@ -541,31 +537,6 @@ public class CamerasActivity extends ParentAppCompatActivity
 
                 index++;
 
-                //TODO: Re-enable or remove this
-//                /**
-//                 * If need to reload the images, read camera layout position and
-//                 * check the rectangle is within scope of the screen or not
-//                 */
-//                if(reloadImages)
-//                {
-//                    evercamCamera.loadingStatus = ImageLoadingStatus.not_started;
-//                    new Handler().postDelayed(new Runnable()
-//                    {
-//                        @Override
-//                        public void run()
-//                        {
-//                            Rect cameraBounds = new Rect();
-//                            cameraListLayout.getHitRect(cameraBounds);
-//                            if(Rect.intersects(cameraBounds, bounds))
-//                            {
-//                                //FIXME
-//                                //cameraLayout.loadImage();
-//                                //cameraLayout.showThumbnail();
-//                            }
-//                        }
-//                    }, 300);
-//                }
-
                 new Handler().postDelayed(new Runnable()
                 {
                     @Override
@@ -596,12 +567,6 @@ public class CamerasActivity extends ParentAppCompatActivity
 
             if(refresh != null) refresh.setActionView(null);
 
-            //TODO: Re-enable or remove this
-//            // Only set up scroll listener if snapshots need to get reload
-//            if(reloadImages)
-//            {
-//                setScrollStopListenerFor(scrollView);
-//            }
             return true;
         }
         catch(Exception e)
@@ -622,81 +587,6 @@ public class CamerasActivity extends ParentAppCompatActivity
         super.onDestroy();
         activity = null;
         removeAllCameraViews();
-    }
-
-    /**
-     * If screen get scrolled, for the moment of scroll stopping, load camera
-     * snapshots within screen.
-     */
-    private void onScreenScrolled()
-    {
-        final Rect scrollViewBounds = readLiveBoundsOfScrollView();
-        final io.evercam.androidapp.custom.FlowLayout camsLineView1 = (io.evercam.androidapp
-                .custom.FlowLayout) CamerasActivity.this.findViewById(R.id.cameras_flow_layout);
-        final int totalLayouts = camsLineView1.getChildCount();
-        new Thread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                for(int index = 0; index < totalLayouts; index++)
-                {
-                    final LinearLayout cameraListLayout = (LinearLayout) camsLineView1.getChildAt
-                            (index);
-                    final CameraLayout cameraLayout = (CameraLayout) cameraListLayout.getChildAt(0);
-
-                    if(cameraLayout.evercamCamera.loadingStatus == ImageLoadingStatus.not_started)
-
-                    {
-                        Rect cameraBounds = new Rect();
-                        cameraListLayout.getHitRect(cameraBounds);
-                        if(Rect.intersects(cameraBounds, scrollViewBounds))
-                        {
-                            CamerasActivity.this.runOnUiThread(new Runnable()
-                            {
-                                @Override
-                                public void run()
-                                {
-                                    //FIXME
-                                    //cameraLayout.loadImage();
-                                    //cameraLayout.showThumbnail();
-                                }
-                            });
-                        }
-                    }
-                }
-            }
-        }).start();
-    }
-
-    private void setScrollStopListenerFor(final CustomScrollView scrollView)
-    {
-        scrollView.setOnTouchListener(new OnTouchListener()
-        {
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event)
-            {
-
-                if(event.getAction() == MotionEvent.ACTION_UP)
-                {
-
-                    scrollView.startScrollerTask();
-                }
-
-                return false;
-            }
-        });
-        scrollView.setOnScrollStoppedListener(new OnScrollStoppedListener()
-        {
-
-            @Override
-            public void onScrollStopped()
-            {
-
-                onScreenScrolled();
-            }
-        });
     }
 
     @Override
@@ -818,13 +708,6 @@ public class CamerasActivity extends ParentAppCompatActivity
         }
     }
 
-    private Rect readLiveBoundsOfScrollView()
-    {
-        CustomScrollView scrollView = (CustomScrollView) CamerasActivity.this.findViewById(R.id
-                .cameras_scroll_view);
-        return scrollView.getLiveBoundsRect();
-    }
-
     private void initDataCollectionObjects()
     {
         startTime = new Date();
@@ -912,6 +795,88 @@ public class CamerasActivity extends ParentAppCompatActivity
             else
             {
                 CustomedDialog.showInternetNotConnectDialog(CamerasActivity.this);
+            }
+        }
+    }
+
+    private boolean toolbarIsShown() {
+        return ViewHelper.getTranslationY(mToolbar) == 0;
+    }
+
+    private boolean toolbarIsHidden() {
+        return ViewHelper.getTranslationY(mToolbar) == -mToolbar.getHeight();
+    }
+
+    private void showToolbar() {
+        moveToolbar(0);
+    }
+
+    private void hideToolbar() {
+        moveToolbar(-mToolbar.getHeight());
+    }
+
+    private void moveToolbar(float toTranslationY)
+    {
+        if (ViewHelper.getTranslationY(mToolbar) == toTranslationY)
+        {
+            return;
+        }
+        ValueAnimator animator = ValueAnimator.ofFloat(ViewHelper.getTranslationY(mToolbar), toTranslationY).setDuration(200);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
+        {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation)
+            {
+                float translationY = (float) animation.getAnimatedValue();
+                ViewHelper.setTranslationY(mToolbar, translationY);
+            }
+        });
+        animator.start();
+    }
+
+    private void showActionButtons(boolean show)
+    {
+        actionButtonLayout.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
+    /**
+     * ObservableScrollView callbacks
+     */
+    @Override
+    public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging)
+    {
+        //Log.e(TAG, "onScrollChanged: " + scrollY + " " + firstScroll + " " + dragging);
+        lastScrollY = scrollY;
+    }
+
+    @Override
+    public void onDownMotionEvent()
+    {
+
+    }
+
+    @Override
+    public void onUpOrCancelMotionEvent(ScrollState scrollState)
+    {
+        //Log.e(TAG, "onUpOrCancelMotionEvent: " + scrollState);
+        if (scrollState == ScrollState.UP)
+        {
+            //Fix the bug that it's UP if swiping down when the view reaches screen top
+            if(lastScrollY != 0)
+            {
+                if(toolbarIsShown())
+                {
+                    hideToolbar();
+                    showActionButtons(false);
+                }
+            }
+        }
+        else if (scrollState == ScrollState.DOWN)
+        {
+            if (toolbarIsHidden())
+            {
+                showToolbar();
+                showActionButtons(true);
             }
         }
     }
