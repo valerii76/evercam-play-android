@@ -66,7 +66,6 @@ public class CamerasActivity extends ParentAppCompatActivity implements
     public boolean reloadCameraList = false;
 
     public CustomProgressDialog reloadProgressDialog;
-    private Toolbar mToolbar;
     private RelativeLayout actionButtonLayout;
     private int lastScrollY;
 
@@ -797,41 +796,6 @@ public class CamerasActivity extends ParentAppCompatActivity implements
                 CustomedDialog.showInternetNotConnectDialog(CamerasActivity.this);
             }
         }
-    }
-
-    private boolean toolbarIsShown() {
-        return ViewHelper.getTranslationY(mToolbar) == 0;
-    }
-
-    private boolean toolbarIsHidden() {
-        return ViewHelper.getTranslationY(mToolbar) == -mToolbar.getHeight();
-    }
-
-    private void showToolbar() {
-        moveToolbar(0);
-    }
-
-    private void hideToolbar() {
-        moveToolbar(-mToolbar.getHeight());
-    }
-
-    private void moveToolbar(float toTranslationY)
-    {
-        if (ViewHelper.getTranslationY(mToolbar) == toTranslationY)
-        {
-            return;
-        }
-        ValueAnimator animator = ValueAnimator.ofFloat(ViewHelper.getTranslationY(mToolbar), toTranslationY).setDuration(200);
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
-        {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation)
-            {
-                float translationY = (float) animation.getAnimatedValue();
-                ViewHelper.setTranslationY(mToolbar, translationY);
-            }
-        });
-        animator.start();
     }
 
     private void showActionButtons(boolean show)

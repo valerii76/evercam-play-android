@@ -1,9 +1,12 @@
 package io.evercam.androidapp;
 
+import android.animation.ValueAnimator;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 
 import com.logentries.android.AndroidLogger;
+import com.nineoldandroids.view.ViewHelper;
 import com.splunk.mint.Mint;
 
 import io.evercam.androidapp.feedback.MixpanelHelper;
@@ -15,6 +18,8 @@ public class ParentAppCompatActivity extends AppCompatActivity
     private PropertyReader propertyReader;
 
     private static MixpanelHelper mixpanelHelper;
+
+    protected Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -105,5 +110,40 @@ public class ParentAppCompatActivity extends AppCompatActivity
     public static void sendWithMsgToMint(String messageName, String message, Exception e)
     {
         Mint.logExceptionMessage(messageName, message, e);
+    }
+
+    protected boolean toolbarIsShown() {
+        return ViewHelper.getTranslationY(mToolbar) == 0;
+    }
+
+    protected boolean toolbarIsHidden() {
+        return ViewHelper.getTranslationY(mToolbar) == -mToolbar.getHeight();
+    }
+
+    protected void showToolbar() {
+        moveToolbar(0);
+    }
+
+    protected void hideToolbar() {
+        moveToolbar(-mToolbar.getHeight());
+    }
+
+    protected void moveToolbar(float toTranslationY)
+    {
+        if (ViewHelper.getTranslationY(mToolbar) == toTranslationY)
+        {
+            return;
+        }
+        ValueAnimator animator = ValueAnimator.ofFloat(ViewHelper.getTranslationY(mToolbar), toTranslationY).setDuration(200);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
+        {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation)
+            {
+                float translationY = (float) animation.getAnimatedValue();
+                ViewHelper.setTranslationY(mToolbar, translationY);
+            }
+        });
+        animator.start();
     }
 }

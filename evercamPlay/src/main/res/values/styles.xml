@@ -3,9 +3,9 @@
     <style name="AppTheme" parent="ThemeOverlay.AppCompat.ActionBar">
     </style>
 
-    <style name="ActionBarOverlayTheme" parent="AppTheme">
-        <item name="android:windowActionBarOverlay">true</item>
-    </style>
+    <!--<style name="ActionBarOverlayTheme" parent="AppTheme">-->
+        <!--<item name="android:windowActionBarOverlay">true</item>-->
+    <!--</style>-->
 
     <style name="ToolbarTheme" parent="Theme.AppCompat.NoActionBar">
         <!-- Color of the menu overflow icon-->

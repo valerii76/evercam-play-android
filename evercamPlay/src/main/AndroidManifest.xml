@@ -78,7 +78,7 @@
             android:name=".video.VideoActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label=""
-            android:theme="@style/ActionBarOverlayTheme"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
             android:screenOrientation="unspecified">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>

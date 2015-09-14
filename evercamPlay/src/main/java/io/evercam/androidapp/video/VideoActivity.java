@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v4.app.NavUtils;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -37,6 +38,7 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,6 +64,7 @@ import io.evercam.androidapp.EvercamPlayApplication;
 import io.evercam.androidapp.FeedbackActivity;
 import io.evercam.androidapp.MainActivity;
 import io.evercam.androidapp.ParentActivity;
+import io.evercam.androidapp.ParentAppCompatActivity;
 import io.evercam.androidapp.R;
 import io.evercam.androidapp.ViewCameraActivity;
 import io.evercam.androidapp.authentication.EvercamAccount;
@@ -88,7 +91,7 @@ import io.evercam.androidapp.utils.PropertyReader;
 import io.evercam.androidapp.video.SnapshotManager.FileType;
 import io.keen.client.java.KeenClient;
 
-public class VideoActivity extends ParentActivity implements SurfaceHolder.Callback
+public class VideoActivity extends ParentAppCompatActivity implements SurfaceHolder.Callback
 {
     public static EvercamCamera evercamCamera;
 
@@ -114,6 +117,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
     private Animation fadeInAnimation = null;
     private RelativeLayout ptzZoomLayout;
     private RelativeLayout ptzMoveLayout;
+    private Spinner mCameraListSpinner;
 
     private long downloadStartCount = 0;
     private long downloadEndCount = 0;
@@ -217,11 +221,6 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
 
             setDisplayOriention();
 
-            if(this.getActionBar() != null)
-            {
-                this.getActionBar().setDisplayHomeAsUpEnabled(true);
-            }
-
             /**
              * Init Gstreamer
              */
@@ -238,6 +237,11 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
             nativeInit();
 
             setContentView(R.layout.video_activity_layout);
+
+            mToolbar = (Toolbar) findViewById(R.id.spinner_tool_bar);
+            setSupportActionBar(mToolbar);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            mCameraListSpinner = (Spinner) findViewById(R.id.spinner_camera_list);
 
             initialPageElements();
 
@@ -831,7 +835,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
                 int orientation = VideoActivity.this.getResources().getConfiguration().orientation;
                 if(!paused && orientation == Configuration.ORIENTATION_LANDSCAPE)
                 {
-                    VideoActivity.this.getActionBar().hide();
+                    hideToolbar();
                 }
             }
         });
@@ -937,15 +941,15 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
             {
                 getWindow().setFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN,
                         WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
-                this.getActionBar().show();
+                showToolbar();
             }
             else
             {
                 getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                         WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-                if(!paused && !end && !isProgressShowing) this.getActionBar().hide();
-                else this.getActionBar().show();
+                if(!paused && !end && !isProgressShowing) hideToolbar();
+                else showToolbar();
             }
 
             this.invalidateOptionsMenu();
@@ -966,7 +970,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
             public void onClick(DialogInterface dialog, int which)
             {
 
-                VideoActivity.this.getActionBar().show();
+                showToolbar();
                 paused = true;
                 isShowingFailureMessage = false;
                 dialog.dismiss();
@@ -1240,7 +1244,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
                     }
                     else
                     {
-                        VideoActivity.this.getActionBar().show();
+                        showToolbar();
                         playPauseImageView.setImageResource(android.R.drawable.ic_media_pause);
 
                         showAllControlMenus(true);
@@ -1619,7 +1623,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
                                 if(playPauseImageView.getVisibility() != View.VISIBLE &&
                                         VideoActivity.this.getResources().getConfiguration()
                                                 .orientation == Configuration.ORIENTATION_LANDSCAPE)
-                                    VideoActivity.this.getActionBar().hide();
+                                    hideToolbar();
 
                                 if(showImagesVideo && cameraId.equals(evercamCamera.getCameraId()))
                                 {
@@ -1764,11 +1768,10 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
 
         CameraListAdapter adapter = new CameraListAdapter(VideoActivity.this,
                 R.layout.live_view_spinner, R.id.spinner_camera_name_text, cameraNames, cameraList);
-        VideoActivity.this.getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-        OnNavigationListener navigationListener = new OnNavigationListener()
-        {
+        mCameraListSpinner.setAdapter(adapter);
+        mCameraListSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public boolean onNavigationItemSelected(int itemPosition, long itemId)
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
             {
                 //Stop time counter when another camera selected
                 if(timeCounter != null)
@@ -1784,7 +1787,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
                 browseJpgTask = null;
                 showImagesVideo = false;
 
-                evercamCamera = cameraList.get(itemPosition);
+                evercamCamera = cameraList.get(position);
 
                 //Hide the PTZ control panel when switch to another camera
                 showPtzControl(false);
@@ -1804,7 +1807,7 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
                 {
                     offlineTextView.setVisibility(View.GONE);
 
-                    setCameraForPlaying(cameraList.get(itemPosition));
+                    setCameraForPlaying(cameraList.get(position));
                     createPlayer(evercamCamera);
 
                     if(evercamCamera.hasModel())
@@ -1813,12 +1816,15 @@ public class VideoActivity extends ParentActivity implements SurfaceHolder.Callb
                                 .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     }
                 }
-                return false;
             }
-        };
 
-        getActionBar().setListNavigationCallbacks(adapter, navigationListener);
-        getActionBar().setSelectedNavigationItem(defaultCameraIndex);
+            @Override
+            public void onNothingSelected(AdapterView<?> parent)
+            {
+
+            }
+        });
+        mCameraListSpinner.setSelection(defaultCameraIndex);
     }
 
     private void onMediaSizeChanged (int width, int height) {
