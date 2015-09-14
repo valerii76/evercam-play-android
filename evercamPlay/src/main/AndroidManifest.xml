@@ -126,6 +126,7 @@
             android:name=".CamerasActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label=""
+            android:theme="@style/Theme.AppCompat.NoActionBar"
             android:launchMode="singleTop"
             android:logo="@android:color/transparent">
         </activity>

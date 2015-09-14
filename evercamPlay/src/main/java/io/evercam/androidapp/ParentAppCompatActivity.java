@@ -1,10 +1,7 @@
 package io.evercam.androidapp;
 
-import android.app.Activity;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Window;
 
 import com.logentries.android.AndroidLogger;
 import com.splunk.mint.Mint;
@@ -13,7 +10,7 @@ import io.evercam.androidapp.feedback.MixpanelHelper;
 import io.evercam.androidapp.utils.Constants;
 import io.evercam.androidapp.utils.PropertyReader;
 
-public class ParentActivity extends Activity
+public class ParentAppCompatActivity extends AppCompatActivity
 {
     private PropertyReader propertyReader;
 
@@ -23,7 +20,6 @@ public class ParentActivity extends Activity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 
         propertyReader = new PropertyReader(this);
 

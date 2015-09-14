@@ -12,6 +12,7 @@ import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
@@ -53,7 +54,7 @@ import io.evercam.androidapp.utils.PrefsManager;
 import io.evercam.androidapp.utils.PropertyReader;
 import io.keen.client.java.KeenClient;
 
-public class CamerasActivity extends ParentActivity
+public class CamerasActivity extends ParentAppCompatActivity
 {
     public static CamerasActivity activity = null;
     public MenuItem refresh;
@@ -86,13 +87,16 @@ public class CamerasActivity extends ParentActivity
     {
         super.onCreate(savedInstanceState);
 
-        if(this.getActionBar() != null)
-        {
-            this.getActionBar().setHomeButtonEnabled(true);
-            this.getActionBar().setDisplayShowTitleEnabled(false);
-        }
+//        if(this.getActionBar() != null)
+//        {
+//            this.getActionBar().setHomeButtonEnabled(true);
+//            this.getActionBar().setDisplayShowTitleEnabled(false);
+//        }
 
         setContentView(R.layout.cameras_list_layout);
+
+        Toolbar toolBar = (Toolbar) findViewById(R.id.tool_bar);
+        setSupportActionBar(toolBar);
 
         setUpActionButtons();
 
