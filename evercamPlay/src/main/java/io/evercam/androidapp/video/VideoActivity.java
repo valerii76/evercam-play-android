@@ -1,7 +1,5 @@
 package io.evercam.androidapp.video;
 
-import android.app.ActionBar;
-import android.app.ActionBar.OnNavigationListener;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.TaskStackBuilder;
@@ -63,7 +61,6 @@ import io.evercam.androidapp.CamerasActivity;
 import io.evercam.androidapp.EvercamPlayApplication;
 import io.evercam.androidapp.FeedbackActivity;
 import io.evercam.androidapp.MainActivity;
-import io.evercam.androidapp.ParentActivity;
 import io.evercam.androidapp.ParentAppCompatActivity;
 import io.evercam.androidapp.R;
 import io.evercam.androidapp.ViewCameraActivity;

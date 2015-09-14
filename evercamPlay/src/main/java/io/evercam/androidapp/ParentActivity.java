@@ -2,8 +2,6 @@ package io.evercam.androidapp;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
 
 import com.logentries.android.AndroidLogger;
