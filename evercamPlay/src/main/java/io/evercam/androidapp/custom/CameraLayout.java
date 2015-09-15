@@ -15,7 +15,7 @@ import android.widget.RelativeLayout;
 
 import com.squareup.picasso.Picasso;
 
-import io.evercam.androidapp.ParentActivity;
+import io.evercam.androidapp.ParentAppCompatActivity;
 import io.evercam.androidapp.R;
 import io.evercam.androidapp.dto.AppData;
 import io.evercam.androidapp.dto.CameraStatus;
@@ -129,7 +129,7 @@ public class CameraLayout extends LinearLayout
         {
             Log.e(TAG, e.toString() + "::" + Log.getStackTraceString(e));
 
-            ParentActivity.sendToMint(e);
+            ParentAppCompatActivity.sendToMint(e);
         }
     }
 

@@ -41,7 +41,7 @@ import io.evercam.network.EvercamDiscover;
 import io.evercam.network.discovery.DiscoveredCamera;
 import io.evercam.network.query.EvercamQuery;
 
-public class ScanActivity extends ParentActivity
+public class ScanActivity extends ParentAppCompatActivity
 {
     private final String TAG = "ScanActivity";
 
@@ -63,12 +63,9 @@ public class ScanActivity extends ParentActivity
     {
         super.onCreate(savedInstanceState);
 
-        if(this.getActionBar() != null)
-        {
-            this.getActionBar().setDisplayHomeAsUpEnabled(true);
-        }
-
         setContentView(R.layout.activity_scan);
+
+        setUpDefaultToolbar();
 
         setActivityBackgroundColor(Color.WHITE);
 
@@ -453,15 +450,7 @@ public class ScanActivity extends ParentActivity
         //Hide the cancel button
         showCancelMenuItem(false);
 
-        updateActionBarTitle("Finished. " + cameraList.size() + " Camera(s) Found.");
-    }
-
-    public void updateActionBarTitle(String title)
-    {
-        if(getActionBar() != null)
-        {
-            getActionBar().setTitle(title);
-        }
+        updateTitleText("Finished. " + cameraList.size() + " Camera(s) Found.");
     }
 
     public void updateScanPercentage(final Float percentageFloat)
@@ -473,7 +462,7 @@ public class ScanActivity extends ParentActivity
             {
                 if(percentageFloat == null)
                 {
-                    updateActionBarTitle("");
+                    updateTitleText("");
                 }
                 else
                 {
@@ -481,7 +470,7 @@ public class ScanActivity extends ParentActivity
                     int percentageInt = (int) percentf;
                     if(percentageInt < 100)
                     {
-                        updateActionBarTitle("Scanning... " + percentageInt + '%');
+                        updateTitleText("Scanning... " + percentageInt + '%');
                         progressBar.setProgress(percentageInt);
                     }
                 }

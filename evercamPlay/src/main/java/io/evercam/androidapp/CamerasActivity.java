@@ -92,6 +92,7 @@ public class CamerasActivity extends ParentAppCompatActivity implements
         setContentView(R.layout.cameras_list_layout);
 
         mToolbar = (Toolbar) findViewById(R.id.tool_bar);
+        setGradientTitleBackground();
         setSupportActionBar(mToolbar);
 
         ObservableScrollView observableScrollView = (ObservableScrollView) findViewById(R.id.cameras_scroll_view);
@@ -560,8 +561,6 @@ public class CamerasActivity extends ParentAppCompatActivity implements
                     }
                 }, 200);
             }
-
-            if(this.getActionBar() != null) this.getActionBar().setHomeButtonEnabled(true);
 
             if(refresh != null) refresh.setActionView(null);
 

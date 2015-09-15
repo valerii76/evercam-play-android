@@ -18,6 +18,8 @@ public class RecordingWebActivity extends WebActivity
 
         setContentView(R.layout.activity_recording_web);
 
+        setUpDefaultToolbar();
+
         if(bundle != null)
         {
             loadPage();

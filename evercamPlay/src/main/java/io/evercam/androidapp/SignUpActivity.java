@@ -28,9 +28,9 @@ import io.evercam.androidapp.tasks.CheckInternetTask;
 import io.evercam.androidapp.utils.Constants;
 import io.evercam.androidapp.utils.DataCollector;
 
-public class SignUpActivity extends ParentActivity
+public class SignUpActivity extends ParentAppCompatActivity
 {
-    private final String TAG = "evercam-SignUpActivity";
+    private final String TAG = "SignUpActivity";
     // Auto filled profiles
     private String filledFirstname = "";
     private String filledLastname = "";
@@ -53,9 +53,9 @@ public class SignUpActivity extends ParentActivity
     {
         super.onCreate(savedInstanceState);
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-
         setContentView(R.layout.activity_sign_up);
+
+        setUpDefaultToolbar();
 
         readFromAccount();
         initialPage();

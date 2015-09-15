@@ -5,8 +5,9 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.splunk.mint.Mint;
@@ -18,7 +19,7 @@ import io.evercam.androidapp.utils.DataCollector;
 import io.evercam.androidapp.utils.PrefsManager;
 import io.evercam.androidapp.utils.PropertyReader;
 
-public class CameraPrefsActivity extends PreferenceActivity
+public class CameraPrefsActivity extends AppCompatActivity
 {
     private static int screenWidth = 0;
     private PropertyReader propertyReader;
@@ -28,6 +29,13 @@ public class CameraPrefsActivity extends PreferenceActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_settings_layout);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
+        toolbar.setBackgroundColor(getResources().getColor(R.color.dark_gray_background));
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         propertyReader = new PropertyReader(this);
         if(Constants.isAppTrackingEnabled)
@@ -41,14 +49,9 @@ public class CameraPrefsActivity extends PreferenceActivity
             }
         }
 
-        if(this.getActionBar() != null)
-        {
-            this.getActionBar().setDisplayHomeAsUpEnabled(true);
-        }
-
         screenWidth = CamerasActivity.readScreenWidth(this);
 
-        getFragmentManager().beginTransaction().replace(android.R.id.content,
+        getFragmentManager().beginTransaction().replace(R.id.content_frame,
                 new MyPreferenceFragment()).commit();
         this.setDefaultKeyMode(DEFAULT_KEYS_DISABLE);
     }

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.Window;
 
 import io.evercam.API;
 import io.evercam.EvercamException;
@@ -24,7 +23,7 @@ import io.evercam.androidapp.utils.PrefsManager;
  * Main starting activity. 
  * Checks whether user should login first or load the cameras straight away
  * */
-public class MainActivity extends ParentActivity
+public class MainActivity extends ParentAppCompatActivity
 {
     private static final String TAG = "MainActivity";
 
@@ -33,7 +32,6 @@ public class MainActivity extends ParentActivity
     {
         super.onCreate(savedInstanceState);
 
-        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.main_activity_layout);
 
         launch();

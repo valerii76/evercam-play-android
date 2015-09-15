@@ -15,6 +15,8 @@ public class AboutWebActivity extends WebActivity
 
         setContentView(R.layout.activity_web);
 
+        setUpDefaultToolbar();
+
         if(bundle != null)
         {
             loadPage();

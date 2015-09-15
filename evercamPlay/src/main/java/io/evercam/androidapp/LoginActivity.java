@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
-import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -30,7 +29,7 @@ import io.evercam.androidapp.dto.AppUser;
 import io.evercam.androidapp.tasks.CheckInternetTask;
 import io.evercam.androidapp.utils.Constants;
 
-public class LoginActivity extends ParentActivity
+public class LoginActivity extends ParentAppCompatActivity
 {
     private EditText usernameEdit;
     private EditText passwordEdit;
@@ -52,7 +51,6 @@ public class LoginActivity extends ParentActivity
 
         customProgressDialog = new CustomProgressDialog(this);
 
-        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.login);
 
         Button btnLogin = (Button) findViewById(R.id.btnLogin);

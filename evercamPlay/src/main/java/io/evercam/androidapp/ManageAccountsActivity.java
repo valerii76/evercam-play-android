@@ -40,7 +40,7 @@ import io.evercam.androidapp.tasks.CheckInternetTask;
 import io.evercam.androidapp.tasks.CheckKeyExpirationTask;
 import io.evercam.androidapp.utils.Constants;
 
-public class ManageAccountsActivity extends ParentActivity
+public class ManageAccountsActivity extends ParentAppCompatActivity
 {
     private static String TAG = "ManageAccountsActivity";
 
@@ -53,12 +53,9 @@ public class ManageAccountsActivity extends ParentActivity
     {
         super.onCreate(savedInstanceState);
 
-        if(this.getActionBar() != null)
-        {
-            this.getActionBar().setDisplayHomeAsUpEnabled(true);
-        }
-
         setContentView(R.layout.manage_account_activity);
+
+        setUpDefaultToolbar();
 
         progressDialog = new CustomProgressDialog(ManageAccountsActivity.this);
 

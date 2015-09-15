@@ -46,7 +46,7 @@ import io.evercam.androidapp.utils.DataCollector;
 import io.evercam.androidapp.video.VideoActivity;
 import io.evercam.network.discovery.DiscoveredCamera;
 
-public class AddEditCameraActivity extends ParentActivity
+public class AddEditCameraActivity extends ParentAppCompatActivity
 {
     private final String TAG = "AddEditCameraActivity";
     private LinearLayout cameraIdLayout;
@@ -76,6 +76,10 @@ public class AddEditCameraActivity extends ParentActivity
     {
         super.onCreate(savedInstanceState);
 
+        setContentView(R.layout.activity_add_camera);
+
+        setUpDefaultToolbar();
+
         Bundle bundle = getIntent().getExtras();
         // Edit Camera
         if(bundle != null && bundle.containsKey(Constants.KEY_IS_EDIT))
@@ -84,7 +88,7 @@ public class AddEditCameraActivity extends ParentActivity
                     getString(R.string.screen_edit_camera));
             cameraEdit = VideoActivity.evercamCamera;
 
-            getActionBar().setTitle(R.string.title_edit_camera);
+            updateTitleText(R.string.title_edit_camera);
         }
         else
         // Add Camera
@@ -93,13 +97,6 @@ public class AddEditCameraActivity extends ParentActivity
 
             // Get camera object from video activity before initial screen
             discoveredCamera = (DiscoveredCamera) getIntent().getSerializableExtra("camera");
-        }
-
-        setContentView(R.layout.activity_add_camera);
-
-        if(this.getActionBar() != null)
-        {
-            this.getActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
         // Initial UI elements
@@ -124,7 +121,7 @@ public class AddEditCameraActivity extends ParentActivity
     }
 
     @Override
-    public boolean onMenuItemSelected(int featureId, MenuItem item)
+    public boolean onOptionsItemSelected(MenuItem item)
     {
         switch(item.getItemId())
         {

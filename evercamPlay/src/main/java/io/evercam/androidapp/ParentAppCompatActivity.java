@@ -2,6 +2,7 @@ package io.evercam.androidapp;
 
 import android.animation.ValueAnimator;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -112,19 +113,23 @@ public class ParentAppCompatActivity extends AppCompatActivity
         Mint.logExceptionMessage(messageName, message, e);
     }
 
-    protected boolean toolbarIsShown() {
+    protected boolean toolbarIsShown()
+    {
         return ViewHelper.getTranslationY(mToolbar) == 0;
     }
 
-    protected boolean toolbarIsHidden() {
+    protected boolean toolbarIsHidden()
+    {
         return ViewHelper.getTranslationY(mToolbar) == -mToolbar.getHeight();
     }
 
-    protected void showToolbar() {
+    protected void showToolbar()
+    {
         moveToolbar(0);
     }
 
-    protected void hideToolbar() {
+    protected void hideToolbar()
+    {
         moveToolbar(-mToolbar.getHeight());
     }
 
@@ -145,5 +150,53 @@ public class ParentAppCompatActivity extends AppCompatActivity
             }
         });
         animator.start();
+    }
+
+    protected void setGradientTitleBackground()
+    {
+        mToolbar.setBackgroundResource(R.drawable.gradient_title);
+    }
+
+    protected void setOpaqueTitleBackground()
+    {
+        mToolbar.setBackgroundColor(getResources().getColor(R.color.dark_gray_background));
+    }
+
+    /**
+     *  Basic tool bar set up, with opaque background
+     */
+    protected void setUpBasicToolbar()
+    {
+        mToolbar = (Toolbar) findViewById(R.id.tool_bar);
+        setOpaqueTitleBackground();
+        setSupportActionBar(mToolbar);
+    }
+
+    /**
+     *  Default tool bar that apply for most activities -
+     *  With opaque background and home as up button
+     */
+    protected void setUpDefaultToolbar()
+    {
+        setUpBasicToolbar();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    protected void updateTitleText(int textId)
+    {
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null)
+        {
+            actionBar.setTitle(textId);
+        }
+    }
+
+    protected void updateTitleText(String title)
+    {
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null)
+        {
+            actionBar.setTitle(title);
+        }
     }
 }

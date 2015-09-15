@@ -13,7 +13,7 @@ import io.evercam.androidapp.utils.Commons;
 import io.evercam.androidapp.utils.PrefsManager;
 
 // 	This activity verifies the login and requests the cams data from the api 
-public class ReleaseNotesActivity extends ParentActivity
+public class ReleaseNotesActivity extends ParentAppCompatActivity
 {
     public String TAG = "ReleaseNotesActivity";
     private Button btnReleaseNotes;
@@ -24,6 +24,8 @@ public class ReleaseNotesActivity extends ParentActivity
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.release_notes_activity_layout);
+
+        setUpBasicToolbar();
 
         TextView textViewNotes = (TextView) findViewById(R.id.txtreleasenotes);
         btnReleaseNotes = (Button) findViewById(R.id.btn_release_notes_ok);

@@ -236,6 +236,7 @@ public class VideoActivity extends ParentAppCompatActivity implements SurfaceHol
             setContentView(R.layout.video_activity_layout);
 
             mToolbar = (Toolbar) findViewById(R.id.spinner_tool_bar);
+            setOpaqueTitleBackground();
             setSupportActionBar(mToolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             mCameraListSpinner = (Spinner) findViewById(R.id.spinner_camera_list);
@@ -615,24 +616,28 @@ public class VideoActivity extends ParentAppCompatActivity implements SurfaceHol
             }
             else if(itemId == R.id.video_menu_create_shortcut)
             {
-                Bitmap bitmap = getBitmapFromImageView(imageView);
-                HomeShortcut.create(getApplicationContext(), evercamCamera, bitmap);
-                CustomToast.showSuperToastShort(this, R.string.msg_shortcut_created);
-                EvercamPlayApplication.sendEventAnalytics(this, R.string.category_shortcut, R
-                        .string.action_shortcut_create, R.string.label_shortcut_create);
-                new ShortcutFeedbackItem(this, AppData.defaultUser.getUsername(), evercamCamera.getCameraId(),
-                        ShortcutFeedbackItem.ACTION_TYPE_CREATE, ShortcutFeedbackItem.RESULT_TYPE_SUCCESS)
-                        .sendToKeenIo(client);
-                getMixpanel().sendEvent(R.string.mixpanel_event_create_shortcut, new JSONObject()
-                        .put("Camera ID", evercamCamera.getCameraId()));
+                if(evercamCamera != null)
+                {
+                    Bitmap bitmap = getBitmapFromImageView(imageView);
+                    HomeShortcut.create(getApplicationContext(), evercamCamera, bitmap);
+                    CustomToast.showSuperToastShort(this, R.string.msg_shortcut_created);
+                    EvercamPlayApplication.sendEventAnalytics(this, R.string.category_shortcut, R.string.action_shortcut_create, R.string.label_shortcut_create);
+
+                    new ShortcutFeedbackItem(this, AppData.defaultUser.getUsername(), evercamCamera.getCameraId(), ShortcutFeedbackItem.ACTION_TYPE_CREATE, ShortcutFeedbackItem.RESULT_TYPE_SUCCESS).sendToKeenIo(client);
+                    getMixpanel().sendEvent(R.string.mixpanel_event_create_shortcut, new
+                            JSONObject().put("Camera ID", evercamCamera.getCameraId()));
+                }
             }
             else if(itemId == R.id.video_menu_view_recordings)
             {
-                recordingsStarted = true;
-                Intent recordingIntent = new Intent(this, RecordingWebActivity.class);
-                recordingIntent.putExtra(Constants.BUNDLE_KEY_CAMERA_ID, evercamCamera
-                        .getCameraId());
-                startActivityForResult(recordingIntent, Constants.REQUEST_CODE_RECORDING);
+                if(evercamCamera != null)
+                {
+                    recordingsStarted = true;
+                    Intent recordingIntent = new Intent(this, RecordingWebActivity.class);
+                    recordingIntent.putExtra(Constants.BUNDLE_KEY_CAMERA_ID, evercamCamera.getCameraId());
+
+                    startActivityForResult(recordingIntent, Constants.REQUEST_CODE_RECORDING);
+                }
             }
         }
         catch(OutOfMemoryError e)
@@ -939,12 +944,14 @@ public class VideoActivity extends ParentAppCompatActivity implements SurfaceHol
                 getWindow().setFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN,
                         WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
                 showToolbar();
+                setOpaqueTitleBackground();
             }
             else
             {
-                getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                        WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager
+                        .LayoutParams.FLAG_FULLSCREEN);
 
+                setGradientTitleBackground();
                 if(!paused && !end && !isProgressShowing) hideToolbar();
                 else showToolbar();
             }
