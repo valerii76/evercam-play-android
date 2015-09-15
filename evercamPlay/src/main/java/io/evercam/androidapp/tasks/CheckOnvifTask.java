@@ -6,6 +6,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import io.evercam.Camera;
 import io.evercam.EvercamException;
 import io.evercam.Model;
 import io.evercam.PTZException;
@@ -41,17 +42,21 @@ public class CheckOnvifTask extends AsyncTask<Void, Void, Boolean>
             Model model = Model.getById(modelId);
             if(model.isOnvif() && model.isPTZ())
             {
-                ArrayList<PTZPreset> allPresets = PTZPreset.getAllPresets(cameraId);
-                getVideoActivity().presetList = allPresets;
-
-                ArrayList<PTZPreset> customPresets = removeSystemPresetsFrom(allPresets);
-
-                if(customPresets.size() > 0)
+                Camera camera = Camera.getById(cameraId, false);
+                if(camera.getRights().isFullRight())
                 {
-                    getVideoActivity().presetList = customPresets;
-                }
+                    ArrayList<PTZPreset> allPresets = PTZPreset.getAllPresets(cameraId);
+                    getVideoActivity().presetList = allPresets;
 
-                return  true;
+                    ArrayList<PTZPreset> customPresets = removeSystemPresetsFrom(allPresets);
+
+                    if(customPresets.size() > 0)
+                    {
+                        getVideoActivity().presetList = customPresets;
+                    }
+
+                    return true;
+                }
             }
         }
         catch(EvercamException e)
