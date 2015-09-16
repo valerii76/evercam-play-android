@@ -265,9 +265,9 @@ public class ScanActivity extends ParentAppCompatActivity
                 @Override
                 public void run()
                 {
-                    cancelMenuItem.setVisible(show);
+                    if(cancelMenuItem != null) cancelMenuItem.setVisible(show);
                 }
-            }, 500);
+            }, 1000);
         }
         else
         {

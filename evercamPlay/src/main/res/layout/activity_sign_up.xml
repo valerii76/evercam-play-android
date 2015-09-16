@@ -1,19 +1,19 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
               tools:context=".SignUpActivity"
               android:layout_width="fill_parent"
-              android:layout_height="fill_parent"
-              android:orientation="vertical">
+              android:layout_height="fill_parent">
 
-    <include layout="@layout/tool_bar" />
+    <include
+        android:id="@+id/tool_bar"
+        layout="@layout/tool_bar" />
 
     <!-- Sign Up progress -->
     <LinearLayout
         android:id="@+id/signup_status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
         android:orientation="vertical"
         android:visibility="gone">
 
@@ -36,7 +36,8 @@
     <ScrollView
         android:id="@+id/signup_form"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_below="@+id/tool_bar">
 
         <LinearLayout
             style="@style/SignupFormContainer"
@@ -172,4 +173,4 @@
                 android:textColor="@+drawable/signup_btn_txt_selector"/>
         </LinearLayout>
     </ScrollView>
-</LinearLayout>
+</RelativeLayout>

@@ -106,17 +106,17 @@ public class ViewCameraActivity extends ParentAppCompatActivity
                 @Override
                 public void onClick(DialogInterface warningDialog, int which)
                 {
-                    if(evercamCamera.canDelete())
+                    if(evercamCamera != null)
                     {
-                        new DeleteCameraTask(evercamCamera.getCameraId(),
-                                ViewCameraActivity.this, EnumConstants.DeleteType
-                                .DELETE_OWNED).executeOnExecutor(AsyncTask
-                                .THREAD_POOL_EXECUTOR);
-                    }
-                    else
-                    {
-                        new DeleteCameraTask(evercamCamera.getCameraId(),
-                                ViewCameraActivity.this, EnumConstants.DeleteType.DELETE_SHARE).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                        if(evercamCamera.canDelete())
+                        {
+                            new DeleteCameraTask(evercamCamera.getCameraId(), ViewCameraActivity.this, EnumConstants.DeleteType.DELETE_OWNED).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+                        }
+                        else
+                        {
+                            new DeleteCameraTask(evercamCamera.getCameraId(), ViewCameraActivity.this, EnumConstants.DeleteType.DELETE_SHARE).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                        }
                     }
                 }
             }, R.string.msg_confirm_remove_camera).show();
