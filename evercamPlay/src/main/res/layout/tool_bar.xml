@@ -6,4 +6,5 @@
     android:layout_width="match_parent"
     android:minHeight="?attr/actionBarSize"
     app:theme="@style/ToolbarTheme"
+    app:popupTheme="@style/ToolBarPopupTheme"
     app:titleTextAppearance="@style/ToolbarTitleTextStyle"/>

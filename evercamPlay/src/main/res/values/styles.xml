@@ -8,6 +8,10 @@
         <item name="android:textColorSecondary">@color/white</item>
     </style>
 
+    <style name="ToolBarPopupTheme" parent="AppTheme">
+        <item name="android:colorBackground">@color/light_gray_background</item>
+    </style>
+
     <style name="ToolbarTitleTextStyle" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textSize">18sp</item>
         <item name="android:textStyle">normal</item>
