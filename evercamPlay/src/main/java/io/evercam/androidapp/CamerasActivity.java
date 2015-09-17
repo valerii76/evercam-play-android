@@ -12,6 +12,8 @@ import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Display;
@@ -67,6 +69,8 @@ public class CamerasActivity extends ParentAppCompatActivity implements
     public CustomProgressDialog reloadProgressDialog;
     private RelativeLayout actionButtonLayout;
     private int lastScrollY;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private DrawerLayout mDrawerLayout;
 
     /**
      * For user data collection, calculate how long it takes to load camera list
@@ -89,11 +93,21 @@ public class CamerasActivity extends ParentAppCompatActivity implements
     {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.cameras_list_layout);
+        setContentView(R.layout.navigation_drawer_layout);
 
         mToolbar = (Toolbar) findViewById(R.id.tool_bar);
         setGradientTitleBackground();
         setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerToggle = new ActionBarDrawerToggle(
+                this,
+                mDrawerLayout,
+                mToolbar,
+                R.string.msg_account_already_added,
+                R.string.msg_camera_has_been_added
+        );
 
         ObservableScrollView observableScrollView = (ObservableScrollView) findViewById(R.id.cameras_scroll_view);
         observableScrollView.setScrollViewCallbacks(this);
@@ -141,6 +155,14 @@ public class CamerasActivity extends ParentAppCompatActivity implements
         // Start loading camera list after menu created(because need the menu
         // showing as animation)
         new CamerasCheckInternetTask(CamerasActivity.this, InternetCheckType.START).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState)
+    {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        mDrawerToggle.syncState();
     }
 
     @Override
@@ -590,6 +612,7 @@ public class CamerasActivity extends ParentAppCompatActivity implements
     public void onConfigurationChanged(Configuration newConfig)
     {
         super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
         resizeCameras();
     }
 
