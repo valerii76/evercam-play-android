@@ -54,6 +54,7 @@ import io.evercam.androidapp.tasks.CheckInternetTask;
 import io.evercam.androidapp.tasks.LoadCameraListTask;
 import io.evercam.androidapp.utils.Commons;
 import io.evercam.androidapp.utils.Constants;
+import io.evercam.androidapp.utils.DataCollector;
 import io.evercam.androidapp.utils.PrefsManager;
 import io.evercam.androidapp.utils.PropertyReader;
 import io.keen.client.java.KeenClient;
@@ -80,6 +81,7 @@ public class CamerasActivity extends ParentAppCompatActivity implements
     private FrameLayout mNavAboutItemLayout;
     private TextView mUserNameTextView;
     private TextView mUserEmailTextView;
+    private TextView mAppVersionTextView;
 
     /**
      * For user data collection, calculate how long it takes to load camera list
@@ -341,6 +343,7 @@ public class CamerasActivity extends ParentAppCompatActivity implements
 
         mUserNameTextView = (TextView) findViewById(R.id.navigation_drawer_title_user_name);
         mUserEmailTextView = (TextView) findViewById(R.id.navigation_drawer_title_user_email);
+        mAppVersionTextView = (TextView) findViewById(R.id.navigation_drawer_version_text_view);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(
@@ -367,6 +370,7 @@ public class CamerasActivity extends ParentAppCompatActivity implements
         mNavSettingsItemLayout.setOnClickListener(this);
         mNavFeedbackItemLayout.setOnClickListener(this);
         mNavAboutItemLayout.setOnClickListener(this);
+        mAppVersionTextView.setText("v" + new DataCollector(this).getAppVersion());
     }
 
     @Override
@@ -393,7 +397,9 @@ public class CamerasActivity extends ParentAppCompatActivity implements
         }
         else if(view == mNavAboutItemLayout)
         {
-
+            Intent aboutIntent = new Intent(CamerasActivity.this, AboutWebActivity.class);
+            aboutIntent.putExtra(Constants.BUNDLE_KEY_URL, getString(R.string.evercam_url));
+            startActivity(aboutIntent);
         }
     }
 

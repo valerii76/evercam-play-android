@@ -121,7 +121,6 @@ public class CameraPrefsActivity extends AppCompatActivity
             addPreferencesFromResource(R.xml.main_preference);
             setCameraNumbersForScreen(screenWidth);
             setUpSleepTime();
-            fillAbout();
         }
 
         private void setCameraNumbersForScreen(int screenWidth)
@@ -172,26 +171,6 @@ public class CameraPrefsActivity extends AppCompatActivity
                     String entry = sleepListPrefs.getEntries()[index].toString();
                     sleepListPrefs.setSummary(getSummary(entry));
                     return true;
-                }
-            });
-        }
-
-        private void fillAbout()
-        {
-            final Preference versionPrefs = getPreferenceManager().findPreference(PrefsManager
-                    .KEY_VERSION);
-            final Preference aboutPrefs = getPreferenceManager().findPreference(PrefsManager
-                    .KEY_ABOUT);
-            versionPrefs.setSummary(new DataCollector(this.getActivity()).getAppVersion());
-            aboutPrefs.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener()
-            {
-                @Override
-                public boolean onPreferenceClick(Preference preference)
-                {
-                    Intent aboutIntent = new Intent(getActivity(), AboutWebActivity.class);
-                    aboutIntent.putExtra(Constants.BUNDLE_KEY_URL, getString(R.string.evercam_url));
-                    startActivity(aboutIntent);
-                    return false;
                 }
             });
         }

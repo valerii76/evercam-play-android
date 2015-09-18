@@ -11,8 +11,6 @@ public class PrefsManager
     public static final String KEY_AWAKE_TIME = "prefsAwakeTime";
     public static final String KEY_FORCE_LANDSCAPE = "prefsForceLandscape";
     public static final String KEY_SHOW_OFFLINE_CAMERA = "prefsShowOfflineCameras";
-    public static final String KEY_VERSION = "version_preference";
-    public static final String KEY_ABOUT = "about_preference";
 
     public static int getCameraPerRow(Context context, int oldNumber)
     {

@@ -165,7 +165,11 @@ public class ScanForCameraTask extends AsyncTask<Void, DiscoveredCamera, ArrayLi
                 e.printStackTrace();
             }
         }
-        return getScanActivity().discoveredCameras;
+        if(getScanActivity() != null)
+        {
+            return getScanActivity().discoveredCameras;
+        }
+        return new ArrayList<>();
     }
 
     @Override
