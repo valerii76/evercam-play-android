@@ -19,7 +19,7 @@
         android:orientation="vertical">
 
         <FrameLayout
-            android:id="@+id/navigation_drawer_title_view"
+            android:id="@+id/navigation_drawer_title_layout"
             android:layout_width="match_parent"
             android:layout_height="@dimen/nav_drawer_account_section_default_height"
             android:paddingBottom="@dimen/nav_drawer_vertical_spacing_listing"
@@ -27,6 +27,7 @@
             android:paddingLeft="@dimen/nav_drawer_vertical_keyline_icon_left"
             android:paddingRight="@dimen/nav_drawer_vertical_keyline_right"
             android:paddingStart="@dimen/nav_drawer_vertical_keyline_icon_left"
+            android:clickable="true"
             android:background="@color/dark_gray_background">
 
             <LinearLayout
@@ -55,7 +56,7 @@
             </LinearLayout>
 
             <RelativeLayout
-                android:id="@+id/navigation_drawer_title_layout"
+                android:id="@+id/navigation_drawer_title_text_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 

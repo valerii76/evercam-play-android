@@ -1,6 +1,5 @@
 package io.evercam.androidapp;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -15,7 +14,6 @@ import com.splunk.mint.Mint;
 import java.util.ArrayList;
 
 import io.evercam.androidapp.utils.Constants;
-import io.evercam.androidapp.utils.DataCollector;
 import io.evercam.androidapp.utils.PrefsManager;
 import io.evercam.androidapp.utils.PropertyReader;
 
