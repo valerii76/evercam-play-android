@@ -12,6 +12,7 @@ import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
@@ -22,8 +23,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
@@ -56,7 +59,7 @@ import io.evercam.androidapp.utils.PropertyReader;
 import io.keen.client.java.KeenClient;
 
 public class CamerasActivity extends ParentAppCompatActivity implements
-        ObservableScrollViewCallbacks
+        ObservableScrollViewCallbacks, OnClickListener
 {
     public static CamerasActivity activity = null;
     public MenuItem refresh;
@@ -71,6 +74,12 @@ public class CamerasActivity extends ParentAppCompatActivity implements
     private int lastScrollY;
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
+    private FrameLayout mNavAccountItemLayout;
+    private FrameLayout mNavSettingsItemLayout;
+    private FrameLayout mNavFeedbackItemLayout;
+    private FrameLayout mNavAboutItemLayout;
+    private TextView mUserNameTextView;
+    private TextView mUserEmailTextView;
 
     /**
      * For user data collection, calculate how long it takes to load camera list
@@ -95,19 +104,9 @@ public class CamerasActivity extends ParentAppCompatActivity implements
 
         setContentView(R.layout.navigation_drawer_layout);
 
-        mToolbar = (Toolbar) findViewById(R.id.tool_bar);
-        setGradientTitleBackground();
-        setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        checkUser();
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerToggle = new ActionBarDrawerToggle(
-                this,
-                mDrawerLayout,
-                mToolbar,
-                R.string.msg_account_already_added,
-                R.string.msg_camera_has_been_added
-        );
+        initNavigationDrawer();
 
         ObservableScrollView observableScrollView = (ObservableScrollView) findViewById(R.id.cameras_scroll_view);
         observableScrollView.setScrollViewCallbacks(this);
@@ -117,7 +116,6 @@ public class CamerasActivity extends ParentAppCompatActivity implements
         initDataCollectionObjects();
 
         activity = this;
-        checkUser();
 
         /**
          * Use Handler here because we want the title bar/menu get loaded first.
@@ -193,25 +191,9 @@ public class CamerasActivity extends ParentAppCompatActivity implements
             startCameraLoadingTask();
 
         }
-        else if(itemId == R.id.menu_settings)
-        {
-            EvercamPlayApplication.sendEventAnalytics(this, R.string.category_menu, R.string.action_settings, R.string.label_settings);
-
-            startActivity(new Intent(CamerasActivity.this, CameraPrefsActivity.class));
-        }
-        else if(itemId == R.id.menu_manage_accounts)
-        {
-            EvercamPlayApplication.sendEventAnalytics(this, R.string.category_menu, R.string.action_manage_account, R.string.label_account);
-
-            startActivityForResult(new Intent(CamerasActivity.this, ManageAccountsActivity.class), Constants.REQUEST_CODE_MANAGE_ACCOUNT);
-        }
         else if(itemId == R.id.menu_logout)
         {
             showSignOutDialog();
-        }
-        else if(itemId == R.id.menu_feedback)
-        {
-            startActivity(new Intent(CamerasActivity.this, FeedbackActivity.class));
         }
         else
         {
@@ -332,6 +314,86 @@ public class CamerasActivity extends ParentAppCompatActivity implements
             LinearLayout linearLayout = (LinearLayout) camsLineView.getChildAt(count);
             CameraLayout cameraLayout = (CameraLayout) linearLayout.getChildAt(0);
             cameraLayout.stopAllActivity();
+        }
+    }
+
+    private void updateNavDrawerUserInfo()
+    {
+        AppUser defaultUser = AppData.defaultUser;
+        if(defaultUser != null)
+        {
+            mUserNameTextView.setText(defaultUser.getFirstName() + " " + defaultUser.getLastName());
+            mUserEmailTextView.setText(defaultUser.getEmail());
+        }
+    }
+
+    private void initNavigationDrawer()
+    {
+        mToolbar = (Toolbar) findViewById(R.id.tool_bar);
+        setGradientTitleBackground();
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        mNavAccountItemLayout = (FrameLayout) findViewById(R.id.navigation_drawer_items_account_layout);
+        mNavSettingsItemLayout = (FrameLayout) findViewById(R.id.navigation_drawer_items_settings_layout);
+        mNavFeedbackItemLayout = (FrameLayout) findViewById(R.id.navigation_drawer_items_feedback_layout);
+        mNavAboutItemLayout = (FrameLayout) findViewById(R.id.navigation_drawer_items_about_layout);
+
+        mUserNameTextView = (TextView) findViewById(R.id.navigation_drawer_title_user_name);
+        mUserEmailTextView = (TextView) findViewById(R.id.navigation_drawer_title_user_email);
+
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerToggle = new ActionBarDrawerToggle(
+                this,
+                mDrawerLayout,
+                mToolbar,
+                R.string.navigation_drawer_opened,
+                R.string.navigation_drawer_closed
+        )
+        {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset)
+            {
+                // Disables the burger/arrow animation by default
+                super.onDrawerSlide(drawerView, 0);
+            }
+        };
+
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerToggle.syncState();
+
+        // Nav Drawer item click listener
+        mNavAccountItemLayout.setOnClickListener(this);
+        mNavSettingsItemLayout.setOnClickListener(this);
+        mNavFeedbackItemLayout.setOnClickListener(this);
+        mNavAboutItemLayout.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View view)
+    {
+        //Close the navigation drawer, currently all click listeners are drawer items
+        mDrawerLayout.closeDrawer(GravityCompat.START);
+
+        if(view == mNavAccountItemLayout)
+        {
+            EvercamPlayApplication.sendEventAnalytics(this, R.string.category_menu, R.string.action_manage_account, R.string.label_account);
+
+            startActivityForResult(new Intent(CamerasActivity.this, ManageAccountsActivity.class), Constants.REQUEST_CODE_MANAGE_ACCOUNT);
+        }
+        else if(view == mNavSettingsItemLayout)
+        {
+            EvercamPlayApplication.sendEventAnalytics(this, R.string.category_menu, R.string.action_settings, R.string.label_settings);
+
+            startActivity(new Intent(CamerasActivity.this, CameraPrefsActivity.class));
+        }
+        else if(view == mNavFeedbackItemLayout)
+        {
+            startActivity(new Intent(CamerasActivity.this, FeedbackActivity.class));
+        }
+        else if(view == mNavAboutItemLayout)
+        {
+
         }
     }
 
@@ -784,6 +846,7 @@ public class CamerasActivity extends ParentAppCompatActivity implements
             {
                 if(type == InternetCheckType.START)
                 {
+                    updateNavDrawerUserInfo();
                     startLoadingCameras();
                 }
                 else if(type == InternetCheckType.RESTART)

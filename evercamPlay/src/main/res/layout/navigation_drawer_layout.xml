@@ -55,14 +55,14 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/navigation_drawer_account_information_display_name"
+                        android:id="@+id/navigation_drawer_title_user_name"
                         style="@style/Body2.White.Primary"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/firstName"/>
 
                     <TextView
-                        android:id="@+id/navigation_drawer_account_information_email"
+                        android:id="@+id/navigation_drawer_title_user_email"
                         style="@style/Body1.White.Primary"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -89,7 +89,7 @@
 
                 <FrameLayout
                     android:id="@+id/navigation_drawer_items_account_layout"
-                    style="@style/NavDrawerRowLayout.Main">
+                    style="@style/NavDrawerRowLayout">
 
                     <ImageView
                         android:id="@+id/navigation_drawer_items_list_icon_home"
@@ -105,30 +105,31 @@
 
                 </FrameLayout>
 
-                <FrameLayout
-                    android:id="@+id/navigation_drawer_items_explore_layout"
-                    style="@style/NavDrawerRowLayout.Main">
+                <!--<FrameLayout-->
+                    <!--android:id="@+id/navigation_drawer_items_explore_layout"-->
+                    <!--style="@style/NavDrawerRowLayout">-->
 
-                    <ImageView
-                        android:id="@+id/navigation_drawer_items_list_icon_explore"
-                        style="@style/NavDrawerRowItemIcon"
-                        android:src="@drawable/ic_scan"
-                        tools:ignore="ContentDescription"
-                        android:tint="@color/nav_drawer_item_icon_normal"/>
+                    <!--<ImageView-->
+                        <!--android:id="@+id/navigation_drawer_items_list_icon_explore"-->
+                        <!--style="@style/NavDrawerRowItemIcon"-->
+                        <!--android:src="@drawable/ic_scan"-->
+                        <!--tools:ignore="ContentDescription"-->
+                        <!--android:tint="@color/nav_drawer_item_icon_normal"/>-->
 
-                    <TextView
-                        android:id="@+id/navigation_drawer_items_textView_explore"
-                        style="@style/NavDrawerRowItemText"
-                        android:text="@string/nav_drawer_item_explore"/>
+                    <!--<TextView-->
+                        <!--android:id="@+id/navigation_drawer_items_textView_explore"-->
+                        <!--style="@style/NavDrawerRowItemText"-->
+                        <!--android:text="@string/nav_drawer_item_explore"/>-->
 
-                </FrameLayout>
+                <!--</FrameLayout>-->
 
-                <include
-                    layout="@layout/navigation_drawer_divider"/>
+                <!-- Temporarily remove the divider, until we decide to add more items in the menu-->
+                <!--<include-->
+                    <!--layout="@layout/navigation_drawer_divider"/>-->
 
                 <FrameLayout
                     android:id="@+id/navigation_drawer_items_settings_layout"
-                    style="@style/NavDrawerRowLayout.Secondary">
+                    style="@style/NavDrawerRowLayout">
 
                     <ImageView
                         android:id="@+id/navigation_drawer_items_settings_image_view"
@@ -146,7 +147,7 @@
 
                 <FrameLayout
                     android:id="@+id/navigation_drawer_items_feedback_layout"
-                    style="@style/NavDrawerRowLayout.Secondary">
+                    style="@style/NavDrawerRowLayout">
 
                     <ImageView
                         android:id="@+id/navigation_drawer_items_feedback_image_view"
@@ -164,7 +165,7 @@
 
                 <FrameLayout
                     android:id="@+id/navigation_drawer_items_about_layout"
-                    style="@style/NavDrawerRowLayout.Secondary">
+                    style="@style/NavDrawerRowLayout">
 
                     <ImageView
                         android:id="@+id/navigation_drawer_items_about_image_view"
