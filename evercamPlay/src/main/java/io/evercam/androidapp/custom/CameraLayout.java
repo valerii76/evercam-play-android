@@ -38,7 +38,6 @@ public class CameraLayout extends LinearLayout
      * processing should be done in any thread.
      */
     private boolean end = false;
-    private ProgressView loadingAnimation = null;
     private ImageView snapshotImageView;
     private ImageView offlineImage = null;
     private GradientTitleLayout gradientLayout;
@@ -78,17 +77,6 @@ public class CameraLayout extends LinearLayout
             snapshotImageView.setBackgroundColor(Color.TRANSPARENT);
             snapshotImageView.setScaleType(ImageView.ScaleType.FIT_XY);
             cameraRelativeLayout.addView(snapshotImageView);
-
-            // control to show progress spinner
-            loadingAnimation = new ProgressView(context);
-            RelativeLayout.LayoutParams ivProgressParams = new RelativeLayout.LayoutParams
-                    (android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
-                            android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
-            ivProgressParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-            ivProgressParams.addRule(RelativeLayout.CENTER_VERTICAL);
-            loadingAnimation.setLayoutParams(ivProgressParams);
-
-            cameraRelativeLayout.addView(loadingAnimation);
 
             offlineImage = new ImageView(context);
             RelativeLayout.LayoutParams offlineImageParams = new RelativeLayout.LayoutParams
@@ -133,17 +121,6 @@ public class CameraLayout extends LinearLayout
         }
     }
 
-    //TODO: Remove this
-//    // This method will call the image
-//    // loading thread to further load from camera
-//    public void loadImage()
-//    {
-//        if(!end)
-//        {
-//            handler.postDelayed(LoadImageRunnable, 0);
-//        }
-//    }
-
     public Rect getOfflineIconBounds()
     {
         Rect bounds = new Rect();
@@ -177,12 +154,6 @@ public class CameraLayout extends LinearLayout
         evercamCamera.setStatus(CameraStatus.ACTIVE);
         offlineImage.setVisibility(View.INVISIBLE);
 
-        if(cameraRelativeLayout.indexOfChild(loadingAnimation) >= 0)
-        {
-            loadingAnimation.setVisibility(View.GONE);
-            cameraRelativeLayout.removeView(loadingAnimation);
-        }
-
         handler.removeCallbacks(LoadImageRunnable);
     }
 
@@ -191,9 +162,6 @@ public class CameraLayout extends LinearLayout
         if(evercamCamera.hasThumbnailUrl())
         {
             Picasso.with(context).load(evercamCamera.getThumbnailUrl()).fit().into(snapshotImageView);
-
-            loadingAnimation.setVisibility(View.GONE);
-            cameraRelativeLayout.removeView(loadingAnimation);
 
             if(!evercamCamera.isActive())
             {
@@ -212,7 +180,6 @@ public class CameraLayout extends LinearLayout
         {
             showOfflineIcon();
             offlineImage.setVisibility(View.VISIBLE);
-            loadingAnimation.setVisibility(View.GONE);
             snapshotImageView.setBackgroundColor(Color.GRAY);
             gradientLayout.removeGradientShadow();
             CameraLayout.this.evercamCamera.loadingStatus = ImageLoadingStatus.live_not_received;
@@ -236,12 +203,6 @@ public class CameraLayout extends LinearLayout
     // appearance and text accordingly
     private void setLayoutForNoImageReceived()
     {
-        if(cameraRelativeLayout.indexOfChild(loadingAnimation) >= 0)
-        {
-            loadingAnimation.setVisibility(View.GONE);
-            cameraRelativeLayout.removeView(loadingAnimation);
-        }
-
         if(!evercamCamera.isActive())
         {
             showGreyImage();
@@ -299,51 +260,4 @@ public class CameraLayout extends LinearLayout
     {
         snapshotImageView.setAlpha(0.5f);
     }
-
-    //TODO: Remove this (Removed live image request because the thumbnail is up-to-date)
-//    private void showAndSaveLiveSnapshot()
-//    {
-//        DownloadLiveSnapshotTask downloadLiveSnapshotTask = new DownloadLiveSnapshotTask
-//                (evercamCamera.getCameraId());
-//        downloadLiveSnapshotTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-//    }
-
-//    private class DownloadLiveSnapshotTask extends AsyncTask<Void, Void, Bitmap>
-//    {
-//        private String cameraId;
-//
-//        public DownloadLiveSnapshotTask(String cameraId)
-//        {
-//            this.cameraId = cameraId;
-//        }
-//
-//        @Override
-//        protected Bitmap doInBackground(Void... params)
-//        {
-//            try
-//            {
-//                Camera camera = Camera.getById(cameraId, false);
-//                InputStream stream = camera.getSnapshotFromEvercam();
-//                return BitmapFactory.decodeStream(stream);
-//            }
-//            catch(EvercamException e)
-//            {
-//                Log.e(TAG, "Failed to request live snapshot for: " + cameraId + " " + e
-//                        .getMessage());
-//            }
-//            return null;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(Bitmap bitmap)
-//        {
-//            if(bitmap != null)
-//            {
-//                snapshotImageView.setImageBitmap(bitmap);
-//
-//                CameraLayout.this.evercamCamera.loadingStatus = ImageLoadingStatus.live_received;
-//                handler.postDelayed(LoadImageRunnable, 0);
-//            }
-//        }
-//    }
 }
