@@ -117,4 +117,66 @@
         <item name="android:textColor">@color/white</item>
     </style>
 
+    <!-- View camera details styles-->
+    <style name="ViewCameraItemRowLayout">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">10dp</item>
+        <item name="android:layout_marginRight">10dp</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="ViewCameraItemRowItemText">
+        <item name="android:layout_width">90dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">17sp</item>
+    </style>
+
+    <style name="ViewCameraItemRowItemValueText">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:layout_marginLeft">12dp</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="ViewCameraTitleItemText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:layout_marginLeft">10dp</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:layout_gravity">left</item>
+    </style>
+
+    <!-- Add/Edit camera details styles-->
+    <style name="AddEditCameraItemRowLayout">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="AddEditCameraItemRowItemText">
+        <item name="android:layout_width">100sp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">17sp</item>
+    </style>
+
+    <style name="AddEditCameraItemRowItemEditText">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="AddEditCameraItemRowItemEditText.Text">
+        <item name="android:inputType">text</item>
+    </style>
+
+    <style name="AddEditCameraItemRowItemEditText.Number">
+        <item name="android:inputType">number</item>
+    </style>
+
 </resources>
