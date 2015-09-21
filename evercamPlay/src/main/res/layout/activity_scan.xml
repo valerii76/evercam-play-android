@@ -1,13 +1,16 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
               android:orientation="vertical"
               tools:context=".ScanActivity">
 
-    <include layout="@layout/tool_bar"/>
+    <include
+        android:id="@+id/tool_bar"
+        layout="@layout/tool_bar"/>
 
     <RelativeLayout
+        android:layout_below="@+id/tool_bar"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
 
@@ -51,45 +54,42 @@
                 android:id="@+id/scan_status_message"
                 style="@style/DarkText"
                 android:layout_marginBottom="16dp"
-                android:fontFamily="sans-serif-light"
                 android:gravity="center"
                 android:text="@string/msg_scanning"
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
 
         </LinearLayout>
 
+        <!-- No Camera Found -->
+        <LinearLayout
+            android:id="@+id/scan_result_no_camera_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_centerInParent="true"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/scan_result_message"
+                android:layout_marginBottom="16dp"
+                style="@style/DarkText"
+                android:gravity="center"
+                android:text="@string/msg_no_camera_found"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+            <Button
+                android:id="@+id/button_add_camera_manually"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:background="@drawable/btn_selector"
+                android:gravity="center"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:text="@string/btn_text_add_manually"
+                android:textColor="@color/white"/>
+        </LinearLayout>
+
     </RelativeLayout>
 
-    <!-- No Camera Found -->
-    <LinearLayout
-        android:id="@+id/scan_result_no_camera_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
-        android:visibility="gone">
-
-        <TextView
-            android:id="@+id/scan_result_message"
-            android:layout_marginBottom="16dp"
-            style="@style/DarkText"
-            android:fontFamily="sans-serif-light"
-            android:gravity="center"
-            android:text="@string/msg_no_camera_found"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
-
-        <Button
-            android:id="@+id/button_add_camera_manually"
-            android:layout_width="wrap_content"
-            android:layout_height="35dp"
-            android:background="@drawable/btn_selector"
-            android:gravity="center"
-            android:paddingLeft="10sp"
-            android:paddingRight="10sp"
-            android:text="@string/btn_text_add_manually"
-            android:textColor="#ffffff"
-            android:textSize="17sp"/>
-    </LinearLayout>
-
-</LinearLayout>
+</RelativeLayout>
