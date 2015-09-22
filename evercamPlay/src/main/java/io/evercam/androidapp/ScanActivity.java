@@ -23,9 +23,12 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+
+import org.w3c.dom.Text;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -37,6 +40,7 @@ import io.evercam.androidapp.scan.ScanResultAdapter;
 import io.evercam.androidapp.tasks.CheckInternetTask;
 import io.evercam.androidapp.tasks.ScanForCameraTask;
 import io.evercam.androidapp.utils.Constants;
+import io.evercam.androidapp.utils.DataCollector;
 import io.evercam.network.EvercamDiscover;
 import io.evercam.network.discovery.DiscoveredCamera;
 import io.evercam.network.query.EvercamQuery;
@@ -249,6 +253,12 @@ public class ScanActivity extends ParentAppCompatActivity
     public void showNoCameraView(boolean show)
     {
         scanResultNoCameraView.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
+    private void updateScanResultMessage(int messageId)
+    {
+        TextView messageTextView = (TextView) findViewById(R.id.scan_result_message);
+        messageTextView.setText(messageId);
     }
 
     public void showHorizontalProgress(boolean show)
@@ -489,6 +499,21 @@ public class ScanActivity extends ParentAppCompatActivity
         public ScanCheckInternetTask(Context context)
         {
             super(context);
+        }
+
+        @Override
+        protected void onPreExecute()
+        {
+            //Check is Wifi connected or not first
+            DataCollector dataCollector = new DataCollector(ScanActivity.this);
+            if(dataCollector.isConnectedMobile() && !dataCollector.isConnectedWifi())
+            {
+                this.cancel(true);
+                showTextProgress(false);
+                showNoCameraView(true);
+                showCancelMenuItem(false);
+                updateScanResultMessage(R.string.msg_must_wifi_for_scan);
+            }
         }
 
         @Override

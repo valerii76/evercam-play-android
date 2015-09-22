@@ -47,7 +47,6 @@ public class ScanResultAdapter extends ArrayAdapter<DiscoveredCamera>
         if (camera != null)
         {
             ImageView thumbnailImageView = (ImageView) view.findViewById(R.id.camera_img);
-            ProgressBar progressBar = (ProgressBar) view.findViewById(R.id.progress);
             TextView ipTextView = (TextView) view.findViewById(R.id.camera_ip);
             TextView modelTextView = (TextView) view.findViewById(R.id.camera_model);
             TextView vendorLabel = (TextView) view.findViewById(R.id.label_vendor);
@@ -56,7 +55,7 @@ public class ScanResultAdapter extends ArrayAdapter<DiscoveredCamera>
             TextView rtspLabel = (TextView) view.findViewById(R.id.label_rtsp);
             TextView evercamLabel = (TextView) view.findViewById(R.id.label_evercam);
 
-            updateThumbnailImage(thumbnailImageView, progressBar, position);
+            updateThumbnailImage(thumbnailImageView, position);
             updateIpAndPort(ipTextView, camera);
             updateVendorAndModel(modelTextView, camera);
 
@@ -70,7 +69,7 @@ public class ScanResultAdapter extends ArrayAdapter<DiscoveredCamera>
         return view;
     }
 
-    private void updateThumbnailImage(ImageView imageView, ProgressBar progressBar, int position)
+    private void updateThumbnailImage(ImageView imageView, int position)
     {
         if(drawableArray.size() > 0)
         {
@@ -78,13 +77,11 @@ public class ScanResultAdapter extends ArrayAdapter<DiscoveredCamera>
             if(drawable != null)
             {
                 imageView.setVisibility(View.VISIBLE);
-                progressBar.setVisibility(View.GONE);
                 imageView.setImageDrawable(drawable);
             }
             else
             {
-                imageView.setVisibility(View.GONE);
-                progressBar.setVisibility(View.VISIBLE);
+                imageView.setVisibility(View.INVISIBLE);
             }
         }
     }

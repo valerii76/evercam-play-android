@@ -41,4 +41,5 @@
     <string name="msg_local_ip_warning">The IP address you provided is a local IP address, we support external IP addresses only.\n\nDo you still want to precede?</string>
     <string name="msg_creating_preset">Creating preset&#8230;</string>
     <string name="msg_preset_created">Preset created</string>
+    <string name="msg_must_wifi_for_scan">You must connect to a WiFi network before scanning</string>
 </resources>

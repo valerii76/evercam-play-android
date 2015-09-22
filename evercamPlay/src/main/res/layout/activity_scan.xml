@@ -39,7 +39,11 @@
                 android:divider="@android:color/darker_gray">
             </ListView>
         </RelativeLayout>
+    </RelativeLayout>
 
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
         <!-- Scan progress -->
         <LinearLayout
             android:id="@+id/scan_status_layout"
@@ -76,6 +80,8 @@
                 style="@style/DarkText"
                 android:gravity="center"
                 android:text="@string/msg_no_camera_found"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
 
             <Button
@@ -89,7 +95,6 @@
                 android:text="@string/btn_text_add_manually"
                 android:textColor="@color/white"/>
         </LinearLayout>
-
     </RelativeLayout>
 
 </RelativeLayout>
