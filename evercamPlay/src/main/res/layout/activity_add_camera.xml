@@ -116,9 +116,9 @@
 
             <LinearLayout
                 android:id="@+id/add_camera_id_layout"
-                android:layout_marginTop="10dp"
+                style="@style/AddEditCameraItemRowLayout"
                 android:layout_marginBottom="10dp"
-                style="@style/AddEditCameraItemRowLayout">
+                android:layout_marginTop="10dp">
 
                 <TextView
                     android:id="@+id/add_id_txt"
@@ -170,10 +170,21 @@
                     style="@style/AddEditCameraItemRowItemText"
                     android:text="@string/http_port"/>
 
-                <EditText
-                    android:id="@+id/add_external_http_edit"
-                    style="@style/AddEditCameraItemRowItemEditText.Number"
-                    android:hint="@string/hint_external_http"/>
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/add_external_http_edit"
+                        style="@style/AddEditCameraItemRowItemEditText.Number"
+                        android:hint="@string/hint_external_http"/>
+
+                    <TextView
+                        android:id="@+id/port_status_text_http"
+                        style="@style/AddEditCameraPortStatusText"
+                        android:visibility="gone"/>
+                </RelativeLayout>
+
             </LinearLayout>
 
             <LinearLayout
@@ -199,10 +210,21 @@
                     style="@style/AddEditCameraItemRowItemText"
                     android:text="@string/rtsp_port"/>
 
-                <EditText
-                    android:id="@+id/add_external_rtsp_edit"
-                    style="@style/AddEditCameraItemRowItemEditText.Number"
-                    android:hint="@string/hint_external_rtsp"/>
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/add_external_rtsp_edit"
+                        style="@style/AddEditCameraItemRowItemEditText.Number"
+                        android:hint="@string/hint_external_rtsp"/>
+
+                    <TextView
+                        android:id="@+id/port_status_text_rtsp"
+                        style="@style/AddEditCameraPortStatusText"
+                        android:visibility="gone"/>
+                </RelativeLayout>
+
             </LinearLayout>
 
             <LinearLayout

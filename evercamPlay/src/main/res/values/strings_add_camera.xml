@@ -31,6 +31,8 @@
     <string name="hint_external_rtsp">554</string>
     <string name="vendor_other">Other</string>
     <string name="model_default">Default</string>
+    <string name="port_is_open">Port is open</string>
+    <string name="port_is_closed">Port is closed</string>
 
     <!-- Messages -->
     <string name="id_required">Please specify a unique ID for your camera</string>

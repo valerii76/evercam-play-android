@@ -54,8 +54,8 @@ public class TestSnapshotTask extends AsyncTask<Void, Void, Drawable>
         try
         {
             URL urlObject = new URL(url);
-            boolean isReachable = Port.isReachable(urlObject.getHost(),
-                                        urlObject.getPort());
+            boolean isReachable = PortCheckTask.isPortOpen(urlObject.getHost(),
+                    String.valueOf(urlObject.getPort()));
             if(!isReachable)
             {
                 errorMessage = activity.getString(R.string.snapshot_test_port_closed);
