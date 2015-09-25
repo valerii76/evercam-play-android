@@ -397,7 +397,7 @@ public class CamerasActivity extends ParentAppCompatActivity implements
         }
         else if(view == mNavAboutItemLayout)
         {
-            Intent aboutIntent = new Intent(CamerasActivity.this, AboutWebActivity.class);
+            Intent aboutIntent = new Intent(CamerasActivity.this, SimpleWebActivity.class);
             aboutIntent.putExtra(Constants.BUNDLE_KEY_URL, getString(R.string.evercam_url));
             startActivity(aboutIntent);
         }

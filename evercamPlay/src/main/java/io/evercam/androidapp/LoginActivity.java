@@ -56,6 +56,7 @@ public class LoginActivity extends ParentAppCompatActivity
         Button btnLogin = (Button) findViewById(R.id.btnLogin);
 
         TextView signUpLink = (TextView) findViewById(R.id.signupLink);
+        TextView forgotPasswordLink = (TextView) findViewById(R.id.forgetPasswordLink);
         usernameEdit = (EditText) findViewById(R.id.editUsername);
         passwordEdit = (EditText) findViewById(R.id.editPassword);
 
@@ -77,6 +78,17 @@ public class LoginActivity extends ParentAppCompatActivity
             {
                 new LoginCheckInternetTask(LoginActivity.this,
                         InternetCheckType.SIGNUP).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }
+        });
+
+        forgotPasswordLink.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+                Intent aboutIntent = new Intent(LoginActivity.this, SimpleWebActivity.class);
+                aboutIntent.putExtra(Constants.BUNDLE_KEY_URL,
+                        getString(R.string.forget_password_url));
+                startActivity(aboutIntent);
             }
         });
         hideLogoIfNecessary();

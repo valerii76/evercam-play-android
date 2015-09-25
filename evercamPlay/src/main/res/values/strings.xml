@@ -55,6 +55,7 @@
     <string name="title_force_landscape">Force landscape for live view</string>
     <string name="show_offline_camera">Show offline cameras</string>
     <string name="evercam_url">http://www.evercam.io</string>
+    <string name="forget_password_url">https://dash.evercam.io/v1/users/password-reset</string>
     <string name="title_activity_recording_web">Recordings</string>
     <string name="title_activity_about_web">About Evercam</string>
 

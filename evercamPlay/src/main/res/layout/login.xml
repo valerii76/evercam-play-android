@@ -7,8 +7,7 @@
     <RelativeLayout
         android:id="@+id/login_form"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="15sp">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:id="@+id/login_form_layout"
@@ -58,13 +57,15 @@
 
         <TextView
             android:id="@+id/signupLink"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/LoginLinkText"
             android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:textColor="@drawable/txt_selector"
-            android:text="@string/create_account"
-            android:textSize="16sp"/>
+            android:text="@string/create_account"/>
+
+        <TextView
+            android:id="@+id/forgetPasswordLink"
+            android:layout_below="@+id/login_form_layout"
+            style="@style/LoginLinkText"
+            android:text="@string/forgot_password"/>
     </RelativeLayout>
 
 </merge>

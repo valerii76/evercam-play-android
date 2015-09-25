@@ -162,7 +162,7 @@
                 android:value=".video.VideoActivity"/>
         </activity>
         <activity
-            android:name=".AboutWebActivity"
+            android:name=".SimpleWebActivity"
             android:label="@string/title_activity_about_web"
             android:configChanges="keyboard|keyboardHidden|screenSize|orientation">
         <meta-data

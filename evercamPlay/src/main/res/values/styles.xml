@@ -24,7 +24,7 @@
         <item name="android:paddingLeft">16dp</item>
         <item name="android:paddingRight">16dp</item>
         <item name="android:paddingTop">20dp</item>
-        <item name="android:paddingBottom">20dp</item>
+        <item name="android:paddingBottom">10dp</item>
     </style>
 
     <style name="SignupFormContainer">
@@ -177,6 +177,16 @@
 
     <style name="AddEditCameraItemRowItemEditText.Number">
         <item name="android:inputType">number</item>
+    </style>
+
+    <!-- Login-->
+    <style name="LoginLinkText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:textColor">@drawable/txt_selector</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:padding">5dp</item>
     </style>
 
 </resources>
