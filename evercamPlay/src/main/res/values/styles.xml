@@ -162,6 +162,7 @@
         <item name="android:layout_width">100sp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">17sp</item>
+        <item name="android:layout_gravity">center</item>
     </style>
 
     <style name="AddEditCameraItemRowItemEditText">
@@ -177,6 +178,14 @@
 
     <style name="AddEditCameraItemRowItemEditText.Number">
         <item name="android:inputType">number</item>
+    </style>
+
+    <style name="AddEditCameraPortStatusText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:layout_marginRight">3dp</item>
     </style>
 
 </resources>

@@ -1,8 +1,11 @@
 package io.evercam.androidapp;
 
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,8 +40,10 @@ import io.evercam.androidapp.custom.CustomToast;
 import io.evercam.androidapp.custom.CustomedDialog;
 import io.evercam.androidapp.dto.AppData;
 import io.evercam.androidapp.dto.EvercamCamera;
+import io.evercam.androidapp.feedback.StreamFeedbackItem;
 import io.evercam.androidapp.tasks.AddCameraTask;
 import io.evercam.androidapp.tasks.PatchCameraTask;
+import io.evercam.androidapp.tasks.PortCheckTask;
 import io.evercam.androidapp.tasks.TestSnapshotTask;
 import io.evercam.androidapp.utils.Commons;
 import io.evercam.androidapp.utils.Constants;
@@ -61,6 +66,8 @@ public class AddEditCameraActivity extends ParentAppCompatActivity
     private EditText externalRtspEdit;
     private EditText jpgUrlEdit;
     private EditText rtspUrlEdit;
+    private TextView mHttpStatusTextView;
+    private TextView mRtspStatusTextView;
     private LinearLayout jpgUrlLayout;
     private LinearLayout rtspUrlLayout;
     private Button addEditButton;
@@ -182,6 +189,8 @@ public class AddEditCameraActivity extends ParentAppCompatActivity
         externalRtspEdit = (EditText) findViewById(R.id.add_external_rtsp_edit);
         jpgUrlEdit = (EditText) findViewById(R.id.add_jpg_edit);
         rtspUrlEdit = (EditText) findViewById(R.id.add_rtsp_edit);
+        mHttpStatusTextView = (TextView) findViewById(R.id.port_status_text_http);
+        mRtspStatusTextView = (TextView) findViewById(R.id.port_status_text_rtsp);
         jpgUrlLayout = (LinearLayout) findViewById(R.id.add_jpg_url_layout);
         rtspUrlLayout = (LinearLayout) findViewById(R.id.add_rtsp_url_layout);
         addEditButton = (Button) findViewById(R.id.button_add_edit_camera);
@@ -221,9 +230,8 @@ public class AddEditCameraActivity extends ParentAppCompatActivity
                     if(!vendorName.equals(getString(R.string.vendor_other)))
                     {
                         //Update vendor logo when vendor is selected
-                        Picasso.with(AddEditCameraActivity.this).load(Vendor.getLogoUrl(vendorId))
-                                .placeholder(android.R.color.transparent)
-                                .into(vendorLogoImageView);
+                        Picasso.with(AddEditCameraActivity.this).load(Vendor.getLogoUrl(vendorId)
+                        ).placeholder(android.R.color.transparent).into(vendorLogoImageView);
 
                         new RequestModelListTask(vendorId).executeOnExecutor(AsyncTask
                                 .THREAD_POOL_EXECUTOR);
@@ -298,6 +306,55 @@ public class AddEditCameraActivity extends ParentAppCompatActivity
             }
         });
 
+        externalHttpEdit.setOnFocusChangeListener(new View.OnFocusChangeListener()
+        {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus)
+            {
+                if(hasFocus)
+                {
+                    setUpRtspTextChangeListener(externalHttpEdit, mHttpStatusTextView);
+                }
+                else
+                {
+                    checkPort(PortCheckTask.PortType.HTTP);
+                }
+            }
+        });
+
+        externalRtspEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus)
+            {
+                if(hasFocus)
+                {
+                    setUpRtspTextChangeListener(externalRtspEdit, mRtspStatusTextView);
+                }
+                else
+                {
+                    checkPort(PortCheckTask.PortType.RTSP);
+                }
+            }
+        });
+
+        externalHostEdit.setOnFocusChangeListener(new View.OnFocusChangeListener()
+        {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus)
+            {
+                if(hasFocus)
+                {
+                    setUpRtspTextChangeListener(externalHostEdit,
+                            mRtspStatusTextView, mHttpStatusTextView);
+                }
+                else
+                {
+                    checkPort(PortCheckTask.PortType.HTTP);
+                    checkPort(PortCheckTask.PortType.RTSP);
+                }
+            }
+        });
+
         jpgUrlEdit.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v)
@@ -357,6 +414,95 @@ public class AddEditCameraActivity extends ParentAppCompatActivity
                 }
             }
         });
+    }
+
+    private void checkPort(PortCheckTask.PortType type)
+    {
+        String ipText = externalHostEdit.getText().toString();
+
+        if(!ipText.isEmpty())
+        {
+            if(type == PortCheckTask.PortType.HTTP)
+            {
+                String httpText = externalHttpEdit.getText().toString();
+                if(!httpText.isEmpty())
+                {
+                    launchPortCheckTask(ipText, httpText, type);
+                }
+            }
+            else if(type == PortCheckTask.PortType.RTSP)
+            {
+                String rtspText = externalRtspEdit.getText().toString();
+                if(!rtspText.isEmpty())
+                {
+                    launchPortCheckTask(ipText, rtspText, type);
+                }
+            }
+        }
+    }
+
+    private void launchPortCheckTask(String ip, String port, PortCheckTask.PortType type)
+    {
+        new PortCheckTask(ip, port, this, type)
+                .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    /**
+     * Clear the status text view when the text in EditText gets changed for the first time
+     *
+     * @param editText The EditText view to add text change listener
+     * @param textViews The status text view(s) list to clear after text changes
+     */
+    private void setUpRtspTextChangeListener(EditText editText, final TextView... textViews)
+    {
+        editText.addTextChangedListener(new TextWatcher()
+        {
+
+            boolean isFirstTimeChange = true;
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable editable)
+            {
+                if(isFirstTimeChange)
+                {
+                    for(TextView textView : textViews)
+                    {
+                        clearPortStatusView(textView);
+                        isFirstTimeChange = false;
+                    }
+                }
+            }
+        });
+    }
+
+    private void clearPortStatusView(TextView textView)
+    {
+        textView.setVisibility(View.GONE);
+    }
+
+    private void updatePortStatusView(TextView textView, boolean isPortOpen)
+    {
+        textView.setVisibility(View.VISIBLE);
+        textView.setText(isPortOpen ? R.string.port_is_open : R.string.port_is_closed);
+        textView.setTextColor(isPortOpen
+                ? getResources().getColor(R.color.mint_green)
+                : getResources().getColor(R.color.orange_red));
+    }
+
+    public void updateHttpPortStatus(boolean isOpen)
+    {
+        updatePortStatusView(mHttpStatusTextView, isOpen);
+    }
+
+    public void updateRtspPortStatus(boolean isOpen)
+    {
+        updatePortStatusView(mRtspStatusTextView, isOpen);
     }
 
     private void performAddEdit()
