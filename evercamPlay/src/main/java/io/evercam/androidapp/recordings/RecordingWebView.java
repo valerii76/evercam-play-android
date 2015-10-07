@@ -1,6 +1,7 @@
 package io.evercam.androidapp.recordings;
 
 import android.content.Context;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.webkit.WebView;
 
@@ -31,6 +32,12 @@ public class RecordingWebView extends WebView
         getSettings().setDisplayZoomControls(false);
 
         setWebViewClient(webActivity.getWebViewClient());
+
+        //Enable DevTool debugging
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+        {
+            WebView.setWebContentsDebuggingEnabled(true);
+        }
 
         //TODO remove <body style='margin:0;padding:0;'>, it's here only to overwrite the widget
         // margin
