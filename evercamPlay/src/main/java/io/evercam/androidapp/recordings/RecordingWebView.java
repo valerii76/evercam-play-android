@@ -6,6 +6,7 @@ import android.util.AttributeSet;
 import android.webkit.WebView;
 
 import io.evercam.API;
+import io.evercam.androidapp.R;
 import io.evercam.androidapp.WebActivity;
 
 public class RecordingWebView extends WebView
@@ -30,6 +31,11 @@ public class RecordingWebView extends WebView
         //Enable zooming in web view
         getSettings().setBuiltInZoomControls(true);
         getSettings().setDisplayZoomControls(false);
+
+        //Append custom user agent
+        String userAgent = getSettings().getUserAgentString() + " "
+                + webActivity.getString(R.string.user_agent_suffix);
+        getSettings().setUserAgentString(userAgent);
 
         setWebViewClient(webActivity.getWebViewClient());
 

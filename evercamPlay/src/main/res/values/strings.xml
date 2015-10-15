@@ -24,6 +24,7 @@
     <string name="options_clear">Clear</string>
     <string name="accounts">Accounts</string>
     <string name="live">Live</string>
+    <string name="user_agent_suffix">io.evercam.androidapp/1.0</string>
 
     <!-- Text on camera -->
     <string name="connecting">Connecting&#8230;</string>
