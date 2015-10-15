@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Evercam Play</string>
+    <string name="app_name">Evercam</string>
     <string name="empty"/>
     <string name="current_video_path"/>
     <string name="local_service_started">local_service_started</string>

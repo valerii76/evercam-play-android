@@ -1,9 +1,9 @@
-# Evercam Play [![Build Status][travis-image]][travis-url] [![API][api-image]][api-url]  
+# Evercam for Android [![Build Status][travis-image]][travis-url] [![API][api-image]][api-url]  
 [![Ready][waffle-image]][waffle-url] [![Join the chat][gitter-image]][gitter-url]
 
-Evercam Play allows connect your own IP cameras, public webcams and any Android devices that you use as an IP camera. It connects you to Evercam dashboard so that you can see all your cameras on your desktop as well. 
+Evercam allows connect your own IP cameras, public webcams and any Android devices that you use as an IP camera. It connects you to Evercam dashboard so that you can see all your cameras on your desktop as well. 
 
-| Name   | Evercam Play  |
+| Name   | Evercam for Android|
 | --- | --- |
 | Owner   | [@liutingdu](https://github.com/liutingdu)   |
 | Version  | 1.5.9 |

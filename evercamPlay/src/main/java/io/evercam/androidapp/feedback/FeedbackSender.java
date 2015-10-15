@@ -17,7 +17,7 @@ public class FeedbackSender
 {
     private final String TAG = "evercam-FeedbackSender";
     private final String TO_EMAIL = "play@evercam.io";
-    private final String TITLE_FEEDBACK = "Evercam Play Feedback";
+    private final String TITLE_FEEDBACK = "Evercam Android Feedback";
     private Context context;
     private Activity activity;
     private SendGrid sendgrid;
