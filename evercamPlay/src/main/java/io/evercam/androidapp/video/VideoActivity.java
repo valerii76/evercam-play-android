@@ -17,6 +17,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NavUtils;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -49,7 +50,11 @@ import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.concurrent.RejectedExecutionException;
 
 import io.evercam.Camera;
@@ -1726,6 +1731,7 @@ public class VideoActivity extends ParentAppCompatActivity implements SurfaceHol
     {
         ArrayList<String> cameraNames = new ArrayList<>();
 
+        boolean matched = false;
         for(int count = 0; count < cameraList.size(); count++)
         {
             EvercamCamera camera = cameraList.get(count);
@@ -1734,13 +1740,30 @@ public class VideoActivity extends ParentAppCompatActivity implements SurfaceHol
             if(cameraList.get(count).getCameraId().equals(startingCameraID))
             {
                 defaultCameraIndex = cameraNames.size() - 1;
+                matched = true;
             }
+        }
+        if(!matched && cameraExistsInListButOffline(startingCameraID))
+        {
+            CustomedDialog.getMessageDialog(this, R.string.msg_camera_is_hidden).show();
         }
 
         String[] cameraNameArray = new String[cameraNames.size()];
         cameraNames.toArray(cameraNameArray);
 
         return cameraNameArray;
+    }
+
+    private boolean cameraExistsInListButOffline(String cameraId)
+    {
+        for (EvercamCamera camera : AppData.evercamCameraList)
+        {
+            if(camera.getCameraId().equals(cameraId) && camera.isOffline())
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void loadCamerasToActionBar()
