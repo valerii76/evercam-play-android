@@ -281,6 +281,7 @@ public class SignUpActivity extends ParentAppCompatActivity
                         newUser.getEmail()).sendToKeenIo(KeenHelper.getClient(SignUpActivity.this));
 
                 getMixpanel().identifyNewUser(newUser);
+                getMixpanel().identifyUser(newUser.getUsername());
                 getMixpanel().sendEvent(R.string.mixpanel_event_sign_up, null);
 
                 new EvercamAccount(SignUpActivity.this).add(newUser);
