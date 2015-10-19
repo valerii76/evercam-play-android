@@ -1,4 +1,14 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+    }
+
+    dependencies {
+        classpath 'io.fabric.tools:gradle:1.+'
+    }
+}
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 22
@@ -55,6 +65,7 @@ repositories {
     maven {
         url "https://mint.splunk.com/gradle/"
     }
+    maven { url 'https://maven.fabric.io/public' }
 }
 
 dependencies {
@@ -85,4 +96,7 @@ dependencies {
 
     //Test dependencies
     testCompile 'junit:junit:4.12'
+    compile('com.crashlytics.sdk.android:crashlytics:2.5.2@aar') {
+        transitive = true;
+    }
 }
