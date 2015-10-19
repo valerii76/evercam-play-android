@@ -53,6 +53,7 @@
                 android:id="@+id/live_progress_view"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
+                android:padding="12dp"
                 android:layout_alignLeft="@+id/play_pause_image_view"
                 android:layout_alignRight="@+id/play_pause_image_view"
                 android:layout_alignTop="@+id/play_pause_image_view"
