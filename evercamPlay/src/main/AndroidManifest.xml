@@ -177,6 +177,10 @@
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="3076ee9439062b784cded123ab7344ffa3b1c872" />
+        <activity
+            android:name=".photoview.ViewPagerActivity"
+            android:label="@string/title_saved_images">
+        </activity>
     </application>
 
 </manifest>

@@ -2,9 +2,8 @@ package io.evercam.androidapp.custom;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Parcelable;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Toast;
@@ -14,6 +13,7 @@ import com.github.johnpersano.supertoasts.SuperToast;
 import com.github.johnpersano.supertoasts.util.OnClickWrapper;
 
 import io.evercam.androidapp.R;
+import io.evercam.androidapp.photoview.SnapshotManager;
 
 public class CustomToast
 {
@@ -59,7 +59,7 @@ public class CustomToast
         toast.show();
     }
 
-    public static void showSuperSnapshotSaved(final Activity activity, final Uri uri)
+    public static void showSuperSnapshotSaved(final Activity activity, final String cameraId)
     {
         /**
          * The OnClickWrapper is needed to reattach SuperToast.OnClickListeners on orientation
@@ -75,12 +75,11 @@ public class CustomToast
             @Override
             public void onClick(View view, Parcelable token)
             {
-                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                activity.startActivity(intent);
+                SnapshotManager.showSnapshotsForCamera(activity, cameraId);
             }
         });
 
-        SuperToast.cancelAllSuperToasts();
+        SuperActivityToast.cancelAllSuperActivityToasts();
         SuperActivityToast superActivityToast = new SuperActivityToast(activity,
                 SuperToast.Type.BUTTON);
         superActivityToast.setDuration(SuperToast.Duration.EXTRA_LONG);

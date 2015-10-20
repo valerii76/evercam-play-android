@@ -2,50 +2,33 @@ package io.evercam.androidapp.tasks;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import io.evercam.androidapp.video.SnapshotManager;
+import io.evercam.androidapp.custom.CustomToast;
+import io.evercam.androidapp.photoview.SnapshotManager;
 
 public class CaptureSnapshotRunnable implements Runnable
 {
-    private final String TAG = "evercamplay_CaptureSnapshotTask";
+    private final String TAG = "CaptureSnapshotRunnable";
 
     private Activity activity;
+    private String cameraId;
     private String path;
     private Bitmap bitmap;
 
-    public CaptureSnapshotRunnable(Activity activity, String path, Bitmap bitmap)
+    public CaptureSnapshotRunnable(Activity activity, String cameraId,
+                                   SnapshotManager.FileType fileType, Bitmap bitmap)
     {
         this.activity = activity;
-        this.path = path;
+        this.cameraId = cameraId;
+        this.path = SnapshotManager.createFilePath
+                (cameraId, fileType);
         this.bitmap = bitmap;
-    }
-
-    public static Bitmap drawableToBitmap(Drawable drawable)
-    {
-        if(drawable instanceof BitmapDrawable)
-        {
-            return ((BitmapDrawable) drawable).getBitmap();
-        }
-
-        int width = drawable.getIntrinsicWidth();
-        width = width > 0 ? width : 1;
-        int height = drawable.getIntrinsicHeight();
-        height = height > 0 ? height : 1;
-
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
-
-        return bitmap;
     }
 
     public String capture(Bitmap snapshotBitmap)
@@ -78,10 +61,17 @@ public class CaptureSnapshotRunnable implements Runnable
     {
         if(bitmap != null)
         {
-            String savedPath = capture(bitmap);
+            final String savedPath = capture(bitmap);
             if(!savedPath.isEmpty())
             {
-                SnapshotManager.updateGallery(savedPath, activity);
+                activity.runOnUiThread(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        CustomToast.showSuperSnapshotSaved(activity, cameraId);
+                    }
+                });
             }
         }
     }

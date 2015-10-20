@@ -2,7 +2,7 @@ package io.evercam.androidapp.test.video;
 
 import junit.framework.TestCase;
 
-import io.evercam.androidapp.video.SnapshotManager;
+import io.evercam.androidapp.photoview.SnapshotManager;
 
 public class SnapshotManagerTest extends TestCase
 {

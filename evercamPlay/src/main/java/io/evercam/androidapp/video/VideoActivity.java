@@ -17,7 +17,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.support.annotation.NonNull;
 import android.support.v4.app.NavUtils;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -50,11 +49,7 @@ import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
 import java.util.concurrent.RejectedExecutionException;
 
 import io.evercam.Camera;
@@ -81,6 +76,7 @@ import io.evercam.androidapp.dto.EvercamCamera;
 import io.evercam.androidapp.feedback.KeenHelper;
 import io.evercam.androidapp.feedback.ShortcutFeedbackItem;
 import io.evercam.androidapp.feedback.StreamFeedbackItem;
+import io.evercam.androidapp.photoview.SnapshotManager;
 import io.evercam.androidapp.ptz.PresetsListAdapter;
 import io.evercam.androidapp.recordings.RecordingWebActivity;
 import io.evercam.androidapp.tasks.CaptureSnapshotRunnable;
@@ -90,7 +86,7 @@ import io.evercam.androidapp.utils.Commons;
 import io.evercam.androidapp.utils.Constants;
 import io.evercam.androidapp.utils.PrefsManager;
 import io.evercam.androidapp.utils.PropertyReader;
-import io.evercam.androidapp.video.SnapshotManager.FileType;
+import io.evercam.androidapp.photoview.SnapshotManager.FileType;
 import io.keen.client.java.KeenClient;
 
 public class VideoActivity extends ParentAppCompatActivity implements SurfaceHolder.Callback
@@ -617,7 +613,7 @@ public class VideoActivity extends ParentAppCompatActivity implements SurfaceHol
             }
             else if(itemId == R.id.video_menu_view_snapshots)
             {
-                SnapshotManager.showSnapshotsInGalleryForCamera(this, evercamCamera.getCameraId());
+                SnapshotManager.showSnapshotsForCamera(this, evercamCamera.getCameraId());
             }
             else if(itemId == R.id.video_menu_create_shortcut)
             {
@@ -1380,11 +1376,8 @@ public class VideoActivity extends ParentAppCompatActivity implements SurfaceHol
                     @Override
                     public void onClick(DialogInterface dialog, int which)
                     {
-                        String path = SnapshotManager.createFilePath
-                            (evercamCamera.getCameraId(), fileType);
-
                         new Thread(new CaptureSnapshotRunnable(VideoActivity
-                                  .this, path, bitmap)).start();
+                                  .this, evercamCamera.getCameraId(), fileType, bitmap)).start();
                         }
                 }).show();
         }
