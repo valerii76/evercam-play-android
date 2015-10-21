@@ -108,6 +108,7 @@ public class CamerasActivity extends ParentAppCompatActivity implements
 
         checkUser();
 
+        setUpGradientToolbarWithHomeButton();
         initNavigationDrawer();
 
         ObservableScrollView observableScrollView = (ObservableScrollView) findViewById(R.id.cameras_scroll_view);
@@ -331,11 +332,6 @@ public class CamerasActivity extends ParentAppCompatActivity implements
 
     private void initNavigationDrawer()
     {
-        mToolbar = (Toolbar) findViewById(R.id.tool_bar);
-        setGradientTitleBackground();
-        setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         mNavAccountItemLayout = (FrameLayout) findViewById(R.id.navigation_drawer_items_account_layout);
         mNavSettingsItemLayout = (FrameLayout) findViewById(R.id.navigation_drawer_items_settings_layout);
         mNavFeedbackItemLayout = (FrameLayout) findViewById(R.id.navigation_drawer_items_feedback_layout);

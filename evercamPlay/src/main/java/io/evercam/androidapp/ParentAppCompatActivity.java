@@ -183,6 +183,14 @@ public class ParentAppCompatActivity extends AppCompatActivity
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
+    protected void setUpGradientToolbarWithHomeButton()
+    {
+        mToolbar = (Toolbar) findViewById(R.id.tool_bar);
+        setGradientTitleBackground();
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
     protected void updateTitleText(int textId)
     {
         ActionBar actionBar = getSupportActionBar();
