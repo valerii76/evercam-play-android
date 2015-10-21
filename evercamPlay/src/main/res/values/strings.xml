@@ -57,7 +57,7 @@
     <string name="show_offline_camera">Show offline cameras</string>
     <string name="evercam_url">http://www.evercam.io</string>
     <string name="forget_password_url">https://dash.evercam.io/v1/users/password-reset</string>
-    <string name="title_activity_recording_web">Recordings</string>
+    <string name="title_activity_recording_web">Cloud Recordings</string>
     <string name="title_activity_about_web">About Evercam</string>
 
     <!-- Menu -->
@@ -82,7 +82,7 @@
     <string name="menu_camera_settings">Camera Settings</string>
     <string name="menu_view_snapshot">Saved Images</string>
     <string name="menu_create_shortcut">Add to homescreen</string>
-    <string name="menu_view_recordings">View Recordings</string>
+    <string name="menu_view_recordings">Cloud Recordings</string>
     <string name="menu_cancel_scan">Cancel</string>
 
     <!-- Feedback -->
