@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 
 import com.crashlytics.android.Crashlytics;
+
 import io.evercam.API;
 import io.evercam.EvercamException;
 import io.evercam.User;

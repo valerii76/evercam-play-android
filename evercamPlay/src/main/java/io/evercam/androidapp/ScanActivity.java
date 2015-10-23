@@ -28,8 +28,6 @@ import android.widget.TextView;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
-import org.w3c.dom.Text;
-
 import java.io.InputStream;
 import java.util.ArrayList;
 

@@ -3,7 +3,6 @@ package io.evercam.androidapp.custom;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Parcelable;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Toast;

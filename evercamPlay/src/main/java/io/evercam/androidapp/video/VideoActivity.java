@@ -77,6 +77,7 @@ import io.evercam.androidapp.feedback.KeenHelper;
 import io.evercam.androidapp.feedback.ShortcutFeedbackItem;
 import io.evercam.androidapp.feedback.StreamFeedbackItem;
 import io.evercam.androidapp.photoview.SnapshotManager;
+import io.evercam.androidapp.photoview.SnapshotManager.FileType;
 import io.evercam.androidapp.ptz.PresetsListAdapter;
 import io.evercam.androidapp.recordings.RecordingWebActivity;
 import io.evercam.androidapp.tasks.CaptureSnapshotRunnable;
@@ -86,7 +87,6 @@ import io.evercam.androidapp.utils.Commons;
 import io.evercam.androidapp.utils.Constants;
 import io.evercam.androidapp.utils.PrefsManager;
 import io.evercam.androidapp.utils.PropertyReader;
-import io.evercam.androidapp.photoview.SnapshotManager.FileType;
 import io.keen.client.java.KeenClient;
 
 public class VideoActivity extends ParentAppCompatActivity implements SurfaceHolder.Callback
