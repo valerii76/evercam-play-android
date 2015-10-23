@@ -1181,7 +1181,7 @@ public class VideoActivity extends ParentAppCompatActivity implements SurfaceHol
 
                     playPauseImageView.setImageBitmap(null);
                     showAllControlMenus(true);
-                    playPauseImageView.setImageResource(android.R.drawable.ic_media_pause);
+                    playPauseImageView.setImageResource(R.drawable.ic_pause);
 
                     startMediaPlayerAnimation();
 
@@ -1211,7 +1211,7 @@ public class VideoActivity extends ParentAppCompatActivity implements SurfaceHol
                     showAllControlMenus(true);
 
                     playPauseImageView.setImageBitmap(null);
-                    playPauseImageView.setImageResource(android.R.drawable.ic_media_play);
+                    playPauseImageView.setImageResource(R.drawable.ic_play);
 
                     pausePlayer();
 
@@ -1250,7 +1250,7 @@ public class VideoActivity extends ParentAppCompatActivity implements SurfaceHol
                     else
                     {
                         showToolbar();
-                        playPauseImageView.setImageResource(android.R.drawable.ic_media_pause);
+                        playPauseImageView.setImageResource(R.drawable.ic_pause);
 
                         showAllControlMenus(true);
 

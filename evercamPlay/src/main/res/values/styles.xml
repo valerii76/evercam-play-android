@@ -66,6 +66,7 @@
         <item name="android:layout_width">60dp</item>
         <item name="android:layout_height">60dp</item>
         <item name="android:scaleType">fitCenter</item>
+        <item name="android:background">@drawable/play_button_background_selector</item>
     </style>
 
     <!-- The menu label style for float action button -->

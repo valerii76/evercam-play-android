@@ -79,6 +79,8 @@ public class CamerasActivity extends ParentAppCompatActivity implements
     private FrameLayout mNavSettingsItemLayout;
     private FrameLayout mNavFeedbackItemLayout;
     private FrameLayout mNavAboutItemLayout;
+    private FrameLayout mNavScanLayout;
+    private FrameLayout mNavLogoutLayout;
     private TextView mUserNameTextView;
     private TextView mUserEmailTextView;
     private TextView mAppVersionTextView;
@@ -193,10 +195,6 @@ public class CamerasActivity extends ParentAppCompatActivity implements
 
             startCameraLoadingTask();
 
-        }
-        else if(itemId == R.id.menu_logout)
-        {
-            showSignOutDialog();
         }
         else
         {
@@ -336,6 +334,8 @@ public class CamerasActivity extends ParentAppCompatActivity implements
         mNavSettingsItemLayout = (FrameLayout) findViewById(R.id.navigation_drawer_items_settings_layout);
         mNavFeedbackItemLayout = (FrameLayout) findViewById(R.id.navigation_drawer_items_feedback_layout);
         mNavAboutItemLayout = (FrameLayout) findViewById(R.id.navigation_drawer_items_about_layout);
+        mNavScanLayout = (FrameLayout) findViewById(R.id.navigation_drawer_items_scan_layout);
+        mNavLogoutLayout = (FrameLayout) findViewById(R.id.navigation_drawer_items_logout_layout);
 
         mUserNameTextView = (TextView) findViewById(R.id.navigation_drawer_title_user_name);
         mUserEmailTextView = (TextView) findViewById(R.id.navigation_drawer_title_user_email);
@@ -366,6 +366,8 @@ public class CamerasActivity extends ParentAppCompatActivity implements
         mNavSettingsItemLayout.setOnClickListener(this);
         mNavFeedbackItemLayout.setOnClickListener(this);
         mNavAboutItemLayout.setOnClickListener(this);
+        mNavScanLayout.setOnClickListener(this);
+        mNavLogoutLayout.setOnClickListener(this);
         mAppVersionTextView.setText("v" + new DataCollector(this).getAppVersion());
     }
 
@@ -396,6 +398,15 @@ public class CamerasActivity extends ParentAppCompatActivity implements
             Intent aboutIntent = new Intent(CamerasActivity.this, SimpleWebActivity.class);
             aboutIntent.putExtra(Constants.BUNDLE_KEY_URL, getString(R.string.evercam_url));
             startActivity(aboutIntent);
+        }
+        else if(view == mNavScanLayout)
+        {
+            startActivityForResult(new Intent(CamerasActivity.this, ScanActivity.class),
+                    Constants.REQUEST_CODE_ADD_CAMERA);
+        }
+        else if(view == mNavLogoutLayout)
+        {
+            showSignOutDialog();
         }
     }
 
