@@ -2,8 +2,9 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-GSTREAMER_ROOT_ANDROID := /Users/liutingdu/Android3rdParty/gstreamer-1.0-android-arm-release-1.4.5
-#GSTREAMER_ROOT_ANDROID := /home/dmitry/etc/android/gst_1.4.5
+# GSTREAMER_ROOT_ANDROID := /Users/liutingdu/Android3rdParty/gstreamer-1.0-android-arm-release-1.4.5
+# GSTREAMER_ROOT_ANDROID := /home/dmitry/etc/android/gst_1.4.5
+GSTREAMER_ROOT_ANDROID := /home/valerii76/android-env/gstreamer-arm
 
 SHELL := PATH=/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin /bin/bash
 
